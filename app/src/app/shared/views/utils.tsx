@@ -5,6 +5,7 @@ const loading_animation = require("./images/loading_animation.png");
 
 interface OurFieldProps {
     label: string;
+    placeholder?: string;
     type: string;
     name: string;
     component(p: ComponentProps): JSX.Element;
@@ -20,14 +21,14 @@ export function OurField (props: OurFieldProps, s: {}) {
     return <Field {...props} />;
 }
 
-export function render_form_field ({ input, label, type, meta}: ComponentProps): JSX.Element {
+export function render_form_field ({ input, label, placeholder, type, meta}: ComponentProps): JSX.Element {
 
     let { touched, error, warning } = meta;
     return (
     <div>
-        <label>{label}</label>
+        {label && <label>{label}</label>}
         <div>
-            <input {...input} placeholder={label} type={type}/>
+            <input {...input} placeholder={placeholder || label} type={type}/>
             {touched && ((error && <span>{error}</span>) || (warning && <span>{warning}</span>))}
         </div>
     </div>);
