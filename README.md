@@ -237,3 +237,4 @@ over all the configuration being used.
     `app/public`, `app/private` (which is only visible to those user who have
     signed in) and `app/private_admin` (content only shown to trusted users).
     `server` is obviously private and resides solely on the server.
+- [ ] Remove APP_NAME from environment variables and commit to code.
