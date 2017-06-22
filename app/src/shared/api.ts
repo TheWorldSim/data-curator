@@ -41,9 +41,3 @@ export namespace ResponsePayload {
     // A protected resource
     export type ProtectedData = string;
 }
-
-export const REQUEST_PAYLOAD_KEYS = {
-    EMAIL_ADDRESS: "email",
-    PASSWORD: "password",
-    USER_UUID: "user_uuid",
-};
