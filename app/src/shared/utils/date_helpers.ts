@@ -29,6 +29,7 @@ export function distance_of_time_in_words (from_date: Date, to_date: Date, optio
     const distance_in_minutes = Math.round(Math.abs(diff) / 60000);
     const distance_in_seconds = Math.round(Math.abs(diff) / 1000);
     const tense = full_options.include_tense ? (diff > 0 ? " from now" : " ago") : "";
+
     if (diff === 0) {
         return "no time";
     }
