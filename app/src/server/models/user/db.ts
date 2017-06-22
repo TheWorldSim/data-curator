@@ -40,16 +40,3 @@ export type UserDbPartialFields = Partial<UserDbFields>;
 
 export const UserDb = sequelize.define<UserDbInstance, UserDbPartialFields>(
     TABLE_NAMES.USER, USER_FIELDS, DEFINE_OPTIONS<UserDbInstance>());
-
-// UserDb.sync().then(() => {
-//     UserDb.create({
-//         email: "John",
-//         password: "Hancock",
-//     })
-//     .then((t) => {
-//         t.toJSON()
-//         t.changed("uuid")
-//     });
-// });
-
-// UserDb.findOne({where: {uuid: ""}})
