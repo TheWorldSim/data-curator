@@ -1,0 +1,92 @@
+/*@import '../shared/css/common';*/
+
+/* ------------------ *
+ * PUBLIC HOME STYLES *
+ * ------------------ */
+
+.public_home {
+    text-align: center;
+}
+
+.public_home section {
+    padding: 30px 15px;
+}
+
+.public_home h1 {
+    margin-bottom: 42px;
+    font-size: 42px;
+    line-height: 1.1;
+    letter-spacing: 1.5px;
+}
+
+.public_home h2 {
+    margin-bottom: 42px;
+    font-size: 32px;
+    line-height: 1.4;
+    letter-spacing: 0.2px;
+}
+
+@media screen and (min-width: 768px) {
+    .public_home section {
+      padding: 80px 0;
+    }
+    .public_home h1 {
+      font-size: 60px;
+    }
+    .public_home h2 {
+      font-size: 44px;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .public_home h1 {
+      font-size: 72px;
+    }
+    .public_home h2 {
+      font-size: 48px;
+    }
+}
+
+.public_home p {
+    margin: 0 auto 42px auto;
+    max-width: 500px;
+    font-size: 22px;
+    line-height: 1.4;
+    letter-spacing: 0.6px;
+}
+
+.public_home a {
+    margin-bottom: 42px;
+    font-size: 14px;
+    line-height: 4.9;
+    letter-spacing: 2.3px;
+}
+
+.dash {
+    margin: 0 auto;
+    width: 100px;
+    height: 1.5px;
+    background-color: lightgrey;
+}
+
+.logo {
+    width: 50px;
+}
+
+.logo_small {
+    width: 25px;
+}
+
+.public_home footer {
+    text-align: center;
+    padding-top: 42px;
+    background-color: #f2f2f2;
+}
+
+.public_home footer .logo {
+    margin-bottom: 12px;
+}
+
+.public_home footer .copyright {
+    line-height: 0.5;
+}

@@ -1,0 +1,10 @@
+.vagrant/*
+*.log
+.vscode
+ansible_venv
+deploy/public_keys/*
+**/*.retry
+
+# Can be removed if repo is private
+deploy/inventory_file
+deploy/roles/env_all/tasks/users.yml

@@ -1,0 +1,47 @@
+import * as Sequelize from "sequelize";
+import {BaseDbFields} from "../../shared/models/base";
+
+export type BaseFields = {
+    [P in keyof BaseDbFields]: string | Sequelize.DataTypeAbstract | Sequelize.DefineAttributeColumnOptions;
+};
+
+export const BASE_FIELDS = {
+    uuid: {
+        type: Sequelize.UUID,
+        primaryKey: true,
+        defaultValue: Sequelize.UUIDV4,
+    },
+    created_at: {
+        type: Sequelize.DATE(6),
+        allowNull: false,
+    },
+    modified_at: {
+        type: Sequelize.DATE(6),
+        allowNull: true,
+    },
+    deleted_at: {
+        type: Sequelize.DATE(6),
+        allowNull: true,
+    },
+};
+
+// Only used in sequelize.define, not yet usable in the migrations
+export function DEFINE_OPTIONS<DbInstance>(): Sequelize.DefineOptions<DbInstance> {
+    return {
+        paranoid: true,
+        freezeTableName: true,
+        timestamps: true,
+        underscored: true,
+        // We specify these explicitly even though sequelize does a fine job of this
+        createdAt: "created_at",
+        deletedAt: "deleted_at",
+        updatedAt: "modified_at",
+    };
+}
+
+export const TABLE_NAMES = {
+    USER: "user",
+};
+
+export const FOREIGN_KEYS = {
+};
