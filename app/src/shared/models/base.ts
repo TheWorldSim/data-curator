@@ -13,16 +13,15 @@ export interface BaseDbFields {
 
 /**
  * Extra fields that may be exchanged between server and client
- * May be removed to only be on the client in the future.
  */
 export interface BaseModel extends BaseDbFields {
     // Temporary fields
     old_temp_id?: string;
     sync_state?: SYNC_STATE;
-    sync_errors?: string[];
+    sync_error?: string;
 }
 
-export const SYNC_STATES = str_enum(["UNSAVED", "SYNCING", "SYNCED", "ERROR"]);
+export const SYNC_STATES = str_enum(["NOT_SYNCED", "SYNCING", "SYNCED", "ERROR"]);
 export type SYNC_STATE = keyof typeof SYNC_STATES;
 
 /**
