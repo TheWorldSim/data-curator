@@ -12,6 +12,8 @@ export function DANGER_force_sync_db_for_tests () {
     return UserDb.sync({force: true});
 }
 
+export const signin_user = server_normal_user();
+
 export function seed_db (): Promise<void> {
 
     return clear_db()
@@ -19,7 +21,7 @@ export function seed_db (): Promise<void> {
         // Add database seeds for tests
 
         let user: UserDbFields = server_admin_user();
-        let promise = UserDb.bulkCreate([user, server_normal_user()]);
+        let promise = UserDb.bulkCreate([user, signin_user]);
 
         return promise.then(() => { return; });
     });
