@@ -9,6 +9,7 @@ export const LOG_LEVEL = {
 };
 
 export const LOG_TAGS = {
+    DEBUG: "DEBUG",
     INFO: "INFO",
     EXCEPTION: "EXCEPTION",
     SECURITY: ["INFO", "SECURITY"],
