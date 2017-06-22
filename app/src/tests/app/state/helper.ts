@@ -1,5 +1,6 @@
 import {Reducer} from "redux";
 
+import {BaseModel} from "../../../shared/models/base";
 import {dispatch} from "../../../app/shared/state/store";
 import {Actions, ACTIONS} from "../../../app/shared/state/actions";
 import {ERRORS} from "../../../shared/errors";
@@ -90,4 +91,16 @@ export function make_helpers<S>(reducer: Reducer<S>) {
             return reducer(state, signout_erred_action());
         },
     };
+}
+
+/**
+ * Convert to string to simulate response from server
+ */
+export function JSON_date_to_string<T extends BaseModel>(model: T): T {
+
+    // tslint:disable-next-line
+    model.created_at = (model.created_at.toString() as any);
+    // tslint:disable-next-line
+    model.modified_at = (model.modified_at!.toString() as any);
+    return model;
 }
