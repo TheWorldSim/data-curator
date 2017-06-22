@@ -34,13 +34,13 @@ export function render_form_field ({ input, label, placeholder, type, meta}: Com
     </div>);
 }
 
-export function make_spinner (text: string = "Loading...") {
+export function make_spinner (text: string = "Loading...", width: number = 60) {
 
     return (
-    <div>
+    <span>
         <span>{text}</span>
-        <div className="spinner_container">
-            <img src={loading_animation} alt="loading animation" style={{width: 60}}/>
-        </div>
-    </div>);
+        <span className="spinner_container">
+            <img src={loading_animation} alt="loading animation" style={{width}}/>
+        </span>
+    </span>);
 }
