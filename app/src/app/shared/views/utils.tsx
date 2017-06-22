@@ -1,7 +1,7 @@
 import * as React from "react";
 import {Field, WrappedFieldProps} from "redux-form";
 
-const logo = require("./images/loading_animation.gif");
+const loading_animation = require("./images/loading_animation.png");
 
 interface OurFieldProps {
     label: string;
@@ -39,7 +39,7 @@ export function make_spinner (text: string = "Loading...") {
     <div>
         <span>{text}</span>
         <div className="spinner_container">
-            <img src={logo} alt="loading animation" style={{width: 60}}/>
+            <img src={loading_animation} alt="loading animation" style={{width: 60}}/>
         </div>
     </div>);
 }
