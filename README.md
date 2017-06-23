@@ -1,25 +1,39 @@
 
 # Napthr
 
-Aims to provides a base web apps to build from quickly and securely.
+Provides a base web app from which to efficiently build secure and scalable
+applications.
 
-* Nginx - web server
-* Ansible - for provision and deployment
-* Postgres - backend data store
-* Typescript + tslint - for productivity to jump to code definitions in Visual Studio
-* Hapi.js - for sharing between back and front end: const API urls, model / data
-validation, model / data schemas, business logic, isomorphic views.  Django was
-a close second (admin interface and safer model SQL migrations).
-Code and auto documenting types
-* React.js + Redux
-* Sequelize - for ORM.  Sequelize is good but
-    the model types are enforced in one file, the database schema are written
-    manually in another, the migrations are written manually in a third and
-    the database config has to be extracted from the .env* files as they cannot
-    be provided via the sequelize cli.  It would be preferable to have a proper
-    tool chain such as Django's South migration manager.
-* Webpack - for HMR and asset bundling etc.
-* Jest - for unit testing
+* Nginx - high performance web server
+* Ansible - straightforward provisioning and deployment tool
+* PostgreSQL - backend data store (would be possible to change for anothe SQL
+    or non SQL store)
+* Typescript + tslint - for refactoring, code completion and code navigation
+    (see Jest for testing)
+* [Hapi.js](github.com/hapijs/hapi) - secure, well maintained, high performance web application server.
+    Enables isomorphic application if required through set up of API urls, model
+    / data validation, model / data schemas, business logic between front end and
+    server side.  Django was a close second (admin interface and safer model
+    SQL migrations).
+* React.js + [Redux](http://redux.js.org/) - liberating UI and state management
+    libraries.  Enables complex and compelling UX when used correctly.
+* Sequelize - ORM for PostgreSQL.
+    Caveat: Sequelize is a fantastic project but there are 2 main down sides of
+    which this project has only tackled the first.
+    * Firstly the database config has to be extracted from the .env* files as they
+        cannot be provided via the sequelize cli.
+    * Secondly model types are enforced in one set of files, the database schema
+        are written manually in others, and the migrations are again manually written
+        in a third.
+    It would be preferable to have a proper tool chain such as Django's South
+    migration manager.
+* Webpack - for HMR (Hot Module Replacment) and asset bundling etc.
+* Jest - for unit and integration testing
+* Create React App - Webpack, Jest, and React are brought in by Create React App.
+    Specifically [the typescript fork](github.com/wmonk/create-react-app-typescript/)
+    of this project.
+
+### TODO
 
 - [ ] CSRF protection
 - [ ] [install fail2ban](https://www.digitalocean.com/community/tutorials/how-to-protect-ssh-with-fail2ban-on-ubuntu-14-04)
@@ -44,10 +58,12 @@ Code and auto documenting types
 
 ## Updating
 
-It uses the [wmonk's Typescript fork](https://github.com/wmonk/create-react-app-typescript)
-of the [Facebook create-react-app](https://github.com/facebookincubator/create-react-app).
-Follow [instructions to update](https://github.com/facebookincubator/create-react-app/blob/
-master/packages/react-scripts/template/README.md#updating-to-new-releases) to new releases.
+As this app uses the [wmonk's Typescript fork](https://github.com/wmonk/create-react-app-typescript)
+of the [Facebook create-react-app](https://github.com/facebookincubator/create-react-app)
+it can and will be updated.
+Follow
+[instructions to update](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#updating-to-new-releases)
+to new releases.
 
 ## Setup
 
