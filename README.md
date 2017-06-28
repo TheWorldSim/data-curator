@@ -6,7 +6,7 @@ applications.
 
 * Nginx - high performance web server
 * Ansible - straightforward provisioning and deployment tool
-* PostgreSQL - backend data store (would be possible to change for anothe SQL
+* PostgreSQL - backend data store (would be possible to change for another SQL
     or non SQL store)
 * Typescript + tslint - for refactoring, code completion and code navigation
     (see Jest for testing)
