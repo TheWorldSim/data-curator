@@ -54,7 +54,7 @@
     - { role: provision_node,                tags: [ 'dbserver', 'provision', 'provision_dbserver' ] }
     - { role: provision_postgresql,          tags: [ 'dbserver', 'provision', 'provision_dbserver' ] }
     - { role: prepare_server_assets_locally, tags: [ 'dbserver', 'deploy', 'deploy_dbserver' ], when: prepared_local_assets == false }
-    - { role: deploy_server_assets,          tags: [ 'dbserver', 'deploy', 'deploy_dbserver' ] }
+    - { role: deploy_server_assets,          tags: [ 'dbserver', 'deploy', 'deploy_dbserver' ], when: deployed_server_assets_to_ip != ansible_all_ipv4_addresses[0] }
     - { role: migrate_server_db,             tags: [ 'dbserver', 'deploy', 'deploy_dbserver' ] }
 
 - hosts: webservers
@@ -68,5 +68,5 @@
     - { role: provision_node,                tags: [ 'webservers', 'provision', 'provision_webservers' ] }
     - { role: provision_web_server,          tags: [ 'webservers', 'provision', 'provision_webservers' ] }
     - { role: prepare_server_assets_locally, tags: [ 'webservers', 'deploy', 'deploy_webservers' ], when: prepared_local_assets == false }
-    - { role: deploy_server_assets,          tags: [ 'webservers', 'deploy', 'deploy_webservers' ] }
+    - { role: deploy_server_assets,          tags: [ 'webservers', 'deploy', 'deploy_webservers' ], when: deployed_server_assets_to_ip != ansible_all_ipv4_addresses[0] }
     - { role: deploy_web_server,             tags: [ 'webservers', 'deploy', 'deploy_webservers' ] }
