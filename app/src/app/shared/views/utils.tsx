@@ -1,14 +1,24 @@
 import * as React from "react";
-import {Field, WrappedFieldProps} from "redux-form";
+import {Field, WrappedFieldProps, BaseFieldProps, ComponentConstructor} from "redux-form";
 
 const loading_animation = require("./images/loading_animation.png");
 
-interface OurFieldProps {
-    label: string;
+interface OurFieldProps extends BaseFieldProps {
+    label?: string;
     placeholder?: string;
     type: string;
+    /**
+     * Made required
+     */
     name: string;
-    component(p: ComponentProps): JSX.Element;
+    /**
+     * Disabled as not used
+     */
+    props?: undefined;
+    /**
+     * Made required
+     */
+    component: ComponentConstructor<ComponentProps> | "input" | "select" | "textarea";
 }
 
 interface ComponentProps extends WrappedFieldProps<{}>, OurFieldProps {
@@ -16,6 +26,8 @@ interface ComponentProps extends WrappedFieldProps<{}>, OurFieldProps {
 
 /**
  * Adds some type hints (Field accepts any props)
+ * TODO: explore react typings for this as it seems under powered.
+ * Will have to deal with FieldArray too.
  */
 export function OurField (props: OurFieldProps, s: {}) {
     return <Field {...props} />;
