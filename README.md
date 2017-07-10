@@ -35,6 +35,9 @@ applications.
 
 ### TODO
 
+- [ ] Add robots.txt
+- [ ] Refactor redux store to follow best practices (using action creators) which
+        will enable server side view rendering.
 - [ ] CSRF protection
 - [ ] [install fail2ban](https://www.digitalocean.com/community/tutorials/how-to-protect-ssh-with-fail2ban-on-ubuntu-14-04)
 - [ ] email & txt client
