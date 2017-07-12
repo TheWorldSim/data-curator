@@ -35,6 +35,7 @@ applications.
 
 ### TODO
 
+- [ ] Move payload_validation from signin/up to RequestPayload namespace
 - [ ] Add robots.txt
 - [ ] Refactor redux store to follow best practices (using action creators) which
         will enable server side view rendering.
