@@ -17,7 +17,7 @@ export function add_signin_route(server: Hapi.Server) {
 
     const config: Hapi.RouteAdditionalConfigurationOptions = {
         auth: { mode: "try" },
-        validate: { payload: RequestPayload.Validate_UserSignIn },
+        validate: { payload: RequestPayload.validate_user_sign_in },
         handler: function (request, reply) {
 
             if (request.auth.isAuthenticated) {

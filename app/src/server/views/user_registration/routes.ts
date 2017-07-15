@@ -12,7 +12,7 @@ export const routes = function (server: Hapi.Server) {
 
     var config: Hapi.RouteAdditionalConfigurationOptions = {
         auth: { mode: "try" },
-        validate: { payload: RequestPayload.Validate_RegisterUser },
+        validate: { payload: RequestPayload.validate_register_user },
         handler: function (request, reply) {
 
             if (request.auth.isAuthenticated) {
