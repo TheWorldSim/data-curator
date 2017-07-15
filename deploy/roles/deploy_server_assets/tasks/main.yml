@@ -29,4 +29,4 @@
 
   - name: Register server ip for later to avoid duplicate asset upload
     set_fact:
-      deployed_server_assets_to_ip: "{{ ansible_all_ipv4_addresses[0] }}"
+      deployed_server_assets_to_ips: "{{ deployed_server_assets_to_ips }} + {{ [ inventory_hostname ] }}"

@@ -55,4 +55,4 @@
 # Keep track of which expensive roles have already been run
 - set_fact:
     prepared_local_assets: false
-    deployed_server_assets_to_ip: false
+    deployed_server_assets_to_ips: []
