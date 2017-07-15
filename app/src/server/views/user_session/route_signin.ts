@@ -17,14 +17,7 @@ export function add_signin_route(server: Hapi.Server) {
 
     const config: Hapi.RouteAdditionalConfigurationOptions = {
         auth: { mode: "try" },
-        validate: {
-            payload: {
-                username_or_email: Joi.string().required().email(),
-                password: Joi.string().required()
-                    .min(CONFIG.MIN_PASSWORD_LENGTH)
-                    .max(CONFIG.MAX_PASSWORD_LENGTH),
-            },
-        },
+        validate: { payload: RequestPayload.Validate_UserSignIn },
         handler: function (request, reply) {
 
             if (request.auth.isAuthenticated) {
@@ -32,7 +25,7 @@ export function add_signin_route(server: Hapi.Server) {
                 return;
             }
 
-            const {username_or_email, password} = request.payload as RequestPayload.SignIn;
+            const {username_or_email, password} = request.payload as RequestPayload.UserSignIn;
 
             // TODO SECURITY add rate limiting, ip throttling to prevent (D)DOS
             // TODO SECURITY add rate limiting, ip throttling to prevent guessing weaker passwords

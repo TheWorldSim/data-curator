@@ -10,7 +10,7 @@ import {fetch} from "../store_util";
 /**
  * The returned promise isn't used in frontend code, only in tests
  */
-export function signin(signin_details: RequestPayload.SignIn): Promise<ResponsePayload.SignInSuccess> {
+export function signin(signin_details: RequestPayload.UserSignIn): Promise<ResponsePayload.SignInSuccess> {
 
     let state = app_store.getState().session;
     if (state.status !== STATUSES.SIGNED_OUT) {

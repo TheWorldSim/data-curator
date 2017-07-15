@@ -2,7 +2,6 @@ import * as Hapi from "hapi";
 import * as Joi from "joi";
 import * as Boom from "boom";
 
-import CONFIG from "../../../shared/config";
 import {PATHS} from "../../../shared/paths";
 import {ERRORS} from "../../../shared/errors";
 import {LOG_TAGS} from "../../../shared/constants";
@@ -13,15 +12,7 @@ export const routes = function (server: Hapi.Server) {
 
     var config: Hapi.RouteAdditionalConfigurationOptions = {
         auth: { mode: "try" },
-        validate: {
-            payload: {
-                email: Joi.string().required().email().max(CONFIG.MAX_EMAIL_LENGTH),
-                // TODO search for joi validation for poor passwords, like "passwordpassword" or "12345678"
-                password: Joi.string().required()
-                    .min(CONFIG.MIN_PASSWORD_LENGTH)
-                    .max(CONFIG.MAX_PASSWORD_LENGTH),
-            },
-        },
+        validate: { payload: RequestPayload.Validate_RegisterUser },
         handler: function (request, reply) {
 
             if (request.auth.isAuthenticated) {
