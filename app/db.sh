@@ -18,6 +18,8 @@ if [[ $1 = "setup" ]]; then
     fi
     createdb $PRIVATE_SERVER_CONFIG_DB_DATABASE
 
+    echo SUCCESS
+
     exit 0
 fi
 
