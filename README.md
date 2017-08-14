@@ -186,7 +186,7 @@ This is to perform several things, including:
 
 Run:
 
-    $ ansible-playbook ./deploy/playbook_bootstrap.yml --limit "<production_yourdomain or whatever value you changed it to in your inventory_file>"
+    $ ENV=production ansible-playbook ./deploy/playbook_bootstrap.yml --limit "<production_yourdomain or whatever value you changed it to in your inventory_file>"
 
 You should now be able to ssh into the server as the deploy user with your ssh
 key.  Because this is not idempotent, if run without error, it can only be and
