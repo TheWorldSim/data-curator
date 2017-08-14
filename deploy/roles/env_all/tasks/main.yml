@@ -32,7 +32,7 @@
 - set_fact:
     # Nginx
     VERSIONS:
-      NGINX: 1.10.0-0ubuntu0.16.04.4
+      NGINX: 1.10.3-0ubuntu0.16.04.2
     # Node, npm, yarn
     nodejs_version: "8.x"
     nodejs_install_npm_user: "{{ WEB_SERVER__USER }}"

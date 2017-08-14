@@ -1,6 +1,10 @@
 ---
   - name: Install apt dependencies
-    apt: name={{ item }} state=installed
+    apt:
+      name: "{{ item }}"
+      state: installed
+      update_cache: yes
+      cache_valid_time: 86400  # one day
     with_items:
       - nginx={{ VERSIONS.NGINX }}
 
