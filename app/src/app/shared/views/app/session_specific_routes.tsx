@@ -32,25 +32,25 @@ class UnconnectedSessionSpecificRoutes extends Base {
 
     render() {
 
-        let additional_routes: JSX.Element[];
+        let session_specific_routes: JSX.Element[];
         const app = which_app(this.props.state);
 
         if (app === "private" || app === "private_admin") {
 
-            additional_routes = private_routes();
+            session_specific_routes = private_routes();
 
             if (app === "private_admin") {
-                additional_routes = [
-                    ...additional_routes,
+                session_specific_routes = [
+                    ...session_specific_routes,
                     ...private_admin_routes(),
                 ];
             }
         }
         else {
-            additional_routes = public_routes();
+            session_specific_routes = public_routes();
         }
 
-        return <SharedRoutes additional_routes={additional_routes} not_found={RedirectTo}/>;
+        return <SharedRoutes session_specific_routes={session_specific_routes} not_found={RedirectTo}/>;
     }
 }
 export const ConnectedSessionSpecificRoutes = connect_to_all_state(UnconnectedSessionSpecificRoutes);

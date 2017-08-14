@@ -10,7 +10,7 @@ import {RouteLegals} from "../legal/routes";
 import {AppContainer} from "./app_container";
 
 interface Props {
-    additional_routes: JSX.Element[];
+    session_specific_routes: JSX.Element[];
     not_found: React.ComponentClass<RouteComponentProps<{}>>;
 }
 
@@ -27,7 +27,7 @@ export function SharedRoutes(props: Props) {
 
                 {...RouteLegals}
 
-                {...props.additional_routes}
+                {...props.session_specific_routes}
 
                 <Route component={props.not_found} key="NotFound"/>
             </Switch>
