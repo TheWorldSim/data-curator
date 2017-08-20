@@ -1,13 +1,15 @@
 import * as Sequelize from "sequelize";
 
 import {UserDbFields} from "../../../shared/models/user";
-export {UserDbFields} from "../../../shared/models/user";
 import {sequelize} from "../../utils/sequelize_db";
 import {
     TABLE_NAMES,
     BASE_FIELDS,
     DEFINE_OPTIONS,
 } from "../../base/db";
+
+// Export
+export {UserDbFields} from "../../../shared/models/user";
 
 type UserFieldsType = {
     [P in keyof UserDbFields]: string | Sequelize.DataTypeAbstract | Sequelize.DefineAttributeColumnOptions;
