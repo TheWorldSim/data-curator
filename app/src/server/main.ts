@@ -35,7 +35,7 @@ if (!CONFIG.ENV_TEST) {
 
         if (arg2) {
             base_server.log(LOG_TAGS.EXCEPTION, "console.log called with second " +
-                "argument from : " + (new Error().stack) + "\n Pass single argument.");
+                "argument from : " + (new Error().stack) + "\n\n>>>>> Pass single argument. <<<<<\n");
             message += JSON.stringify(arg2);
         }
 
@@ -47,7 +47,7 @@ if (!CONFIG.ENV_TEST) {
         }
 
         base_server.log(LOG_TAGS.EXCEPTION, "console.log called from: " +
-            (new Error().stack) + "\nUse server.log() instead.");
+            (new Error().stack) + "\n\n>>>>> Use server.log() instead. <<<<<\n");
         base_server.log(LOG_TAGS.INFO, message);
     };
 
