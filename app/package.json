@@ -20,7 +20,7 @@
     "@types/react-router-dom": "4.0.4",
     "@types/react-router-redux": "5.0.2",
     "@types/redux-form": "6.6.2",
-    "@types/sequelize": "3.4.49",
+    "@types/sequelize": "3.30.4",
     "deep-freeze": "0.0.1",
     "good": "7.1.0",
     "good-console": "6.4.0",

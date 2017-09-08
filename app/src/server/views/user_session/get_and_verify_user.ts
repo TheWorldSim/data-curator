@@ -23,7 +23,7 @@ function promise_email_or_password_not_recognised () {
 
 // Get user by email address
 
-function get_user__for_web_api (email: string, server: Hapi.Server): Promise<UserDbFields> {
+function get_user__for_web_api (email: string, server: Hapi.Server): PromiseLike<UserDbFields> {
 
     return UserDb.findOne({where: {email}})
     .catch((error) => {
@@ -52,7 +52,7 @@ interface Args {
 // Check user email and password are valid
 
 export function verify_password__for_web_api ({email, password}: Args, server: Hapi.Server):
-    Promise<ResponsePayload.SignInSuccess> {
+    PromiseLike<ResponsePayload.SignInSuccess> {
 
     return get_user__for_web_api(email, server)
     .then((user) => {

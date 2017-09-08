@@ -6,7 +6,7 @@ import {ServerAppData} from "../../server/views/bootstrap/server_app";
 import {sequelize} from "../../server/utils/sequelize_db";
 import {UserDb} from "../../server/models/user/db";
 
-export function clear_db(): Promise<void> {
+export function clear_db(): PromiseLike<void> {
 
     return UserDb.destroy({ where: {}, force: true})
     .then(() => {

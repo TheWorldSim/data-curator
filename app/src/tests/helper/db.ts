@@ -14,7 +14,7 @@ export function DANGER_force_sync_db_for_tests () {
 
 export const signin_user = server_normal_user();
 
-export function seed_db (): Promise<void> {
+export function seed_db (): PromiseLike<void> {
 
     return clear_db()
     .then(() => {

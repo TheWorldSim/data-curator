@@ -46,8 +46,7 @@ export function add_signin_route(server: Hapi.Server) {
                     request.cookieAuth.set({ sid });
                     reply(response);
                 });
-            })
-            .catch((error) => {
+            }, (error) => {
 
                 if (error.isBoom) {
 
