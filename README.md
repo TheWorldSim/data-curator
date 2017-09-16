@@ -239,7 +239,7 @@ Or
 * sudo su
 * cd /usr/local/share/letsencrypt/env
 * service nginx stop
-* letsencrypt renew
+* bin/letsencrypt renew
 * service nginx start
 
 ## Ejecting
