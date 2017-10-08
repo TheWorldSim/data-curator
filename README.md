@@ -153,7 +153,7 @@ Uses ansible roles and config for provisioning new machines.
 
 You will need to have git, virtualenv, python, and pip installed already
 
-    $ source setup_ansible.bash
+    $ source s/setup-ansible.sh
 
 ### Create new server
 
