@@ -58,6 +58,7 @@ applications.
 - [ ] Localisation
 - [ ] Docker containerise
 - [ ] Support (long polling etc) / warn when multiple tabs open
+- [ ] Experiment with isomorphic and use mapDispatchToProps instead of the "dispatchers" etc to allow this.
 - [ ] Post ejection TODO list (see below)
 
 ## Updating
