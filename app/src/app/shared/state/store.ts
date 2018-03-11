@@ -1,6 +1,7 @@
 import {createStore, applyMiddleware, compose} from "redux";
 const History = require("history");
 import {routerMiddleware as create_redux_router_middleware} from "react-router-redux";
+const thunk = require("redux-thunk").default;
 
 import CONFIG from "../../../shared/config";
 import {all_reducers} from "./reducers";
@@ -11,7 +12,7 @@ import {Action} from "./actions";
 // https://github.com/ReactTraining/react-router/tree/dc2149ec0c63bfc95b71e40c81431e34cfbfeda9/packages/react-router-redux
 export const history = History.createBrowserHistory();
 const redux_router_middleware = create_redux_router_middleware(history);
-const redux_router_store_enhancer = applyMiddleware(redux_router_middleware);
+const redux_router_store_enhancer = applyMiddleware(thunk, redux_router_middleware);
 
 // tslint:disable-next-line
 const glo = (window || global) as any;
@@ -32,6 +33,7 @@ export const app_store = createStore<AppState>(
 // const create_store_with_middleware = redux_router_store_enhancer<AppState>(createStore);
 // export const app_store = create_store_with_middleware(enableBatching(all_reducers));
 
+// TODO: Remove this
 export function dispatch(action: Action): Action {
     return app_store.dispatch(action);
 }
