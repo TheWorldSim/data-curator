@@ -146,6 +146,16 @@ Start the backend server:
 For the front end, react-devtools-extension and redux-devtools-extension are
 supported.
 
+### Live
+
+#### Tail logs
+
+    remote$ tail -f /var/log/web_server/*.log /var/log/nginx/*.log
+
+#### When all else fails: Restarting web app server
+
+    $ service web_app_server restart
+
 ## Provisioning and Deploying a server
 
 Uses ansible roles and config for provisioning new machines.
