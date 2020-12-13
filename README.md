@@ -75,10 +75,15 @@ to new releases.
 On Mac:
 
     $ git clone --recursive git@github.com:AJamesPhillips/napthr.git
-    app$ brew install yarn postgresql
-    app$ brew services start postgresql  # If it hasn't started by itself
-    app$ yarn install
-    app$ ./db.sh setup  # you will need to edit your .env files to change DB_DATABASE if you have another version of this project
+    $ brew install yarn postgresql
+    $ brew services start postgresql  # If it hasn't started by itself
+
+    app/frontend$ yarn install
+    app/frontend$ npm start
+
+    app/server$ yarn install
+    app/server$ ./db.sh setup  # you will need to edit your .env files to change DB_DATABASE if you have another version of this project
+
     app$ npm install -f npm-run
     app$ npm run build-back
     # Undo any migrations, run all migrations and reseed db
