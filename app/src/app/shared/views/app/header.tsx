@@ -5,12 +5,12 @@ import {PATHS} from "../../../../shared/paths";
 const logo = require("../images/logo.svg");
 import NavLinkCustom from "../nav_link";
 
-interface Props {
+export interface HeaderProps {
     signed_in: boolean;
     email_address?: string;
 }
 
-export function Header(props: Props) {
+export function Header(props: HeaderProps) {
 
     const session_path = props.signed_in ? PATHS.SIGNOUT : PATHS.SIGNIN;
     const session_text = props.signed_in ? "Sign out" : "Sign in";

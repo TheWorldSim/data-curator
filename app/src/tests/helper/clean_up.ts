@@ -1,61 +1,21 @@
-import * as _ from "lodash";
-import * as Boom from "boom";
-import * as Hapi from "hapi";
+import * as _ from "lodash"
 
-import {ServerAppData} from "../../server/views/bootstrap/server_app";
-import {sequelize} from "../../server/utils/sequelize_db";
-import {UserDb} from "../../server/models/user/db";
+import { sequelize } from "../../server/utils/sequelize_db"
+import { UserDb } from "../../server/models/user/db"
 
 export function clear_db(): PromiseLike<void> {
 
     return UserDb.destroy({ where: {}, force: true})
     .then(() => {
-        return;
-    });
-}
-
-export function clear_app_cache(server: Hapi.Server): Promise<void> {
-
-    const cache = (server.app as ServerAppData).sessions_cache;
-    // tslint:disable-next-line
-    const sids = _.keys((cache as any)._cache.connection.cache.sessions_cache);
-
-    return new Promise<void>((resolve, reject) => {
-
-        let callback = function(err?: Boom.BoomError) {
-
-            if (err) {
-                reject(err);
-                return;
-            }
-            resolve();
-        };
-
-        function nested_callback (sid: string, previous_callback: typeof callback) {
-
-            return function(err?: Boom.BoomError) {
-
-                if (err) {
-                    previous_callback(err);
-                    return;
-                }
-                cache.drop(sid, previous_callback);
-            };
-        }
-
-        for (let i = 0, len = sids.length; i < len; ++i) {
-            callback = nested_callback(sids[i], callback);
-        }
-
-        callback(undefined);
-    });
+        return
+    })
 }
 
 /**
  * Close db connections
  *      afterAll(() => {
- *          sequelize.close();
- *      });
+ *          sequelize.close()
+ *      })
  */
 export function clean_up () {
     /**
@@ -64,10 +24,10 @@ export function clean_up () {
      * circular import error as the type of `Schema` in `joi/lib/any.js:36`
      * is `{}`.
      *
-     *      import {get_server_for_tests} from "../../server/main";
+     *      import {get_server_for_tests} from "../../server/main"
      *
      *      function clean_up () {
-     *          const server = get_server_for_tests();  // <---
+     *          const server = get_server_for_tests()  // <---
      *          ...
      *
      * TypeError: Cannot read property 'validate' of undefined
@@ -95,5 +55,5 @@ export function clean_up () {
      * at _combinedTickCallback (internal/process/next_tick.js:73:7)
      * at process._tickCallback (internal/process/next_tick.js:104:9)
      */
-    sequelize.close();
+    sequelize.close()
 }

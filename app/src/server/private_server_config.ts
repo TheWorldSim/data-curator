@@ -1,5 +1,5 @@
 import { Dialect } from "sequelize"
-import {as_string, as_int} from "../shared/utils/process_env"
+import { as_string, as_int } from "../shared/utils/process_env"
 
 function as_dialect (dialect: any): Dialect
 {

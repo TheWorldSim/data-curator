@@ -1,6 +1,6 @@
-import {User_OwnerView} from "../../../../shared/models/user";
+import { UserView } from "../../../../shared/models/user"
 
-export interface State {
-    newly_registered_user_email: string | undefined;
-    user: User_OwnerView | undefined;
+
+export interface UserStateShape {
+    user: UserView | undefined;
 }

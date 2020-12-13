@@ -1,34 +1,25 @@
-// import * as Immutable from "immutable";
-// import * as deepFreeze from "deep-freeze";
+import { UserStateShape } from "./user/shape"
 
-import {State as RegistrationStateShape} from "./user_registration/reducer";
-import {State as SessionStateShape} from "./user_session/reducer";
-import {State as UserStateShape} from "./user/shape";
-import {State as ProtectedStateShape} from "./protected/reducer";
 
 export type UserRegistrationFormDataShape = {
-    email: string;
-    password: string;
-};
+    email: string
+    password: string
+}
 
-export type UserSignInFormDataShape = UserRegistrationFormDataShape;
+
+export type UserSignInFormDataShape = UserRegistrationFormDataShape
+
 
 interface PluginState {
     // tslint:disable-next-line
-    routing: any;
-    form: {
-        user_signup: { values?: UserRegistrationFormDataShape; };
-        user_signin: { values?: UserSignInFormDataShape; };
-    };
+    routing: any
 }
 
+
 export interface AppState {
-    registration: RegistrationStateShape;
-    path_after_signinout: string;
-    session: SessionStateShape;
-    user: UserStateShape;
-    protected: ProtectedStateShape;
+    user: UserStateShape
 }
+
 
 export interface AllAppState extends PluginState, AppState {
 }

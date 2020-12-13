@@ -14,23 +14,23 @@ interface Props {
     not_found: React.ComponentClass<RouteComponentProps<{}>>;
 }
 
-export function SharedRoutes(props: Props) {
+// export function SharedRoutes(props: Props) {
 
-    return (
-    <ConnectedRouter history={history}>
-        <AppContainer>
-            <Switch>
-                <Redirect from="/public/index.html" to={PATHS.HOME}/>
-                <Redirect from="/index.html" to={PATHS.HOME}/>
+//     return (
+//     <ConnectedRouter history={history}>
+//         <AppContainer>
+//             <Switch>
+//                 <Redirect from="/public/index.html" to={PATHS.HOME}/>
+//                 <Redirect from="/index.html" to={PATHS.HOME}/>
 
-                <Route path={PATHS.HOME} exact={true} component={PublicHome} key="PublicHome"/>
+//                 <Route path={PATHS.HOME} exact={true} component={PublicHome} key="PublicHome"/>
 
-                {...RouteLegals}
+//                 {...RouteLegals}
 
-                {...props.session_specific_routes}
+//                 {...props.session_specific_routes}
 
-                <Route component={props.not_found} key="NotFound"/>
-            </Switch>
-        </AppContainer>
-    </ConnectedRouter>);
-}
+//                 <Route component={props.not_found} key="NotFound"/>
+//             </Switch>
+//         </AppContainer>
+//     </ConnectedRouter>);
+// }

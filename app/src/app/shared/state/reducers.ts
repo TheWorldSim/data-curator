@@ -1,17 +1,12 @@
 import reduceReducers = require("reduce-reducers");
 import {combineReducers, Reducer} from "redux";
 import {routerReducer} from "react-router-redux";
-import {reducer as formReducer} from "redux-form";
 
 import CONFIG from "../../../shared/config";
 import {LOG_LEVELS} from "../../../shared/constants";
 import {AppState, AllAppState} from "./shape";
 import {Action} from "./actions";
 // Reducers
-import * as Registration from "./user_registration/reducer";
-import * as Session from "./user_session/reducer";
-import * as User from "./user/reducer";
-import * as Router from "./router/reducer";
 import * as Protected from "./protected/reducer";
 
 type expected_reducers = {
@@ -21,11 +16,6 @@ type expected_reducers = {
 
 const reducers_map: expected_reducers = {
     routing: routerReducer,
-    form: formReducer,
-    registration: Registration.reducer,
-    path_after_signinout: Router.reducer,
-    session: Session.reducer,
-    user: User.reducer,
     protected: Protected.reducer,
 };
 
