@@ -78,7 +78,7 @@ On Mac:
     app$ brew install yarn postgresql
     app$ brew services start postgresql  # If it hasn't started by itself
     app$ yarn install
-    app$ ./db.sh setup  # you will need to edit your .env files if you have another version of this project
+    app$ ./db.sh setup  # you will need to edit your .env files to change DB_DATABASE if you have another version of this project
     app$ npm install -g npm-run
     app$ npm run build-back
     # Undo any migrations, run all migrations and reseed db

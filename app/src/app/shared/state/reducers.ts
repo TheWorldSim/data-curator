@@ -4,7 +4,7 @@ import {routerReducer} from "react-router-redux";
 import {reducer as formReducer} from "redux-form";
 
 import CONFIG from "../../../shared/config";
-import {LOG_LEVEL} from "../../../shared/constants";
+import {LOG_LEVELS} from "../../../shared/constants";
 import {AppState, AllAppState} from "./shape";
 import {Action} from "./actions";
 // Reducers
@@ -32,7 +32,7 @@ const reducers_map: expected_reducers = {
 const all_reducers_unwrapped = reduceReducers<AppState>(
     // debug logger
     function (state: AppState, action: Action) {
-        if (!action.type.match("@@redux-form/") && CONFIG.LOG >= LOG_LEVEL.DEBUG) {
+        if (!action.type.match("@@redux-form/") && CONFIG.LOG >= LOG_LEVELS.DEBUG) {
             console.log("REDUCERS: action, state: ", action, state);
         }
         return state;

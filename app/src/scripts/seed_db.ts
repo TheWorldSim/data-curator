@@ -1,6 +1,6 @@
 /**
  * This script, when run as development with:
- *      app$ NODE_ENV=development node compiled_all/bin/seed_db.js
+ *      app$ NODE_ENV=development node compiled_all/scripts/seed_db.js
  * will seed the database.
  */
 

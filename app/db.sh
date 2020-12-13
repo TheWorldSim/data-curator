@@ -1,5 +1,6 @@
 #!/bin/bash
 # Helper script for common interactions with db
+# TODO move to app/src/scripts
 
 # Run setup script
 

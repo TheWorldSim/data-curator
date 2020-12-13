@@ -1,13 +1,13 @@
 import {as_string, as_int} from "./utils/process_env";
 
 const NODE_ENV = as_string(process.env.NODE_ENV);
-const SERVER_SCHEME = as_string(process.env.REACT_APP_SERVER_SCHEME);
+const SERVER_SCHEME = as_string(process.env.SERVER_SCHEME);
 const IS_SECURE = SERVER_SCHEME === "https";
-if (!IS_SECURE && SERVER_SCHEME !== "http") {
-    throw new Error(`Invalid env variables, SERVER_SCHEME must be http or https but was: ${SERVER_SCHEME}`);
+if (IS_SECURE && SERVER_SCHEME !== "https") {
+    throw new Error(`Invalid env variables, SERVER_SCHEME must be https if IS_SECURE but was: ${SERVER_SCHEME}`);
 }
-const SERVER_PORT = as_int(process.env.REACT_APP_SERVER_PORT);
-const SERVER_HOST = as_string(process.env.REACT_APP_SERVER_HOST);
+const SERVER_PORT = as_int(process.env.SERVER_PORT);
+const SERVER_HOST = as_string(process.env.SERVER_HOST);
 const SERVER_URI = `${SERVER_SCHEME}://${SERVER_HOST}:${SERVER_PORT}`;
 
 const ENV_DEVELOPMENT = NODE_ENV === "development";
@@ -26,14 +26,15 @@ export default {
     SERVER_SCHEME,
     SERVER_HOST,
     SERVER_PORT,
-    APP_ID:              as_string(process.env.REACT_APP_APP_ID),
-    APP_NAME:            as_string(process.env.REACT_APP_APP_NAME),
-    SUPPORT_EMAIL:       as_string(process.env.REACT_APP_SUPPORT_EMAIL),
-    COMPANY_NAME:        as_string(process.env.REACT_APP_COMPANY_NAME),
-    MIN_PASSWORD_LENGTH: as_int(process.env.REACT_APP_MIN_PASSWORD_LENGTH),
-    LOG:                 as_int(process.env.REACT_APP_LOG),
+    APP_ID:              "app_id",
+    APP_NAME:            "App name",
+    // must be the same domain as SERVER_HOST otherwise letsencrypt will fail
+    SUPPORT_EMAIL:       "support@example.com",
+    COMPANY_NAME:        "You company name Ltd",
+    LOG:                 as_int(process.env.LOG_LEVEL),
     // Added max length to email as database is VARCHAR(255)
     MAX_EMAIL_LENGTH: 200,
+    MIN_PASSWORD_LENGTH: 10,
     // TODO SECURITY research this
     // Added max password length, not sure if this helps mitigate some (D)DOS
     MAX_PASSWORD_LENGTH: 100,

@@ -1,38 +1,38 @@
-import * as SequelizeImport from "sequelize";
+import { QueryInterface, Sequelize, DataTypes } from "sequelize";
 
 import {BASE_FIELDS, TABLE_NAMES} from "../base/db";
 
 export = {
-    up: function(queryInterface: SequelizeImport.QueryInterface, Sequelize: SequelizeImport.SequelizeStatic) {
+    up: function(queryInterface: QueryInterface, Sequelize: Sequelize) {
 
         const USER_FIELDS = {
             ...BASE_FIELDS,
             email: {
-                type: Sequelize.STRING,
+                type: DataTypes.STRING,
                 allowNull: false,
                 unique: true,
             },
             password: {
-                type: Sequelize.TEXT,
+                type: DataTypes.TEXT,
                 allowNull: false,
             },
             is_admin: {
-                type: Sequelize.BOOLEAN,
+                type: DataTypes.BOOLEAN,
                 defaultValue: false,
             },
             admin_notes: {
-                type: Sequelize.STRING,
+                type: DataTypes.STRING,
                 defaultValue: "",
             },
             added_by_admin_uuid: {
-                type: Sequelize.STRING,
+                type: DataTypes.STRING,
                 allowNull: true,
             },
         };
         return queryInterface.createTable(TABLE_NAMES.USER, USER_FIELDS);
     },
 
-    down: function(queryInterface: SequelizeImport.QueryInterface) {
+    down: function(queryInterface: QueryInterface) {
 
         return queryInterface.dropTable(TABLE_NAMES.USER);
     }

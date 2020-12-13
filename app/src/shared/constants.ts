@@ -1,5 +1,5 @@
 
-export const LOG_LEVEL = {
+export const LOG_LEVELS = {
     NONE: 0,
     CRITICAL: 1,
     ERROR: 2,

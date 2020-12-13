@@ -12,7 +12,6 @@ export namespace RequestPayload {
      */
     const password_validation = Joi.string().required()
         .min(CONFIG.MIN_PASSWORD_LENGTH)
-        .max(CONFIG.MAX_PASSWORD_LENGTH);
 
     export interface RegisterUser {
         email: string;
