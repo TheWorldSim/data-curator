@@ -1,7 +1,7 @@
 import { UserDbFields } from "./db"
 import {
     UserView,
-} from "../../../shared/models/user"
+} from "../../shared/models/user"
 
 export interface AuthedUser {
     uuid: string

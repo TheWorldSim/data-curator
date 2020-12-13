@@ -1,5 +1,5 @@
 import { DataTypes, UUIDV4, Model, ModelOptions } from "sequelize"
-import {BaseDbFields} from "../../shared/models/base"
+import { BaseDbFields } from "../shared/models/base"
 
 export type BaseFields = {
     [P in keyof BaseDbFields]: any

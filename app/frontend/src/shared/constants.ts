@@ -6,7 +6,7 @@ export const LOG_LEVELS = {
     WARN: 3,
     LOG: 4,
     DEBUG: 5,
-};
+}
 
 export const LOG_TAGS = {
     DEBUG: "DEBUG",
@@ -14,4 +14,4 @@ export const LOG_TAGS = {
     EXCEPTION: "EXCEPTION",
     SECURITY: ["INFO", "SECURITY"],
     DATABASE: ["INFO", "DATABASE"],
-};
+}

@@ -1,24 +1,24 @@
-import * as Hapi from "hapi"
-const Good = require("good")
-const HapiAuthCookie = require("hapi-auth-cookie")
+import * as Hapi from "@hapi/hapi"
 
-import CONFIG from "../shared/config"
-import {LOG_TAGS} from "../shared/constants"
+import CONFIG from "./shared/config"
+import { LOG_TAGS } from "./shared/constants"
 import PRIVATE_SERVER_CONFIG from "./private_server_config"
-import GoodOptions from "./utils/good"
 
-const base_server = new Hapi.Server({
-    debug: {},
-    connections: {
-        routes: {
-            cors: CONFIG.ENV_DEVELOPMENT ? ({
-                // Also allows API calls from server code as these have origin ''
-                origin: ["http://localhost:3000"],  // address of webpack dev server
-                credentials: true,
-            }) : false,
-        },
-    },
-})
+
+const server_options: Hapi.ServerOptions = {
+    port: PRIVATE_SERVER_CONFIG.SERVER_PORT,
+    host: PRIVATE_SERVER_CONFIG.SERVER_HOST,
+    debug: { log: ["yes"] },
+    routes: {
+        cors: CONFIG.ENV_DEVELOPMENT ? ({
+            // Also allows API calls from server code as these have origin ''
+            origin: ["http://localhost:3000"],  // address of webpack dev server
+            credentials: true,
+        }) : false,
+    }
+}
+
+const base_server = new Hapi.Server(server_options)
 
 /**
  * Override global console.log console.error
@@ -61,79 +61,56 @@ if (!CONFIG.ENV_TEST) {
     }
 }
 
-// Set up connection
-
-base_server.connection({
-    port: PRIVATE_SERVER_CONFIG.SERVER_PORT,
-    host: PRIVATE_SERVER_CONFIG.SERVER_HOST,
-})
-
-/**
- * throws if unsuccessful (tests and server should fail hard)
- * @param plugins
- */
-function plugins_and_routes (plugins: Hapi.PluginRegistrationObject<{}>[]): Promise<Hapi.Server> {
-
-    return new Promise<Hapi.Server>((resolve) => {
-
-        base_server.register(plugins, (err) => {
-            if (err) {
-                throw err
-            }
-
-            resolve(base_server)
-        })
-    })
-}
-
-const plugins: Hapi.PluginRegistrationObject<{}>[] = [
-    HapiAuthCookie,
-]
-
-const plugins_not_for_tests: Hapi.PluginRegistrationObject<{}>[] = [
-    {register: Good, options: GoodOptions},
-    ...plugins,
-]
 
 if (require.main === module) {
 
-    plugins_and_routes(plugins_not_for_tests)
-    .then((server) => {
-
-        server.start((err) => {
-            if (err) { throw err }
-            server.log(LOG_TAGS.INFO, `Server running at: ${server.info!.uri}`)
+    base_server.start()
+    .then(() =>
+    {
+        return base_server.register({
+            plugin: require('hapi-pino'),
+            options: {
+              prettyPrint: process.env.NODE_ENV !== 'production',
+              // Redact Authorization headers, see https://getpino.io/#/docs/redaction
+              redact: ['req.headers.authorization']
+            }
         })
+    })
+    .then(() =>
+    {
+        base_server.log(LOG_TAGS.INFO, `Server running at: ${base_server.info!.uri}`)
+    })
+    .catch(err =>
+    {
+        if (err) { throw err }
     })
 }
 
-let resolve_server_for_tests: (server: Hapi.Server) => void
+
+let setup_server_for_tests = false
 /**
  * throws if unsuccessful (tests and server should fail hard)
  */
-let promised_server_for_tests: Promise<Hapi.Server> = new Promise<Hapi.Server>((resolve) => {
-    resolve_server_for_tests = resolve
-})
-
-let setup_server_for_tests = false
 export function get_server_for_tests (): Promise<Hapi.Server> {
 
     if (!setup_server_for_tests) {
-        plugins_and_routes(plugins)
-        .then((server) => {
 
-            // Need to call initialize to finalise plugins and start cache
-            server.initialize((err) => {
-
-                if (err) {
-                    throw err
-                }
-
-                resolve_server_for_tests(server)
-            })
+        // Need to call initialize to finalise plugins and start cache
+        const result: Promise<Hapi.Server | void> = base_server.initialize()
+        .then(() =>
+        {
+            setup_server_for_tests = true
+            return base_server
         })
-        setup_server_for_tests = true
+        .catch(err =>
+        {
+            if (err) {
+                throw err
+            }
+        })
+
+        return result as any
     }
 
-    return promised_server_for_tests
+    return Promise.resolve(base_server)
 }

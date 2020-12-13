@@ -1,7 +1,7 @@
 import { DataTypes, Model } from "sequelize"
 
-import {UserDbFields} from "../../../shared/models/user"
-import {sequelize} from "../../utils/sequelize_db"
+import { UserDbFields } from "../../shared/models/user"
+import { sequelize } from "../../utils/sequelize_db"
 import {
     TABLE_NAMES,
     BASE_FIELDS,
@@ -9,7 +9,7 @@ import {
 } from "../../base/db"
 
 // Export
-export { UserDbFields } from "../../../shared/models/user"
+export { UserDbFields } from "../../shared/models/user"
 
 
 type UserFieldsType = {
