@@ -6,7 +6,7 @@
 
 import * as Sequelize from "sequelize"
 
-import { UserDb, UserDbFields } from "../server/models/user/db"
+import { UserDb, UserDbFields } from "../models/user/db"
 
 const NODE_ENV = process.env.NODE_ENV
 

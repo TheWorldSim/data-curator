@@ -7,7 +7,7 @@ import fs = require("fs");
 function get_env (our_env: string) {
 
     // Note the path is relative to the compiled .js file not this .ts file
-    let file_name = path.resolve(__dirname, "../../../.env." + our_env);
+    let file_name = path.resolve(__dirname, "../../.env." + our_env);
     const ENV_VARS_STRING: string = fs.readFileSync(file_name, "utf8");
 
     ENV_VARS_STRING.split("\n").forEach((element) => {

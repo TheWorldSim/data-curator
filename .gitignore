@@ -15,7 +15,9 @@ yarn-debug.log*
 yarn-error.log*
 
 node_modules
+compiled_all
 
 # Can be removed if repo is private
 deploy/inventory_file
 deploy/roles/env_all/tasks/users.yml
+

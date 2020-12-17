@@ -87,7 +87,7 @@ elif [[ $2 = "DESTROY" ]]; then
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
         ./node_modules/.bin/sequelize db:migrate:undo:all --env $NODE_ENV
         ./node_modules/.bin/sequelize db:migrate --env $NODE_ENV
-        node compiled_all/bin/seed_db.js
+        node compiled_all/scripts/seed_db.js
     else
         echo "Skipping"
     fi

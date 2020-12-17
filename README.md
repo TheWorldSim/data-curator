@@ -85,9 +85,9 @@ On Mac:
     app/server$ yarn install
     app/server$ ./db.sh setup  # you will need to edit your .env files to change DB_DATABASE if you have another version of this project
 
-    app$ npm run build-back
+    app/server$ npm run build-back
     # Undo any migrations, run all migrations and reseed db
-    app$ ./db.sh dev DESTROY
+    app/server$ ./db.sh dev DESTROY
 
 ## Database
 
