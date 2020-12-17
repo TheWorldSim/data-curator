@@ -1,65 +1,24 @@
 
-# Napthr
+# Data curator
 
-Provides a base web app from which to efficiently build secure and scalable
-applications.
+(Based off of Napthr code base).
 
-* Nginx - high performance web server
-* Ansible - straightforward provisioning and deployment tool
-* PostgreSQL - backend data store (would be possible to change for another SQL
-    or non SQL store)
-* Typescript + tslint - for refactoring, code completion and code navigation
-    (see Jest for testing)
-* [Hapi.js](github.com/hapijs/hapi) - secure, well maintained, high performance web application server.
-    Enables isomorphic application if required through set up of API urls, model
-    / data validation, model / data schemas, business logic between front end and
-    server side.  Django was a close second (admin interface and safer model
-    SQL migrations).
-* React.js + [Redux](http://redux.js.org/) - liberating UI and state management
-    libraries.  Enables complex and compelling UX when used correctly.
-* Sequelize - ORM for PostgreSQL.
-    Caveat: Sequelize is a fantastic project but there are 2 main down sides of
-    which this project has only tackled the first.
-    * Firstly the database config has to be extracted from the .env* files as they
-        cannot be provided via the sequelize cli.
-    * Secondly model types are enforced in one set of files, the database schema
-        are written manually in others, and the migrations are again manually written
-        in a third.
-    It would be preferable to have a proper tool chain such as Django's South
-    migration manager.
-* Webpack - for HMR (Hot Module Replacment) and asset bundling etc.
-* Jest - for unit and integration testing
-* Create React App - Webpack, Jest, and React are brought in by Create React App.
-    Specifically [the typescript fork](github.com/wmonk/create-react-app-typescript/)
-    of this project.
+https://github.com/TheWorldSim/world-sim-data/blob/master/data/data-compact.json
 
-### TODO
+Deployed: https://cloud.digitalocean.com/droplets/221256283/access?i=661988
 
-- [ ] Move payload_validation from signin/up to RequestPayload namespace
-- [ ] Add robots.txt
-- [ ] Refactor redux store to follow best practices (using action creators) which
-        will enable server side view rendering.
-- [ ] CSRF protection
-- [ ] [install fail2ban](https://www.digitalocean.com/community/tutorials/how-to-protect-ssh-with-fail2ban-on-ubuntu-14-04)
-- [ ] email & txt client
-- [ ] Add email confirmation field to user model, email to user, confirmation page
-- [ ] Add password reset mechanism
-- [ ] Add admin panel to see users
-- [ ] Ensure `clean_up` does not need to be called to close db connections when
-        in tests which are purely of front end.
-- [ ] Fix / return promises to jest testing framework / hard fail with env var
-        when tests expectations fail.
-- [ ] automate renewing ssl certification using something like
-        https://gist.github.com/renchap/c093702f06df69ba5cac#file-readme-md
-        and submit PR back to lets_encrypt repo
-- [ ] Get `@import 'some_css'` working in .tsx and .css
-- [ ] Get `:root { --colour-white: #ffffff;` and `var(--colour-white)` working.
-- [ ] Enable development in vagrant / virtualbox.  Webpack HMR causes box to hang.
-- [ ] Localisation
-- [ ] Docker containerise
-- [ ] Support (long polling etc) / warn when multiple tabs open
-- [ ] Experiment with isomorphic and use mapDispatchToProps instead of the "dispatchers" etc to allow this.
-- [ ] Post ejection TODO list (see below)
+## GitHub:
+
+[Authorizing OAuth Apps](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/authorizing-oauth-apps#user-data)
+
+GitHub OAuth App: https://github.com/settings/applications/1433709
+
+Example of request: https://github.com/login/oauth/authorize?client_id=90952987cea931a20e2a&scope=repo
+
+[Scopes for OAuth Apps](https://docs.github.com/en/free-pro-team@latest/developers/apps/scopes-for-oauth-apps)
+
+
+
 
 ## Updating
 
