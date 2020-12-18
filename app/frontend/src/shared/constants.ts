@@ -1,4 +1,8 @@
 
+export const APP_DETAILS = {
+    NAME: "App name"
+}
+
 export const LOG_LEVELS = {
     NONE: 0,
     CRITICAL: 1,

@@ -1,4 +1,4 @@
-import {str_enum} from "@ajp/utils-ts/utils";
+import { str_enum } from "@ajp/utils-ts/utils"
 
 export const ERRORS = str_enum([
     // General errors
@@ -20,5 +20,5 @@ export const ERRORS = str_enum([
     "ALREADY_SIGNED_IN",
     "ALREADY_SIGNED_OUT",
     "EMAIL_OR_PASSWORD_NOT_RECOGNISED",
-]);
-export type ERROR = keyof typeof ERRORS;
+])
+export type ERROR = keyof typeof ERRORS

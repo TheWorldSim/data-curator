@@ -1,7 +1,7 @@
 import * as Hapi from "@hapi/hapi"
 import * as Boom from "boom"
 
-import CONFIG from "./shared/config"
+import CONFIG from "./utils/config"
 import { LOG_TAGS } from "./shared/constants"
 import PRIVATE_SERVER_CONFIG from "./private_server_config"
 

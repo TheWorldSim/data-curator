@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@types/boom": "^7.3.0"
+  }
+}
