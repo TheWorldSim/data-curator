@@ -2,12 +2,13 @@
 # yarn lockfile v1
 
 
-"@ajp/utils-ts@0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@ajp/utils-ts/-/utils-ts-0.2.0.tgz#c0e85b3f4bcf07bcfdf79045b4b22e0d22657f41"
+"@ajp/utils-ts@0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@ajp/utils-ts/-/utils-ts-0.3.0.tgz#dc2cec303c25a6e97847742e83cd1bc77b6655b4"
+  integrity sha512-NnTQjCuxJyPhLy8vt+SkW1IH7PrX5/o2fH244KjSb7uvCrTtN2YQS5BpezvJYuh+pKdHdLK391amMByjj1oCsA==
   dependencies:
-    lodash "4.14.2"
-    react "15.4.2"
+    lodash "4.17.20"
+    react "17.0.1"
     react-router "4.1.1"
     reduce-reducers "0.1.2"
 
@@ -5914,7 +5915,7 @@ lodash@4.14.2:
   version "4.14.2"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.14.2.tgz#bbccce6373a400fbfd0a8c67ca42f6d1ef416432"
 
-"lodash@>=3.5 <5", lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.2, lodash@^4.17.20, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.0, lodash@^4.3.0:
+lodash@4.17.20, "lodash@>=3.5 <5", lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.2, lodash@^4.17.20, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.0, lodash@^4.3.0:
   version "4.17.20"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
   integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
@@ -7780,6 +7781,14 @@ react@15.4.2:
     fbjs "^0.8.4"
     loose-envify "^1.1.0"
     object-assign "^4.1.0"
+
+react@17.0.1:
+  version "17.0.1"
+  resolved "https://registry.yarnpkg.com/react/-/react-17.0.1.tgz#6e0600416bd57574e3f86d92edba3d9008726127"
+  integrity sha512-lG9c9UuMHdcAexXtigOZLX8exLWkW0Ku29qPRU8uhF2R9BN96dLCt0psvzPLlHc5OWkgymP3qwTRgbnw5BKx3w==
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
 
 read-pkg-up@^1.0.1:
   version "1.0.1"

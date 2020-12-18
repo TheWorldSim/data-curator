@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@ajp/utils-ts": "0.2.0",
+    "@ajp/utils-ts": "0.3.0",
     "@hapi/hapi": "20.0.3",
     "@types/boom": "4.3.5",
     "@types/deep-freeze": "0.0.29",
