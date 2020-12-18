@@ -23,7 +23,7 @@
     "test": "web-test-runner \"src/**/*.test.tsx\""
   },
   "dependencies": {
-    "preact": "^10.0.0"
+    "preact": "10.5.7"
   },
   "devDependencies": {
     "@prefresh/snowpack": "2.0.1",
