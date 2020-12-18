@@ -1,4 +1,5 @@
-import { str_enum } from "@ajp/utils-ts/utils"
+import { str_enum } from "./utils/str_enum"
+
 
 export const ERRORS = str_enum([
     // General errors
