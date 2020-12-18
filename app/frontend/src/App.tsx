@@ -21,7 +21,7 @@ function App() {
   const [statements, setValue] = useState(state.statements)
   const create_statement = useCallback((new_statement_content: string) => {
     const new_statement: Statement = {
-      id: Math.random().toString(),
+      id: Math.random().toString().slice(2),
       content: new_statement_content,
     }
 
