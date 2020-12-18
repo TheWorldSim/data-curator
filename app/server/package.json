@@ -51,7 +51,7 @@
   },
   "scripts": {
     "start": "set -a && source .env.development && set +a && ts-node src/main.ts",
-    "build-back": "rm -rf compiled_all/ && tsc",
+    "build": "rm -rf compiled_all/ && tsc",
     "test": "set -a && source .env.test && set +a && react-scripts-ts test --env=jsdom --runInBand",
     "eject": "react-scripts-ts eject"
   }

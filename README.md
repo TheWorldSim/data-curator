@@ -85,7 +85,7 @@ On Mac:
     app/server$ yarn install
     app/server$ ./db.sh setup  # you will need to edit your .env files to change DB_DATABASE if you have another version of this project
 
-    app/server$ npm run build-back
+    app/server$ npm run build
     # Undo any migrations, run all migrations and reseed db
     app/server$ ./db.sh dev DESTROY
 
@@ -95,7 +95,7 @@ On Mac:
 
 To apply a newly written migration
 
-    app/server$ npm run build-back
+    app/server$ npm run build
     app/server$ ./db.sh dev migrate
 
 ### Postgres shell and Sequelize migrations

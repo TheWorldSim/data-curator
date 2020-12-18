@@ -56,6 +56,7 @@ export class PATHS {
         PROTECTED: PATHS._API_V1 + "/protected",
 
         // Users
+        USERS_LIST: PATHS._API_V1 + "/users/",
         USERS_GET: (userId: string = template_path_for_hapi(HAPI_PATH_IDS.USERS_ID)) => {
             return PATHS._API_V1 + "/users/" + userId;
         },

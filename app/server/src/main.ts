@@ -4,6 +4,9 @@ import CONFIG from "./shared/config"
 import { LOG_TAGS } from "./shared/constants"
 import PRIVATE_SERVER_CONFIG from "./private_server_config"
 
+import * as Home from "./views/home/routes"
+import * as API from "./views/api/routes"
+
 
 const server_options: Hapi.ServerOptions = {
     port: PRIVATE_SERVER_CONFIG.SERVER_PORT,
@@ -78,6 +81,9 @@ if (require.main === module) {
     })
     .then(() =>
     {
+        Home.routes(base_server)
+        API.routes(base_server)
+
         base_server.log(LOG_TAGS.INFO, `Server running at: ${base_server.info!.uri}`)
     })
     .catch(err =>
