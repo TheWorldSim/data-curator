@@ -5,12 +5,14 @@ console.log("REMEMBER to continue to first debugger statement.");
 // https://medium.com/@ap1/anyone-successfully-used-this-with-libraries-that-use-promises-6b56029e08e3
 
 // force importing
-const Models = require("../src/models");
+const Models = require("../models");
 const Usr = Models.UserDb;
+
 
 function looper() {
     // tslint:disable
     var Tmp = {Usr};
+
     debugger;
     setTimeout(looper, 100);
 }

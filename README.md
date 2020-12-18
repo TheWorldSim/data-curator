@@ -95,8 +95,8 @@ On Mac:
 
 To apply a newly written migration
 
-    app$ npm run build-back
-    app$ ./db.sh dev migrate
+    app/server$ npm run build-back
+    app/server$ ./db.sh dev migrate
 
 ### Postgres shell and Sequelize migrations
 
@@ -107,6 +107,7 @@ To apply a newly written migration
 #### Common commands
 
     main_data=> \l             # list databases
+    main_data=> \c db_name     # change database
     main_data=> \d             # list tables
     main_data=> \d+ "user";    # describe a table
     main_data=> \?             # list available commands
@@ -116,7 +117,7 @@ To apply a newly written migration
 Start the tests for frontend and backend server.  Note the `--runInBand` option
 runs the tests sequentially which is necessary for tests touching the db.
 
-    app$ npm test -- --runInBand
+    # app$ npm test -- --runInBand  # TODO fix this
 
 ### Open test connections causing failure
 
@@ -138,11 +139,11 @@ To kill the open connections run:
 
 Start the create-react-app frontend server:
 
-    app$ npm start
+    app/frontend$ npm start
 
 Start the backend server:
 
-    app$ npm run start-back
+    app/server$ npm start
 
 ## Debugging
 
