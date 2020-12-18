@@ -1,4 +1,5 @@
 import * as Hapi from "@hapi/hapi"
+import * as Boom from "boom"
 
 import CONFIG from "./shared/config"
 import { LOG_TAGS } from "./shared/constants"
@@ -14,7 +15,7 @@ const server_options: Hapi.ServerOptions = {
     debug: { log: ["yes"] },
     routes: {
         cors: CONFIG.ENV_DEVELOPMENT ? ({
-            // Also allows API calls from server code as these have origin ''
+            // Also allows API calls from server code as these have origin "
             origin: ["http://localhost:3000"],  // address of webpack dev server
             credentials: true,
         }) : false,
@@ -39,14 +40,13 @@ if (!CONFIG.ENV_TEST) {
         }
 
         // Special case POSTGRES for now and allow it to use the app server log
-        // mechanism.  TODO: have sequelize logger manage it's own file
+        // mechanism.  TODO: have sequelize logger manage it"s own file
         if (message.startsWith("POSTGRES:")) {
             base_server.log(LOG_TAGS.DATABASE, message)
             return
         }
 
-        base_server.log(LOG_TAGS.EXCEPTION, "console.log called from: " +
-            (new Error().stack) + "\n\n>>>>> Use server.log() instead. <<<<<\n")
+        base_server.log(LOG_TAGS.EXCEPTION, "console.log called.  Do not use console.log, use server.log() instead.  Console.log called from: " + (new Error().stack))
         base_server.log(LOG_TAGS.INFO, message)
     }
 
@@ -65,31 +65,52 @@ if (!CONFIG.ENV_TEST) {
 }
 
 
+
+
+async function setup_server ()
+{
+    await base_server.start()
+
+    await base_server.register({
+        plugin: require("hapi-pino"),
+        options: {
+          prettyPrint: process.env.NODE_ENV !== "production",
+          // Redact Authorization headers, see https://getpino.io/#/docs/redaction
+          redact: ["req.headers.authorization"]
+        }
+    })
+
+    // await base_server.register({
+    //     plugin: require("poop"),
+    //     options: ({
+    //         logPath: __dirname + "/error.log"
+    //     } as any)
+    // })
+    // base_server.log(__dirname + "/error.log")
+
+    base_server.ext("onPreResponse", (request, h) => {
+
+        if ((request.response as Boom.BoomError).isBoom) {
+            const err_output = (request.response as Boom.BoomError).output as Boom.Output
+            const errName = err_output.payload.error
+            const statusCode = err_output.payload.statusCode
+
+            return h.response(`Error encounted`).code(statusCode)
+        }
+
+        return h.continue
+    })
+
+    Home.routes(base_server)
+    API.routes(base_server)
+
+    base_server.log(LOG_TAGS.INFO, `Server running at: ${base_server.info!.uri}`)
+}
+
+
 if (require.main === module) {
-
-    base_server.start()
-    .then(() =>
-    {
-        return base_server.register({
-            plugin: require('hapi-pino'),
-            options: {
-              prettyPrint: process.env.NODE_ENV !== 'production',
-              // Redact Authorization headers, see https://getpino.io/#/docs/redaction
-              redact: ['req.headers.authorization']
-            }
-        })
-    })
-    .then(() =>
-    {
-        Home.routes(base_server)
-        API.routes(base_server)
-
-        base_server.log(LOG_TAGS.INFO, `Server running at: ${base_server.info!.uri}`)
-    })
-    .catch(err =>
-    {
-        if (err) { throw err }
-    })
+    setup_server()
+    .catch(err => { throw err })
 }
 
 
