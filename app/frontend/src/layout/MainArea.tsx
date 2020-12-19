@@ -12,7 +12,6 @@ export class MainArea extends Component {
 
     update_positions ()
     {
-        console.log("updating positions")
         const width = this.ref.current.clientWidth
         this.ref_tabs_container.current.style.width = `${width}px`
 
