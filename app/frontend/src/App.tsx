@@ -5,6 +5,8 @@ import { NewStatementForm } from "./statements/NewStatementForm"
 import { StatementsList } from "./statements/StatementsList"
 import type { DesiredState, State, Statement } from "./state/State"
 import { ManuallySaveState } from "./state/ManuallySaveState"
+import { MainArea } from "./layout/MainArea"
+import { SidePanel } from "./layout/SidePanel"
 
 
 function load_state (): State
@@ -75,16 +77,18 @@ function App() {
 
   return (
     <div className="App">
-      Add statements:
+      <div id="main_area"><MainArea /></div>
+      <div id="side_panel"><SidePanel /></div>
+      {/* Add statements:
       <NewStatementForm create_statement={create_statement} />
       <StatementsList statements={statements} delete_statement={delete_statement} />
 
       Add desired state:
       <NewStatementForm create_statement={create_desired_state} />
-      <StatementsList statements={desired_states} delete_statement={delete_statement} />
-      {/* <StatementsList statements={statements} format="json" /> */}
+      <StatementsList statements={desired_states} delete_statement={delete_desired_state} /> */}
+
       {/* <input type="range" style={{ width: 800 }}></input> */}
-      <ManuallySaveState state={state} />
+      {/* <ManuallySaveState state={state} /> */}
     </div>
   )
 }

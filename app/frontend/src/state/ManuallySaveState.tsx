@@ -33,7 +33,9 @@ export function ManuallySaveState (props: ManuallySaveStateProps)
         backgroundColor: just_saved ? "green" : ""
     }
 
-    const text = just_saved ? "Saved" : "Save"
+    const text = just_saved ? "Saved" : "(Backup) Save"
 
-    return <input type="button" onClick={save_state} style={style} value={text}></input>
+    return <div>
+        <input type="button" onClick={save_state} style={style} value={text}></input>
+    </div>
 }
