@@ -1,31 +1,37 @@
 import { h } from "preact"
-import type { Statement } from "src/state/State"
+import { connect, ConnectedProps } from "react-redux"
+
+import type { RootState } from "../state/State"
 import { StatementListEntry } from "./StatementListEntry"
+import { ACTIONS } from "../state/store"
+import { DeleteButton } from "../sharedf/DeleteButton"
 
-interface DeleteStatementProps
-{
-    delete_statement: () => void
+
+const map_state = (state: RootState) => ({
+    statements: state.statements
+})
+
+const map_dispatch = {
+    delete_statement: (id: string) => ACTIONS.delete_statement(id)
 }
 
-function DeleteStatement (props: DeleteStatementProps)
-{
-    return <input type="button" value="X" onClick={() => props.delete_statement()}></input>
-}
+
+const connector = connect(map_state, map_dispatch)
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {}
 
 
-interface StatementsListProps
-{
-    statements: Statement[]
-    delete_statement: (id: string) => void
-}
-
-export function StatementsList (props: StatementsListProps)
+function _StatementsList (props: Props)
 {
 
     return <ul>
         {props.statements.map(statement => <li>
             <StatementListEntry statement={statement}/>
-            <DeleteStatement delete_statement={() => props.delete_statement(statement.id)}/>
+            <DeleteButton delete={() => props.delete_statement(statement.id)}/>
         </li>)}
     </ul>
 }
+
+
+export const StatementsList = connector(_StatementsList)

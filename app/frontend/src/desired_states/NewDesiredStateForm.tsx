@@ -6,7 +6,7 @@ import { ACTIONS } from "../state/store"
 
 
 const map_dispatch = {
-    add_statement: (content: string) => ACTIONS.add_statement({ content })
+    add_desired_state: (content: string) => ACTIONS.add_desired_state({ content })
 }
 
 
@@ -16,16 +16,16 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux & {}
 
 
-function _NewStatementForm (props: Props)
+function _NewDesiredStateForm (props: Props)
 {
     const [value, set_value] = useState("")
     const value_changed = useCallback((event: h.JSX.TargetedEvent<HTMLInputElement, Event>) => {
         set_value(event.currentTarget.value)
     }, [value])
 
-    function add_statement ()
+    function add_desired_state ()
     {
-        props.add_statement(value)
+        props.add_desired_state(value)
         set_value("")
     }
 
@@ -33,15 +33,15 @@ function _NewStatementForm (props: Props)
         <input
             value={value}
             onChange={value_changed}
-            onKeyDown={e => e.key === "Enter" && add_statement()}
+            onKeyDown={e => e.key === "Enter" && add_desired_state()}
         ></input>
         <input
             type="button"
-            onClick={add_statement}
+            onClick={add_desired_state}
             value="Add"
         ></input>
     </div>
 }
 
 
-export const NewStatementForm = connector(_NewStatementForm)
+export const NewDesiredStateForm = connector(_NewDesiredStateForm)

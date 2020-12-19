@@ -1,18 +1,20 @@
 import { h } from "preact"
 
+import { DesiredStatesList } from "../desired_states/DesiredStatesList"
+import { NewDesiredStateForm } from "../desired_states/NewDesiredStateForm"
+import { NewStatementForm } from "../statements/NewStatementForm"
+import { StatementsList } from "../statements/StatementsList"
+
 
 export function MainContent ()
 {
-    return <div>MainContent
-        <br/><br/><br/><br/><br/><br/><br/><br/>Thing1
-        <br/><br/><br/><br/><br/><br/><br/><br/>Thing
-        <br/><br/><br/><br/><br/><br/><br/><br/>Thing
-        <br/><br/><br/><br/><br/><br/><br/><br/>Thing
-        <br/><br/><br/><br/><br/><br/><br/><br/>Thing
-        <br/><br/><br/><br/><br/><br/><br/><br/>Thing
-        <br/><br/><br/><br/><br/><br/><br/><br/>Thing
-        <br/><br/><br/><br/><br/><br/><br/><br/>Thing
-        <br/><br/><br/><br/><br/><br/><br/><br/>Thing
-        <br/><br/><br/><br/><br/><br/><br/><br/>Thing2
+    return <div>
+        Add statements:
+        <NewStatementForm/>
+        <StatementsList/>
+
+        Add desired state:
+        <NewDesiredStateForm/>
+        <DesiredStatesList/>
     </div>
 }

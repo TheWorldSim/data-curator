@@ -1,30 +1,50 @@
 import { createStore, Action, Reducer, AnyAction } from "redux"
+import { statements_reducer, statement_actions } from "./statements"
+import type { RootState } from "./State"
+import { desired_states_reducer, desired_state_actions } from "./desired_states"
 
 
-export interface RootState
+const KEY_FOR_LOCAL_STORAGE_STATE = "state"
+
+
+function get_default_state (): RootState
 {
-    counter: number
-    counter_last_clicked: Date | null
-}
+    let starting_state = {
+        statements: [],
+        desired_states: [],
+    }
 
-function default_state (): RootState
-{
-    return { counter: 0, counter_last_clicked: null }
+    const state_str = localStorage.getItem(KEY_FOR_LOCAL_STORAGE_STATE)
+    if (state_str)
+    {
+        const saved_state = JSON.parse(state_str)
+        const expected_keys = new Set(Object.keys(starting_state))
+        const saved_keys = new Set(Object.keys(saved_state))
+
+        const extra_keys = Array.from(saved_keys).filter(ek => !expected_keys.has(ek))
+        if (extra_keys.length) console.warn(`Extra ${extra_keys.length} keys: ${extra_keys}`)
+
+        const missing_keys = Array.from(expected_keys).filter(ek => !saved_keys.has(ek))
+        if (missing_keys.length)
+        {
+            console.error(`Missing ${missing_keys.length} keys: ${missing_keys}`)
+        }
+        else
+        {
+            starting_state = saved_state
+        }
+    }
+
+    return starting_state
 }
 
 
 const root_reducer: Reducer<RootState, any> = (state: RootState | undefined, action: AnyAction) =>
 {
-    state = state || default_state()
+    state = state || get_default_state()
 
-    if (is_increment_clicked(action))
-    {
-        state = {
-            ...state,
-            counter: state.counter + 1,
-            counter_last_clicked: action.when
-        }
-    }
+    state = statements_reducer(state, action)
+    state = desired_states_reducer(state, action)
 
     return state
 }
@@ -32,18 +52,18 @@ const root_reducer: Reducer<RootState, any> = (state: RootState | undefined, act
 
 export function config_store ()
 {
-    return createStore<RootState, Action, any, any>(root_reducer)
-}
+    const store = createStore<RootState, Action, {}, {}>(root_reducer)
 
+    store.subscribe(() => {
+        const state = store.getState()
+        localStorage.setItem(KEY_FOR_LOCAL_STORAGE_STATE, JSON.stringify(state))
+    })
 
-interface ActionIncrementClicked extends Action { when: Date }
-const increment_clicked_type = "increment_clicked"
-const increment_clicked = (when: Date): ActionIncrementClicked => ({ type: increment_clicked_type, when })
-const is_increment_clicked = (action: AnyAction): action is ActionIncrementClicked => {
-    return action.type === increment_clicked_type
+    return store
 }
 
 export const ACTIONS =
 {
-    increment_clicked,
+    ...statement_actions,
+    ...desired_state_actions,
 }

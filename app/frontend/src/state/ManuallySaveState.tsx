@@ -1,6 +1,6 @@
 import { h } from "preact"
 import { useState } from "preact/hooks"
-import type { State } from "./State"
+import type { RootState } from "./State"
 
 
 function move_stored_state (id: number)
@@ -11,7 +11,7 @@ function move_stored_state (id: number)
 
 interface ManuallySaveStateProps
 {
-    state: State
+    state: RootState
 }
 
 export function ManuallySaveState (props: ManuallySaveStateProps)
