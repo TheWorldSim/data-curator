@@ -25,7 +25,7 @@ type Props = PropsFromRedux & {}
 function _DesiredStatesList (props: Props)
 {
 
-    return <ul>
+    return <ul style={{ listStyle: "none" }}>
         {props.desired_states.map(desired_state => <li>
             <DesiredStateListEntry desired_state={desired_state}/>
             <DeleteButton delete={() => props.delete_desired_state(desired_state.id)}/>

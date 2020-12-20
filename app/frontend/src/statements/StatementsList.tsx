@@ -25,7 +25,7 @@ type Props = PropsFromRedux & {}
 function _StatementsList (props: Props)
 {
 
-    return <ul>
+    return <ul style={{ listStyle: "none" }}>
         {props.statements.map(statement => <li>
             <StatementListEntry statement={statement}/>
             <DeleteButton delete={() => props.delete_statement(statement.id)}/>
