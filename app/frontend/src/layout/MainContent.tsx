@@ -2,6 +2,7 @@ import { h } from "preact"
 
 import type { RootState } from "../state/State"
 import { connect, ConnectedProps } from "react-redux"
+import { Canvas } from "../canvas/Canvas"
 
 
 const map_state = (state: RootState) => ({
@@ -24,6 +25,8 @@ function _MainContent (props: Props)
         {props.route === "desired_states" && <div>
             Desired states
         </div>}
+
+        <Canvas />
     </div>
 }
 
