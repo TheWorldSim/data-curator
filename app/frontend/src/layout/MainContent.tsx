@@ -5,7 +5,7 @@ import { connect, ConnectedProps } from "react-redux"
 
 
 const map_state = (state: RootState) => ({
-    selected_tab: state.tabs.selected_tab
+    route: state.routing.route
 })
 
 const connector = connect(map_state)
@@ -17,11 +17,11 @@ type Props = PropsFromRedux & {}
 function _MainContent (props: Props)
 {
     return <div>
-        {props.selected_tab === "statements" && <div>
+        {props.route === "statements" && <div>
             Statements
         </div>}
 
-        {props.selected_tab === "desired_states" && <div>
+        {props.route === "desired_states" && <div>
             Desired states
         </div>}
     </div>

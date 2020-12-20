@@ -2,7 +2,7 @@ import { createStore, Action, Reducer, AnyAction } from "redux"
 import { statements_reducer, statement_actions } from "./statements"
 import type { RootState } from "./State"
 import { desired_states_reducer, desired_state_actions } from "./desired_states"
-import { tabs_reducer, tab_actions } from "./tabs"
+import { get_current_route, routing_reducer, routing_actions } from "./routing"
 
 
 const KEY_FOR_LOCAL_STORAGE_STATE = "state"
@@ -13,7 +13,7 @@ function get_default_state (): RootState
     let starting_state: RootState = {
         statements: [],
         desired_states: [],
-        tabs: { selected_tab: "statements" }
+        routing: { route: get_current_route() }
     }
 
     const state_str = localStorage.getItem(KEY_FOR_LOCAL_STORAGE_STATE)
@@ -33,7 +33,11 @@ function get_default_state (): RootState
         }
         else
         {
-            starting_state = saved_state
+            const routing = starting_state.routing
+            starting_state = {
+                ...saved_state,
+                routing
+            }
         }
     }
 
@@ -47,7 +51,7 @@ const root_reducer: Reducer<RootState, any> = (state: RootState | undefined, act
 
     state = statements_reducer(state, action)
     state = desired_states_reducer(state, action)
-    state = tabs_reducer(state, action)
+    state = routing_reducer(state, action)
 
     return state
 }
@@ -69,5 +73,5 @@ export const ACTIONS =
 {
     ...statement_actions,
     ...desired_state_actions,
-    ...tab_actions,
+    ...routing_actions,
 }

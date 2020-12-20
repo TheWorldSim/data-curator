@@ -15,10 +15,11 @@ export interface DesiredState
 }
 
 
-export type TAB_TYPES = "statements" | "desired_states"
-export interface TabsState
+export type ROUTE_TYPES = "statements" | "desired_states"
+export const ALLOWED_ROUTES: ROUTE_TYPES[] = ["statements", "desired_states"]
+export interface RoutingState
 {
-    selected_tab: TAB_TYPES
+    route: ROUTE_TYPES
 }
 
 
@@ -26,5 +27,5 @@ export interface RootState
 {
     statements: Statement[]
     desired_states: DesiredState[]
-    tabs: TabsState
+    routing: RoutingState
 }
