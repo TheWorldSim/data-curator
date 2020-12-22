@@ -7,16 +7,8 @@ export interface Statement
 }
 
 
-export interface DesiredState
-{
-    id: string
-    content: string
-    datetime_created: Date
-}
-
-
-export type ROUTE_TYPES = "statements" | "desired_states"
-export const ALLOWED_ROUTES: ROUTE_TYPES[] = ["statements", "desired_states"]
+export type ROUTE_TYPES = "filter" | "statements" | "objects" | "patterns" | "creation_context"
+export const ALLOWED_ROUTES: ROUTE_TYPES[] = ["filter", "statements", "objects", "patterns", "creation_context"]
 export interface RoutingState
 {
     route: ROUTE_TYPES
@@ -26,6 +18,5 @@ export interface RoutingState
 export interface RootState
 {
     statements: Statement[]
-    desired_states: DesiredState[]
     routing: RoutingState
 }

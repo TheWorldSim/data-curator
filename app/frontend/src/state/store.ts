@@ -1,7 +1,6 @@
 import { createStore, Action, Reducer, AnyAction } from "redux"
 import { statements_reducer, statement_actions } from "./statements"
 import type { RootState } from "./State"
-import { desired_states_reducer, desired_state_actions } from "./desired_states"
 import { get_current_route, routing_reducer, routing_actions } from "./routing"
 
 
@@ -12,7 +11,6 @@ function get_default_state (): RootState
 {
     let starting_state: RootState = {
         statements: [],
-        desired_states: [],
         routing: { route: get_current_route() }
     }
 
@@ -50,7 +48,6 @@ const root_reducer: Reducer<RootState, any> = (state: RootState | undefined, act
     state = state || get_default_state()
 
     state = statements_reducer(state, action)
-    state = desired_states_reducer(state, action)
     state = routing_reducer(state, action)
 
     return state
@@ -72,6 +69,5 @@ export function config_store ()
 export const ACTIONS =
 {
     ...statement_actions,
-    ...desired_state_actions,
     ...routing_actions,
 }

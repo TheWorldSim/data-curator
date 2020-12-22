@@ -1,8 +1,6 @@
 import { h } from "preact"
 
 import type { RootState } from "../state/State"
-import { DesiredStatesList } from "../desired_states/DesiredStatesList"
-import { NewDesiredStateForm } from "../desired_states/NewDesiredStateForm"
 import { NewStatementForm } from "../statements/NewStatementForm"
 import { StatementsList } from "../statements/StatementsList"
 import { connect, ConnectedProps } from "react-redux"
@@ -25,12 +23,6 @@ function _SidePanel (props: Props)
             Add statements:
             <NewStatementForm/>
             <StatementsList/>
-        </div>}
-
-        {props.route === "desired_states" && <div>
-            Add desired states:
-            <NewDesiredStateForm/>
-            <DesiredStatesList/>
         </div>}
     </div>
 }

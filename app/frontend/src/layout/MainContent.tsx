@@ -18,14 +18,6 @@ type Props = PropsFromRedux & {}
 function _MainContent (props: Props)
 {
     return <div>
-        {props.route === "statements" && <div>
-            Statements
-        </div>}
-
-        {props.route === "desired_states" && <div>
-            Desired states
-        </div>}
-
         <Canvas />
     </div>
 }

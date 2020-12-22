@@ -8,8 +8,12 @@ import "./Tab.css"
 
 function get_title (id: ROUTE_TYPES)
 {
-    if (id === "statements") return "Statements"
-    else if (id === "desired_states") return "Desired States"
+    if (id === "filter") return "Filter"
+    else if (id === "statements") return "Statements"
+    else if (id === "objects") return "Objects"
+    else if (id === "patterns") return "Patterns"
+    else if (id === "creation_context") return "Creation Context"
+
     else return "?"
 }
 

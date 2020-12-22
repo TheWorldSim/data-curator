@@ -13,7 +13,10 @@ export function TabsContainer (props: TabsContainerProps)
     setTimeout(() => props.content_changed(), 0) // remove hack
 
     return <div>
-        <Tab id="statements"/>
-        <Tab id="desired_states"/>
+        <Tab id="filter" />
+        <Tab id="statements" />
+        <Tab id="objects" />
+        <Tab id="patterns" />
+        <Tab id="creation_context" />
     </div>
 }
