@@ -5,7 +5,7 @@ import { bounded } from "../utils"
 import "./Canvas.css"
 
 
-type MouseState =
+type PointerState =
 {
     down: false
     start_x: null
@@ -19,7 +19,7 @@ type MouseState =
     canvas_start_x: number
     canvas_start_y: number
 }
-const mouse_state: MouseState = {
+const pointer_state: PointerState = {
     down: false,
     start_x: null,
     start_y: null,
@@ -31,55 +31,81 @@ export function Canvas ()
     const [x, change_x] = useState(0)
     const [y, change_y] = useState(0)
     const [scale, _change_scale] = useState(1)
-    function change_scale (new_scale: number)
-    {
-        _change_scale(bounded(new_scale, 0.1, 4))
-    }
+    const bound_scale = (new_scale: number) => bounded(new_scale, 0.1, 4)
+    function change_scale (new_scale: number) { _change_scale(bound_scale(new_scale)) }
 
-    function on_mouse_down (e: h.JSX.TargetedEvent<SVGSVGElement, MouseEvent>) {
-        mouse_state.down = true
-        mouse_state.start_x = e.clientX
-        mouse_state.start_y = e.clientY
-        mouse_state.canvas_start_x = x
-        mouse_state.canvas_start_y = y
+    function on_pointer_down (e: h.JSX.TargetedEvent<HTMLDivElement, MouseEvent>) {
+        pointer_state.down = true
+        pointer_state.start_x = e.clientX
+        pointer_state.start_y = e.clientY
+        pointer_state.canvas_start_x = x
+        pointer_state.canvas_start_y = y
     }
-    function on_mouse_up () { mouse_state.down = false }
+    function on_pointer_up () { pointer_state.down = false }
 
-    function on_mouse_move (e: h.JSX.TargetedEvent<SVGSVGElement, MouseEvent>)
+    function on_pointer_move (e: h.JSX.TargetedEvent<HTMLDivElement, MouseEvent>)
     {
-        if (mouse_state.down)
+        if (pointer_state.down)
         {
-            change_x(mouse_state.canvas_start_x + e.clientX - mouse_state.start_x)
-            change_y(mouse_state.canvas_start_y + e.clientY - mouse_state.start_y)
+            change_x(pointer_state.canvas_start_x + e.clientX - pointer_state.start_x)
+            change_y(pointer_state.canvas_start_y + e.clientY - pointer_state.start_y)
         }
     }
 
-    function on_wheel (e: h.JSX.TargetedEvent<SVGSVGElement, WheelEvent>)
+    function on_wheel (e: h.JSX.TargetedEvent<HTMLDivElement, WheelEvent>)
     {
-        e.preventDefault()
-        change_scale(scale + (e.deltaY * -0.01 * scale))
+        e.stopPropagation()
+
+        const old_scale = scale
+        const new_scale = bound_scale(scale + (e.deltaY * -0.01 * scale))
+        if (new_scale === old_scale) return
+
+        const bounding_rect = e.currentTarget.getBoundingClientRect()
+        const client_width = bounding_rect.width
+        const client_height = bounding_rect.height
+        const width_diff = client_width * new_scale - client_width * old_scale
+        const height_diff = client_height * new_scale - client_height * old_scale
+        const client_x = e.clientX - bounding_rect.left
+        const client_y = e.clientY - bounding_rect.top
+
+        const x_factor = ((client_x - x) / old_scale) / client_width
+        const y_factor = ((client_y - y) / old_scale) / client_height
+
+        change_scale(new_scale)
+        change_x(x - width_diff * x_factor)
+        change_y(y - height_diff * y_factor)
     }
 
-    const transform = `translate(${x},${y}) scale(${scale})`
     const background_style = {
         backgroundPosition: `${x}px ${y}px`,
         backgroundSize: `${20 * scale}px ${20 * scale}px`,
     }
+    const html_container_style = {
+        transform: `translate(${x}px,${y}px) scale(${scale})`
+    }
 
     return (
-    <div id="paper_background" style={background_style}>
-        <svg
-            width="900"
-            height="600"
-            onMouseDown={on_mouse_down}
-            onMouseMove={on_mouse_move}
-            onMouseUp={on_mouse_up}
-            onWheel={on_wheel}
-        >
-            <g transform={transform}>
-                <rect width="100" height="100" />
-            </g>
-        </svg>
+    <div
+        id="graph_container"
+        style={background_style}
+        onPointerDown={on_pointer_down}
+        onPointerMove={on_pointer_move}
+        onPointerUp={on_pointer_up}
+        onWheel={on_wheel}
+    >
+        <div id="graph_visuals_container" style={html_container_style}>
+            {/* List of visuals */}
+
+            <svg
+                width="900"
+                height="600"
+            >
+                <g>
+                    {/* List of SVG objects */}
+                </g>
+            </svg>
+        </div>
+
     </div>
     )
 }

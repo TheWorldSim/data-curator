@@ -1,9 +1,32 @@
 
 
-#paper_background
+#graph_container
 {
     cursor: move;
     background-image:
         linear-gradient(to right, #EEE 1px, transparent 1px),
         linear-gradient(to bottom, #EEE 1px, transparent 1px);
+    overflow: hidden;
+    text-align: left;
+    vertical-align: top;
+}
+
+#graph_visuals_container
+{
+    overflow: visible;
+    position: relative;
+    border: thick solid blueviolet;
+    transform-origin: left top;
+}
+
+#graph_container svg
+{
+    overflow: visible;
+}
+
+.visual
+{
+    position: absolute;
+    width: 200px;
+    cursor: pointer;
 }
