@@ -1,9 +1,11 @@
 import { h } from "preact"
+import { connect, ConnectedProps } from "react-redux"
 
+import { NewPatternForm } from "../patterns/NewPatternForm"
+import { PatternsList } from "../patterns/PatternsList"
 import type { RootState } from "../state/State"
 import { NewStatementForm } from "../statements/NewStatementForm"
 import { StatementsList } from "../statements/StatementsList"
-import { connect, ConnectedProps } from "react-redux"
 
 
 const map_state = (state: RootState) => ({
@@ -19,10 +21,30 @@ type Props = PropsFromRedux & {}
 function _SidePanel (props: Props)
 {
     return <div>
+        {props.route === "filter" && <div>
+            Filter
+        </div>}
+
         {props.route === "statements" && <div>
             Add statements:
-            <NewStatementForm/>
-            <StatementsList/>
+            <NewStatementForm />
+            Statements:
+            <StatementsList />
+        </div>}
+
+        {props.route === "objects" && <div>
+            Add Objects:
+        </div>}
+
+        {props.route === "patterns" && <div>
+            Add patterns:
+            <NewPatternForm />
+            Patterns:
+            <PatternsList />
+        </div>}
+
+        {props.route === "creation_context" && <div>
+            Set Creation Context:
         </div>}
     </div>
 }

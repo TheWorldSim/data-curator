@@ -1,6 +1,7 @@
 import { createStore, Action, Reducer, AnyAction } from "redux"
 import { statements_reducer, statement_actions } from "./statements"
-import type { RootState } from "./State"
+import { patterns_reducer, pattern_actions } from "./patterns"
+import type { RootState, Statement } from "./State"
 import { get_current_route, routing_reducer, routing_actions } from "./routing"
 
 
@@ -9,9 +10,26 @@ const KEY_FOR_LOCAL_STORAGE_STATE = "state"
 
 function get_default_state (): RootState
 {
+    const statement_contents = [
+        "Type",  // leave this in position 0
+        "Author",
+        "Document",
+        "DOI",
+        "URL",
+    ]
+    const statements: Statement[] = statement_contents.map((content, i) => ({
+        id: `${i}`,
+        content,
+        datetime_created: new Date("2020-12-22"),
+        labels: ["0"],  // All are given label of type
+    }))
+
+
     let starting_state: RootState = {
-        statements: [],
-        routing: { route: get_current_route() }
+        statements,
+        patterns: [],
+        objects: [],
+        routing: { route: get_current_route() },
     }
 
     const state_str = localStorage.getItem(KEY_FOR_LOCAL_STORAGE_STATE)
@@ -47,6 +65,7 @@ const root_reducer: Reducer<RootState, any> = (state: RootState | undefined, act
 {
     state = state || get_default_state()
 
+    state = patterns_reducer(state, action)
     state = statements_reducer(state, action)
     state = routing_reducer(state, action)
 
@@ -68,6 +87,7 @@ export function config_store ()
 
 export const ACTIONS =
 {
+    ...pattern_actions,
     ...statement_actions,
     ...routing_actions,
 }

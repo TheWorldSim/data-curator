@@ -4,14 +4,15 @@ import { get_datetime, get_new_id } from "../utils"
 import type { RootState, Statement } from "./State"
 
 
-export const statements_reducer = (state: RootState, action: AnyAction) =>
+export const statements_reducer = (state: RootState, action: AnyAction): RootState =>
 {
     if (is_add_statement(action))
     {
-        const new_statement = {
+        const new_statement: Statement = {
             id: action.id,
             content: action.content,
             datetime_created: action.datetime_created,
+            labels: [],
         }
 
         state = {
@@ -32,22 +33,37 @@ export const statements_reducer = (state: RootState, action: AnyAction) =>
 }
 
 
+//
+
 interface ActionAddStatement extends Action, Statement {}
 
 const add_statement_type = "add_statement"
 
-export const add_statement = (args: { content: string }): ActionAddStatement =>
+
+interface AddStatementProps
+{
+    content: string
+}
+export const add_statement = (args: AddStatementProps): ActionAddStatement =>
 {
     const datetime_created = get_datetime()
     const id = get_new_id()
 
-    return { type: add_statement_type, content: args.content, datetime_created, id }
+    return {
+        type: add_statement_type,
+        id,
+        datetime_created,
+        content: args.content,
+        labels: [],
+    }
 }
 
 const is_add_statement = (action: AnyAction): action is ActionAddStatement => {
     return action.type === add_statement_type
 }
 
+
+//
 
 interface ActionDeleteStatement extends Action {
     id: string

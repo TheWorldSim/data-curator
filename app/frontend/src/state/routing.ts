@@ -13,7 +13,7 @@ export function get_current_route (): ROUTE_TYPES
 }
 
 
-export const routing_reducer = (state: RootState, action: AnyAction) =>
+export const routing_reducer = (state: RootState, action: AnyAction): RootState =>
 {
 
     if (is_change_route(action))
