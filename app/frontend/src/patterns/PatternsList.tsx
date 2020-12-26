@@ -13,7 +13,7 @@ const map_state = (state: RootState) => ({
 
 const map_dispatch = {
     delete_pattern: (id: string) => ACTIONS.delete_pattern(id),
-    pattern_selected: (element_id: string) => ACTIONS.change_route({ route: "patterns", element_id }),
+    pattern_selected: (item_id: string) => ACTIONS.change_route({ route: "patterns", item_id }),
 }
 
 

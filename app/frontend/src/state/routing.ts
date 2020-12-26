@@ -8,11 +8,11 @@ export function parse_url_for_routing_params (url: string): RoutingState
     const hash = url.split("#")[1]
     const parts = hash.split("/")
     const route = parts[0] as ROUTE_TYPES
-    const element_id = parts[1]
+    const item_id = parts[1]
 
-    if (!ALLOWED_ROUTES.includes(route)) return { route: "statements", element_id: undefined }
+    if (!ALLOWED_ROUTES.includes(route)) return { route: "statements", item_id: undefined }
 
-    return { route, element_id }
+    return { route, item_id }
 }
 
 
@@ -29,20 +29,20 @@ export const routing_reducer = (state: RootState, action: AnyAction): RootState 
 
     if (is_change_route(action))
     {
-        if (state.routing.route !== action.route || state.routing.element_id !== action.element_id)
+        if (state.routing.route !== action.route || state.routing.item_id !== action.item_id)
         {
             state = {
                 ...state,
                 routing: {
                     route: action.route,
-                    element_id: action.element_id,
+                    item_id: action.item_id,
                 }
             }
         }
     }
 
     // Putting this side effect here seems wrong, perhaps best as a store.subscribe?
-    const element_route = state.routing.element_id ? `/${state.routing.element_id}` : ""
+    const element_route = state.routing.item_id ? `/${state.routing.item_id}` : ""
     const route = state.routing.route + element_route
     window.location.hash = route
 
@@ -52,7 +52,7 @@ export const routing_reducer = (state: RootState, action: AnyAction): RootState 
 
 interface ActionChangeRoute extends Action {
     route: ROUTE_TYPES
-    element_id: string | undefined
+    item_id: string | undefined
 }
 
 const change_route_type = "change_route"

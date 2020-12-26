@@ -8,7 +8,7 @@ import { NewPatternForm } from "../patterns/NewPatternForm"
 
 
 const map_state = (state: RootState) => ({
-    pattern: state.patterns.find(({ id }) => id === state.routing.element_id)
+    pattern: state.patterns.find(({ id }) => id === state.routing.item_id)
 })
 
 const connector = connect(map_state)
