@@ -14,6 +14,7 @@ export interface Pattern
 {
     id: string
     datetime_created: Date
+    name: string
     content: string
     attributes: PatternAttribute[]
 }
@@ -22,6 +23,7 @@ export interface PatternAttribute
 {
     statement_type_id: string
     alt_name: string
+    multiple?: boolean
 }
 
 

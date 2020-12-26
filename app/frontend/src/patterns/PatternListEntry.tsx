@@ -10,5 +10,5 @@ interface Props {
 
 export function PatternListEntry (props: Props)
 {
-    return <div>{props.pattern.content}</div>
+    return <div>{props.pattern.name}</div>
 }

@@ -39,6 +39,7 @@ function _SidePanel (props: Props)
         {props.route === "patterns" && <div>
             Add patterns:
             <NewPatternForm />
+            <hr />
             Patterns:
             <PatternsList />
         </div>}
