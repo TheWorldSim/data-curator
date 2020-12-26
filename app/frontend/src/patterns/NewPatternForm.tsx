@@ -4,11 +4,11 @@ import { connect, ConnectedProps } from "react-redux"
 
 import type { PatternAttribute } from "../state/State"
 import { ACTIONS } from "../state/store"
-import { PatternAttributesList } from "./PatternAttributeList"
+import { EditablePatternAttributesList } from "./EditablePatternAttributesList"
 
 
 const map_dispatch = {
-    add_pattern: (content: string, attributes: PatternAttribute[]) => ACTIONS.add_pattern({ content, attributes })
+    add_pattern: (args: { name: string, content: string, attributes: PatternAttribute[] }) => ACTIONS.add_pattern(args)
 }
 
 
@@ -44,7 +44,7 @@ function _NewPatternForm (props: Props)
 
     function add_pattern ()
     {
-        props.add_pattern(content, attributes)
+        props.add_pattern({ name, content, attributes })
         set_content("")
         set_attributes([])
     }
@@ -57,7 +57,7 @@ function _NewPatternForm (props: Props)
             onChange={name_changed}
         ></input>
 
-        <PatternAttributesList
+        <EditablePatternAttributesList
             attributes={attributes}
             change_attributes={change_attributes}
             delete_attribute={delete_attribute}

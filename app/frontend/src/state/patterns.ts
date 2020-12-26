@@ -11,6 +11,7 @@ export const patterns_reducer = (state: RootState, action: AnyAction): RootState
         const new_pattern: Pattern = {
             id: action.id,
             datetime_created: action.datetime_created,
+            name: action.name,
             content: action.content,
             attributes: action.attributes,
         }
@@ -42,6 +43,7 @@ const add_pattern_type = "add_pattern"
 
 interface AddPatternArgs
 {
+    name: string
     content: string
     attributes: PatternAttribute[]
 }
@@ -54,6 +56,7 @@ export const add_pattern = (args: AddPatternArgs): ActionAddPattern =>
         type: add_pattern_type,
         id,
         datetime_created,
+        name: args.name,
         content: args.content,
         attributes: args.attributes,
     }

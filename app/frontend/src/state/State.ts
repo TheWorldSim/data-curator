@@ -49,6 +49,7 @@ export const ALLOWED_ROUTES: ROUTE_TYPES[] = ["filter", "statements", "objects",
 export interface RoutingState
 {
     route: ROUTE_TYPES
+    element_id: string | undefined
 }
 
 

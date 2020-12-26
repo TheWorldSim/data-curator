@@ -6,17 +6,17 @@ import { DeleteButton } from "../sharedf/DeleteButton"
 import { PatternAttributeListEntry } from "./PatternAttributeListEntry"
 
 
-const map_state = (state: RootState) => ({
-    // attributes: state.
-})
+// const map_state = (state: RootState) => ({
+//     // attributes: state.
+// })
 
-const map_dispatch = {
-    // delete_pattern: (id: string) => ACTIONS.delete_pattern(id)
-}
+// const map_dispatch = {
+//     // delete_pattern: (id: string) => ACTIONS.delete_pattern(id)
+// }
 
 
-const connector = connect(map_state, map_dispatch)
-type PropsFromRedux = ConnectedProps<typeof connector>
+// const connector = connect(map_state, map_dispatch)
+// type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = /*PropsFromRedux &*/ {
     attributes: PatternAttribute[]
@@ -25,7 +25,7 @@ type Props = /*PropsFromRedux &*/ {
 }
 
 
-function _PatternAttributesList (props: Props)
+function _EditablePatternAttributesList (props: Props)
 {
 
     function add_attribute ()
@@ -46,9 +46,9 @@ function _PatternAttributesList (props: Props)
 
     return <table>
         {props.attributes.map((attribute, i) => <tr>
-            {...PatternAttributeListEntry({ attribute, on_change: change_attribute(i) })}
+            {...PatternAttributeListEntry({ attribute, on_change: change_attribute(i), editable: true })}
             <td>
-                <DeleteButton delete={() => props.delete_attribute(i)}/>
+                <DeleteButton delete={() => props.delete_attribute(i) } />
             </td>
         </tr>)}
         <tr>
@@ -60,4 +60,4 @@ function _PatternAttributesList (props: Props)
 }
 
 
-export const PatternAttributesList = _PatternAttributesList // connector(_PatternAttributesList)
+export const EditablePatternAttributesList = _EditablePatternAttributesList // connector(_EditablePatternAttributesList)

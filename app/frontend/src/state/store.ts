@@ -1,8 +1,14 @@
 import { createStore, Action, Reducer, AnyAction } from "redux"
+
 import { statements_reducer, statement_actions } from "./statements"
 import { patterns_reducer, pattern_actions } from "./patterns"
 import type { Pattern, RootState, Statement } from "./State"
-import { get_current_route, routing_reducer, routing_actions } from "./routing"
+import {
+    get_current_route_params,
+    parse_url_for_routing_params,
+    routing_reducer,
+    routing_actions,
+} from "./routing"
 
 
 const KEY_FOR_LOCAL_STORAGE_STATE = "state"
@@ -93,33 +99,33 @@ function get_default_state (): RootState
         statements,
         patterns,
         objects: [],
-        routing: { route: get_current_route() },
+        routing: get_current_route_params(),
     }
 
     const state_str = localStorage.getItem(KEY_FOR_LOCAL_STORAGE_STATE)
-    if (false && state_str)
-    {
-        const saved_state = JSON.parse(state_str)
-        const expected_keys = new Set(Object.keys(starting_state))
-        const saved_keys = new Set(Object.keys(saved_state))
+    // if (state_str)
+    // {
+        // const saved_state = JSON.parse(state_str)
+        // const expected_keys = new Set(Object.keys(starting_state))
+        // const saved_keys = new Set(Object.keys(saved_state))
 
-        const extra_keys = Array.from(saved_keys).filter(ek => !expected_keys.has(ek))
-        if (extra_keys.length) console.warn(`Extra ${extra_keys.length} keys: ${extra_keys}`)
+        // const extra_keys = Array.from(saved_keys).filter(ek => !expected_keys.has(ek))
+        // if (extra_keys.length) console.warn(`Extra ${extra_keys.length} keys: ${extra_keys}`)
 
-        const missing_keys = Array.from(expected_keys).filter(ek => !saved_keys.has(ek))
-        if (missing_keys.length)
-        {
-            console.error(`Missing ${missing_keys.length} keys: ${missing_keys}`)
-        }
-        else
-        {
-            const routing = starting_state.routing
-            starting_state = {
-                ...saved_state,
-                routing
-            }
-        }
-    }
+        // const missing_keys = Array.from(expected_keys).filter(ek => !saved_keys.has(ek))
+        // if (missing_keys.length)
+        // {
+        //     console.error(`Missing ${missing_keys.length} keys: ${missing_keys}`)
+        // }
+        // else
+        // {
+        //     const routing = starting_state.routing
+        //     starting_state = {
+        //         ...saved_state,
+        //         routing
+        //     }
+        // }
+    // }
 
     return starting_state
 }
@@ -145,6 +151,12 @@ export function config_store ()
         const state = store.getState()
         localStorage.setItem(KEY_FOR_LOCAL_STORAGE_STATE, JSON.stringify(state))
     })
+
+    window.onhashchange = (e: HashChangeEvent) =>
+    {
+        const routing_params = parse_url_for_routing_params(e.newURL)
+        store.dispatch(ACTIONS.change_route(routing_params))
+    }
 
     return store
 }

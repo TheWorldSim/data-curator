@@ -24,7 +24,7 @@ const map_state = (state: RootState) => ({
 
 
 const map_dispatch = {
-    change_route: (id: ROUTE_TYPES) => ACTIONS.change_route(id)
+    change_route: (route: ROUTE_TYPES) => ACTIONS.change_route({ route, element_id: undefined })
 }
 
 

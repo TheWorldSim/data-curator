@@ -12,7 +12,8 @@ const map_state = (state: RootState) => ({
 })
 
 const map_dispatch = {
-    delete_pattern: (id: string) => ACTIONS.delete_pattern(id)
+    delete_pattern: (id: string) => ACTIONS.delete_pattern(id),
+    pattern_selected: (element_id: string) => ACTIONS.change_route({ route: "patterns", element_id }),
 }
 
 
@@ -27,7 +28,7 @@ function _PatternsList (props: Props)
 
     return <ul style={{ listStyle: "none" }}>
         {props.patterns.map(pattern => <li>
-            <PatternListEntry pattern={pattern}/>
+            <PatternListEntry pattern={pattern} on_click={() => props.pattern_selected(pattern.id)} />
             <DeleteButton delete={() => props.delete_pattern(pattern.id)}/>
         </li>)}
     </ul>

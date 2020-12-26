@@ -3,22 +3,26 @@ import { h } from "preact"
 import type { PatternAttribute } from "../state/State"
 
 
-interface Props {
+type Props = {
     attribute: PatternAttribute
     on_change: (attribute: PatternAttribute) => void
+    editable: true
+} | {
+    attribute: PatternAttribute
+    editable: false
 }
 
 
 export function PatternAttributeListEntry (props: Props)
 {
-    // if (!props.editable)
-    // {
-    //     return [
-    //         <td>{props.attribute.statement_type_id}</td>,
-    //         <td>{props.attribute.alt_name}</td>,
-    //         <td><input type="checkbox" checked={props.attribute.multiple} disabled={true}></input></td>,
-    //     ]
-    // }
+    if (!props.editable)
+    {
+        return [
+            <td>{props.attribute.statement_type_id}</td>,
+            <td>{props.attribute.alt_name}</td>,
+            <td><input type="checkbox" checked={props.attribute.multiple} disabled={true}></input></td>,
+        ]
+    }
 
     return [
         <td>
