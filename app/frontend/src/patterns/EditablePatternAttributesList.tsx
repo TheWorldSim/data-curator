@@ -3,7 +3,7 @@ import { connect, ConnectedProps } from "react-redux"
 
 import type { PatternAttribute, RootState } from "../state/State"
 import { DeleteButton } from "../sharedf/DeleteButton"
-import { PatternAttributeListEntry } from "./PatternAttributeListEntry"
+import { PatternAttributeListEntry, PatternAttributeListHeader } from "./PatternAttributeListEntry"
 
 
 // const map_state = (state: RootState) => ({
@@ -31,7 +31,7 @@ function _EditablePatternAttributesList (props: Props)
     function add_attribute ()
     {
         const new_blank_attribute: PatternAttribute = {
-            statement_type_id: "",
+            type_id: "",
             alt_name: "",
         }
         props.change_attributes([...props.attributes, new_blank_attribute])
@@ -44,19 +44,18 @@ function _EditablePatternAttributesList (props: Props)
         props.change_attributes(new_attributes)
     }
 
-    return <table>
-        {props.attributes.map((attribute, i) => <tr>
-            {...PatternAttributeListEntry({ attribute, on_change: change_attribute(i), editable: true })}
-            <td>
-                <DeleteButton delete={() => props.delete_attribute(i) } />
-            </td>
-        </tr>)}
-        <tr>
-            <td>
-                <input type="button" value="Add attribute" onClick={add_attribute} />
-            </td>
-        </tr>
-    </table>
+    return <div>
+        <table>
+            <PatternAttributeListHeader />
+            {props.attributes.map((attribute, i) => <tr>
+                <PatternAttributeListEntry attribute={attribute} on_change={change_attribute(i)} editable={true} />
+                <td>
+                    <DeleteButton delete={() => props.delete_attribute(i) } />
+                </td>
+            </tr>)}
+        </table>
+        <input type="button" value="Add attribute" onClick={add_attribute} />
+    </div>
 }
 
 

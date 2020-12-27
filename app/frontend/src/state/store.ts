@@ -25,11 +25,11 @@ function get_default_state (): RootState
         "First name": "4",
         "Last name": "5",
 
-        Author: "P0",
-        Authors: "P1",
-        Group: "P2",
-        "Author(s) or Group": "P3",
-        Document: "P4",
+        Author: "p0",
+        Authors: "p1",
+        Group: "p2",
+        "Author(s) or Group": "p3",
+        Document: "p4",
     }
     const statement_contents: {[id: string]: string} = {
         [ids.Type]: "Type",
@@ -51,8 +51,8 @@ function get_default_state (): RootState
             name: "Author",
             content: `@@0 @@1`,
             attributes: [
-                { statement_type_id: ids["First name"], alt_name: "" },
-                { statement_type_id: ids["Last name"], alt_name: "" },
+                { type_id: ids["First name"], alt_name: "" },
+                { type_id: ids["Last name"], alt_name: "" },
             ]
         },
         {
@@ -61,7 +61,7 @@ function get_default_state (): RootState
             name: "Authors",
             content: "@@0",
             attributes: [
-                { statement_type_id: ids["Author"], alt_name: "Authors", multiple: true },
+                { type_id: ids["Author"], alt_name: "Authors", multiple: true },
             ]
         },
         {
@@ -70,7 +70,7 @@ function get_default_state (): RootState
             name: "Group",
             content: `@@0`,
             attributes: [
-                { statement_type_id: "", alt_name: "Group" },
+                { type_id: "", alt_name: "Group" },
             ]
         },
         {
@@ -79,8 +79,8 @@ function get_default_state (): RootState
             name: "Author(s) or Group",
             content: `@@0@@1`,
             attributes: [
-                { statement_type_id: ids["Authors"], alt_name: "" },
-                { statement_type_id: ids["Group"], alt_name: "" },
+                { type_id: ids["Authors"], alt_name: "" },
+                { type_id: ids["Group"], alt_name: "" },
             ]
         },
         {
@@ -89,8 +89,8 @@ function get_default_state (): RootState
             name: "Document",
             content: `@@0 from @@1`,
             attributes: [
-                { statement_type_id: ids.Title, alt_name: "" },
-                { statement_type_id: ids["Author(s) or Group"], alt_name: "" },
+                { type_id: ids.Title, alt_name: "" },
+                { type_id: ids["Author(s) or Group"], alt_name: "" },
             ]
         },
     ]

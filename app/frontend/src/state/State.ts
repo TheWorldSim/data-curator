@@ -21,7 +21,7 @@ export interface Pattern
 
 export interface PatternAttribute
 {
-    statement_type_id: string
+    type_id: string
     alt_name: string
     multiple?: boolean
 }
@@ -38,9 +38,14 @@ export interface ObjectAttribute
     id: string   // statement_id
 }
 
-export function is_statement (s: Statement | Objekt): s is Statement
-{ return !s.hasOwnProperty("pattern_id") }
-export function is_objekt (s: Statement | Objekt): s is Objekt
+
+export type Item = Statement | Pattern | Objekt
+
+export function is_statement (s: Item): s is Statement
+{ return !is_object(s) && !is_item(s) }
+export function is_item (s: Item): s is Item
+{ return s.hasOwnProperty("name") }
+export function is_object (s: Item): s is Objekt
 { return s.hasOwnProperty("pattern_id") }
 
 

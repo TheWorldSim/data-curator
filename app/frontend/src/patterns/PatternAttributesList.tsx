@@ -1,7 +1,7 @@
 import { h } from "preact"
 
 import type { PatternAttribute } from "../state/State"
-import { PatternAttributeListEntry } from "./PatternAttributeListEntry"
+import { PatternAttributeListEntry, PatternAttributeListHeader } from "./PatternAttributeListEntry"
 
 
 type Props = {
@@ -12,8 +12,9 @@ type Props = {
 export function PatternAttributesList (props: Props)
 {
     return <table>
+        <PatternAttributeListHeader />
         {props.attributes.map((attribute, i) => <tr>
-            {...PatternAttributeListEntry({ attribute, editable: false })}
+            <PatternAttributeListEntry attribute={attribute} editable={false} />
         </tr>)}
     </table>
 }

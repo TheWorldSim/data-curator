@@ -1,7 +1,7 @@
 import { h } from "preact"
 import { useState } from "preact/hooks"
 
-import { bounded } from "../utils"
+import { bounded } from "../utils/utils"
 import "./Canvas.css"
 
 
