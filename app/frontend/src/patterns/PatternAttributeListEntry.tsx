@@ -34,7 +34,7 @@ const map_state = (state: RootState, own_props: OwnProps): StateProps => {
 function _PatternAttributeListEntry (props: Props)
 {
     const item = props.id_map[props.attribute.type_id]
-    const desc = description(item)
+    const desc = item ? description(item) : ""
 
     if (!props.editable)
     {

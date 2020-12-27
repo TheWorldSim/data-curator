@@ -2,9 +2,8 @@ import { h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
 
 import type { RootState } from "../state/State"
-import { NewStatementForm } from "../statements/NewStatementForm"
-import { StatementsList } from "../statements/StatementsList"
 import { Patterns } from "./Patterns"
+import { Statements } from "./Statements"
 
 
 const map_state = (state: RootState) => ({
@@ -24,12 +23,7 @@ function _SidePanel (props: Props)
             Filter
         </div>}
 
-        {props.route === "statements" && <div>
-            Add statements:
-            <NewStatementForm />
-            Statements:
-            <StatementsList />
-        </div>}
+        {props.route === "statements" && <Statements />}
 
         {props.route === "objects" && <div>
             Add Objects:

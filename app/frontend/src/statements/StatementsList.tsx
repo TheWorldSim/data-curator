@@ -12,7 +12,8 @@ const map_state = (state: RootState) => ({
 })
 
 const map_dispatch = {
-    delete_statement: (id: string) => ACTIONS.delete_statement(id)
+    delete_statement: (id: string) => ACTIONS.delete_statement(id),
+    statement_selected: (item_id: string) => ACTIONS.change_route({ route: "statements", item_id }),
 }
 
 
@@ -27,7 +28,7 @@ function _StatementsList (props: Props)
 
     return <ul style={{ listStyle: "none" }}>
         {props.statements.map(statement => <li>
-            <StatementListEntry statement={statement}/>
+            <StatementListEntry statement={statement} on_click={() => props.statement_selected(statement.id)}/>
             <DeleteButton delete={() => props.delete_statement(statement.id)}/>
         </li>)}
     </ul>

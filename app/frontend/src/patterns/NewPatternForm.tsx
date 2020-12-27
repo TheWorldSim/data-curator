@@ -57,11 +57,15 @@ function _NewPatternForm (props: Props)
             onChange={name_changed}
         ></input>
 
+        <br /><br />
+
         <EditablePatternAttributesList
             attributes={attributes}
             change_attributes={change_attributes}
             delete_attribute={delete_attribute}
         />
+
+        <br />
 
         <input
             type="text"
@@ -70,7 +74,7 @@ function _NewPatternForm (props: Props)
             onChange={content_changed}
         ></input>
 
-        <br/>
+        <br/><br />
 
         <input
             type="button"

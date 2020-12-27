@@ -46,7 +46,7 @@ function _EditablePatternAttributesList (props: Props)
 
     return <div>
         <table>
-            <PatternAttributeListHeader />
+            {!!props.attributes.length && <PatternAttributeListHeader />}
             {props.attributes.map((attribute, i) => <tr>
                 <PatternAttributeListEntry attribute={attribute} on_change={change_attribute(i)} editable={true} />
                 <td>
