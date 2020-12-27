@@ -1,5 +1,7 @@
 import { h } from "preact"
+import { useState } from "preact/hooks"
 import { connect } from "react-redux"
+import { SearchWindow } from "../search/SearchWindow"
 
 import type { Item, PatternAttribute, RootState } from "../state/State"
 import { get_id_map } from "../utils/get_id_map"
@@ -33,6 +35,8 @@ const map_state = (state: RootState, own_props: OwnProps): StateProps => {
 
 function _PatternAttributeListEntry (props: Props)
 {
+    const [display_search, set_display_search] = useState(false)
+
     const item = props.id_map[props.attribute.type_id]
     const desc = item ? description(item) : props.attribute.type_id
 
@@ -69,6 +73,7 @@ function _PatternAttributeListEntry (props: Props)
                 type="text"
                 placeholder="Statement Type or Pattern"
                 value={desc}
+                onFocus={() => set_display_search(true)}
                 onChange={on_change_type_id}
             ></input>
         </td>,
@@ -88,6 +93,10 @@ function _PatternAttributeListEntry (props: Props)
                 onChange={on_change_multiple}
             ></input>
         </td>,
+        display_search && <SearchWindow  // This seems pretty hacky
+            on_change={(v) => console.log("change ", v)}
+            on_close={() => set_display_search(false)}
+        />
     ]
 }
 
