@@ -74,6 +74,7 @@ function _PatternAttributeListEntry (props: Props)
                 placeholder="Statement Type or Pattern"
                 value={desc}
                 onFocus={() => set_display_search(true)}
+                onClick={() => set_display_search(true)}
                 onChange={on_change_type_id}
             ></input>
         </td>,
@@ -94,7 +95,7 @@ function _PatternAttributeListEntry (props: Props)
             ></input>
         </td>,
         display_search && <SearchWindow  // This seems pretty hacky
-            on_change={(v) => console.log("change ", v)}
+            on_change={(v: string) => console.log("change ", v)}
             on_close={() => set_display_search(false)}
         />
     ]

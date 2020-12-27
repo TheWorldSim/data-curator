@@ -58,10 +58,18 @@ export interface RoutingState
 }
 
 
+export interface GlobalKeyPress
+{
+    last_key: string | undefined
+    last_key_time_stamp: number | undefined
+}
+
+
 export interface RootState
 {
     statements: Statement[]
     patterns: Pattern[]
     objects: Objekt[]
     routing: RoutingState
+    global_key_press: GlobalKeyPress
 }

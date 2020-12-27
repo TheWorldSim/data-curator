@@ -9,6 +9,7 @@ import {
     routing_reducer,
     routing_actions,
 } from "./routing"
+import { ActionKeyDownArgs, global_key_press_actions, global_key_press_reducer } from "./global_key_press"
 
 
 const KEY_FOR_LOCAL_STORAGE_STATE = "state"
@@ -100,6 +101,7 @@ function get_default_state (): RootState
         patterns,
         objects: [],
         routing: get_current_route_params(),
+        global_key_press: { last_key: undefined, last_key_time_stamp: undefined },
     }
 
     const state_str = localStorage.getItem(KEY_FOR_LOCAL_STORAGE_STATE)
@@ -138,6 +140,7 @@ const root_reducer: Reducer<RootState, any> = (state: RootState | undefined, act
     state = patterns_reducer(state, action)
     state = statements_reducer(state, action)
     state = routing_reducer(state, action)
+    state = global_key_press_reducer(state, action)
 
     return state
 }
@@ -158,6 +161,24 @@ export function config_store ()
         store.dispatch(ACTIONS.change_route(routing_params))
     }
 
+    document.onkeydown = (e) =>
+    {
+        const action_args: ActionKeyDownArgs = {
+            time_stamp: e.timeStamp,
+            alt_key: e.altKey,
+            code: e.code,
+            ctrl_key: e.ctrlKey,
+            key: e.key,
+            meta_key: e.metaKey,
+            return_value: e.returnValue,
+            shift_key: e.shiftKey,
+        }
+
+        console.log(action_args)
+
+        store.dispatch(ACTIONS.key_down(action_args))
+    }
+
     return store
 }
 
@@ -166,4 +187,5 @@ export const ACTIONS =
     ...pattern_actions,
     ...statement_actions,
     ...routing_actions,
+    ...global_key_press_actions,
 }
