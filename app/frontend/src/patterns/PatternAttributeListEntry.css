@@ -1,0 +1,16 @@
+.fake_text_input
+{
+    height: 15px;
+    width: 160px;
+    background-color: white;
+    border: thin solid #777;
+    border-radius: 3px;
+    padding: 2px 2px;
+    font-family: Arial;
+    font-size: 13.333px;
+}
+
+.fake_text_input.empty
+{
+    color: #666;
+}

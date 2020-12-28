@@ -3,6 +3,7 @@ import { useState } from "preact/hooks"
 import { connect } from "react-redux"
 import { SearchWindow } from "../search/SearchWindow"
 
+import "./PatternAttributeListEntry.css"
 import type { Item, PatternAttribute, RootState } from "../state/State"
 import { get_id_map } from "../utils/get_id_map"
 import { description } from "../utils/item"
@@ -37,13 +38,18 @@ function _PatternAttributeListEntry (props: Props)
 {
     const [display_search, set_display_search] = useState(false)
 
-    const item = props.id_map[props.attribute.type_id]
-    const desc = item ? description(item) : props.attribute.type_id
+    let type_id_css_class = "empty"
+    let type_id_desc = "Statement Type or Pattern"
+    if (props.attribute.type_id)
+    {
+        const item = props.id_map[props.attribute.type_id]
+        type_id_desc = item ? description(item) : props.attribute.type_id
+    }
 
     if (!props.editable)
     {
         return [
-            <td>{desc}</td>,
+            <td>{type_id_desc}</td>,
             <td>{props.attribute.alt_name}</td>,
             <td><input type="checkbox" title="Multiple values" checked={props.attribute.multiple} disabled={true}></input></td>,
         ]
@@ -69,14 +75,10 @@ function _PatternAttributeListEntry (props: Props)
 
     return [
         <td>
-            <input
-                type="text"
-                placeholder="Statement Type or Pattern"
-                value={desc}
-                onFocus={() => set_display_search(true)}
+            <div
+                class={"fake_text_input " + type_id_css_class}
                 onClick={() => set_display_search(true)}
-                onChange={on_change_type_id}
-            ></input>
+            >{type_id_desc}</div>
         </td>,
         <td>
             <input

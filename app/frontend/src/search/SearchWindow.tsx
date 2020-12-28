@@ -1,8 +1,17 @@
-import { Component, h } from "preact"
+import { h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
 
 import "./SearchWindow.css"
 import type { RootState } from "../state/State"
+import { ListOfTypes } from "./ListOfTypes"
+import { useState } from "preact/hooks"
+
+
+interface OwnProps
+{
+    on_choose: (id: string) => void
+    on_close: () => void
+}
 
 
 function map_state (state: RootState)
@@ -13,53 +22,51 @@ function map_state (state: RootState)
     }
 }
 
-
 const connector = connect(map_state)
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-type Props = PropsFromRedux &
+type Props = PropsFromRedux & OwnProps
+
+
+function calc_should_close (props: Props, time_stamp_first_rendered: number)
 {
-    on_change: (value: string) => void
-    on_close: () => void
+    const is_escape = props.last_key === "Escape"
+    const is_new = props.last_key_time_stamp && props.last_key_time_stamp > time_stamp_first_rendered
+
+    return is_escape && is_new
 }
 
 
-class _SearchWindow extends Component<Props, { time_stamp_first_rendered: number }>
+function _SearchWindow (props: Props)
 {
-    constructor(props: Props) {
-        super(props)
 
-        this.state = {
-            time_stamp_first_rendered: performance.now()
-        }
-    }
+    const [time_stamp_first_rendered] = useState(performance.now())
+    const [search_string, set_search_string] = useState("")
 
-    shouldComponentUpdate (new_props: Props)
-    {
-        const is_escape = new_props.last_key === "Escape"
-        const is_new = new_props.last_key_time_stamp && new_props.last_key_time_stamp > this.state.time_stamp_first_rendered
+    const should_close = calc_should_close(props, time_stamp_first_rendered)
+    if (should_close) setTimeout(() => props.on_close(), 0)
 
-        const should_close = is_escape && is_new
+    return <div id="search_background">
+        <div id="search_box">
+            Search
+            <div id="search_close" onClick={() => props.on_close()}><span>X</span></div>
 
-        if (should_close)
-        {
-            setTimeout(() => {
-                this.props.on_close()
-            }, 0)
-        }
+            <input
+                type="text"
+                value={search_string}
+                onChange={e => set_search_string(e.currentTarget.value)}
+                // TODO make focused
+            ></input>
 
-        return !should_close
-    }
+            <br />
+            <br />
 
-    render ()
-    {
-        return <div id="search_background">
-            <div id="search_box">
-                Search
-                <div id="search_close" onClick={() => this.props.on_close()}><span>X</span></div>
-            </div>
+            <ListOfTypes
+                filtered_by={search_string}
+                on_click={(id: string) => props.on_choose(id)}
+            />
         </div>
-    }
+    </div>
 }
 
 

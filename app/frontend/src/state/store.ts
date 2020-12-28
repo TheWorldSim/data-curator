@@ -174,8 +174,6 @@ export function config_store ()
             shift_key: e.shiftKey,
         }
 
-        console.log(action_args)
-
         store.dispatch(ACTIONS.key_down(action_args))
     }
 
