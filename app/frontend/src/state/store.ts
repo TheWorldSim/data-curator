@@ -10,6 +10,7 @@ import {
     routing_actions,
 } from "./routing"
 import { ActionKeyDownArgs, global_key_press_actions, global_key_press_reducer } from "./global_key_press"
+import { CORE_IDS } from "./core_data"
 
 
 const KEY_FOR_LOCAL_STORAGE_STATE = "state"
@@ -18,55 +19,42 @@ const KEY_FOR_LOCAL_STORAGE_STATE = "state"
 function get_default_state (): RootState
 {
     const datetime_created = new Date("2020-12-22")
-    const ids = {
-        Type: "0",
-        Title: "1",
-        DOI: "2",
-        URL: "3",
-        "First name": "4",
-        "Last name": "5",
 
-        Author: "p0",
-        Authors: "p1",
-        Group: "p2",
-        "Author(s) or Group": "p3",
-        Document: "p4",
-    }
     const statement_contents: {[id: string]: string} = {
-        [ids.Type]: "Type",
-        [ids.Title]: "Title",
-        [ids.DOI]: "DOI",
-        [ids.URL]: "URL",
+        [CORE_IDS.Type]: "Type",
+        [CORE_IDS.Title]: "Title",
+        [CORE_IDS.DOI]: "DOI",
+        [CORE_IDS.URL]: "URL",
     }
     const statements: Statement[] = Object.keys(statement_contents).map(id => ({
         id,
         content: statement_contents[id],
         datetime_created,
-        labels: [ids.Type],  // All are given label of type
+        labels: [CORE_IDS.Type],  // All are given label of type
     }))
 
     const patterns: Pattern[] = [
         {
-            id: ids.Author,
+            id: CORE_IDS.Author,
             datetime_created: datetime_created,
             name: "Author",
             content: `@@0 @@1`,
             attributes: [
-                { type_id: ids["First name"], alt_name: "" },
-                { type_id: ids["Last name"], alt_name: "" },
+                { type_id: CORE_IDS["First name"], alt_name: "" },
+                { type_id: CORE_IDS["Last name"], alt_name: "" },
             ]
         },
         {
-            id: ids.Authors,
+            id: CORE_IDS.Authors,
             datetime_created: datetime_created,
             name: "Authors",
             content: "@@0",
             attributes: [
-                { type_id: ids["Author"], alt_name: "Authors", multiple: true },
+                { type_id: CORE_IDS["Author"], alt_name: "Authors", multiple: true },
             ]
         },
         {
-            id: ids.Group,
+            id: CORE_IDS.Group,
             datetime_created: datetime_created,
             name: "Group",
             content: `@@0`,
@@ -75,23 +63,23 @@ function get_default_state (): RootState
             ]
         },
         {
-            id: ids["Author(s) or Group"],
+            id: CORE_IDS["Author(s) or Group"],
             datetime_created: datetime_created,
             name: "Author(s) or Group",
             content: `@@0@@1`,
             attributes: [
-                { type_id: ids["Authors"], alt_name: "" },
-                { type_id: ids["Group"], alt_name: "" },
+                { type_id: CORE_IDS["Authors"], alt_name: "" },
+                { type_id: CORE_IDS["Group"], alt_name: "" },
             ]
         },
         {
-            id: ids["Document"],
+            id: CORE_IDS["Document"],
             datetime_created: datetime_created,
             name: "Document",
             content: `@@0 from @@1`,
             attributes: [
-                { type_id: ids.Title, alt_name: "" },
-                { type_id: ids["Author(s) or Group"], alt_name: "" },
+                { type_id: CORE_IDS.Title, alt_name: "" },
+                { type_id: CORE_IDS["Author(s) or Group"], alt_name: "" },
             ]
         },
     ]
