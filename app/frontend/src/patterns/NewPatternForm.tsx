@@ -83,6 +83,7 @@ function _NewPatternForm (props: Props)
             type="button"
             onClick={add_pattern}
             value="Add pattern"
+            disabled={!name}
         ></input>
     </div>
 }

@@ -25,6 +25,12 @@ function get_default_state (): RootState
         [CORE_IDS.Title]: "Title",
         [CORE_IDS.DOI]: "DOI",
         [CORE_IDS.URL]: "URL",
+        [CORE_IDS.Year]: "Year",
+        [CORE_IDS["Month of year"]]: "Month of year",
+        [CORE_IDS["Day of month"]]: "Day of month",
+        [CORE_IDS["Hour of day"]]:  "Hour of day",
+        [CORE_IDS["Minute of hour"]]:  "Minute of hour",
+        [CORE_IDS["Seconds of minute"]]:  "Seconds of minute",
     }
     const statements: Statement[] = Object.keys(statement_contents).map(id => ({
         id,
@@ -73,13 +79,41 @@ function get_default_state (): RootState
             ]
         },
         {
+            id: CORE_IDS["Date"],
+            datetime_created: datetime_created,
+            name: "Date",
+            content: `@@0-@@1-@@2 @@3:@@4:@@5 @@6ns +@@7`,
+            attributes: [
+                { type_id: CORE_IDS.Year, alt_name: "" },
+                { type_id: CORE_IDS["Month of year"], alt_name: "" },
+                { type_id: CORE_IDS["Day of month"], alt_name: "" },
+                { type_id: CORE_IDS["Hour of day"], alt_name: "" },
+                { type_id: CORE_IDS["Minute of hour"], alt_name: "" },
+                { type_id: CORE_IDS["Seconds of minute"], alt_name: "" },
+                { type_id: CORE_IDS.Nanoseconds, alt_name: "" },
+                { type_id: CORE_IDS.Timezone, alt_name: "" },
+            ]
+        },
+        {
+            id: CORE_IDS["Short date"],
+            datetime_created: datetime_created,
+            name: "Short Date",
+            content: `@@@0.0-@@@0.1-@@@0.2`,
+            attributes: [
+                { type_id: CORE_IDS.Date, alt_name: "" },
+            ]
+        },
+        {
             id: CORE_IDS["Document"],
             datetime_created: datetime_created,
             name: "Document",
-            content: `@@0 from @@1`,
+            content: `@@0 - @@1, @@2`,
             attributes: [
                 { type_id: CORE_IDS.Title, alt_name: "" },
                 { type_id: CORE_IDS["Author(s) or Group"], alt_name: "" },
+                { type_id: CORE_IDS["Short date"], alt_name: "Published date" },
+                { type_id: CORE_IDS.URL, alt_name: "" },
+                { type_id: CORE_IDS.DOI, alt_name: "" },
             ]
         },
     ]
@@ -92,30 +126,32 @@ function get_default_state (): RootState
         global_key_press: { last_key: undefined, last_key_time_stamp: undefined },
     }
 
-    const state_str = localStorage.getItem(KEY_FOR_LOCAL_STORAGE_STATE)
-    // if (state_str)
-    // {
-        // const saved_state = JSON.parse(state_str)
-        // const expected_keys = new Set(Object.keys(starting_state))
-        // const saved_keys = new Set(Object.keys(saved_state))
 
-        // const extra_keys = Array.from(saved_keys).filter(ek => !expected_keys.has(ek))
-        // if (extra_keys.length) console.warn(`Extra ${extra_keys.length} keys: ${extra_keys}`)
+    const state_str = 0 ? "" : localStorage.getItem(KEY_FOR_LOCAL_STORAGE_STATE)
 
-        // const missing_keys = Array.from(expected_keys).filter(ek => !saved_keys.has(ek))
-        // if (missing_keys.length)
-        // {
-        //     console.error(`Missing ${missing_keys.length} keys: ${missing_keys}`)
-        // }
-        // else
-        // {
-        //     const routing = starting_state.routing
-        //     starting_state = {
-        //         ...saved_state,
-        //         routing
-        //     }
-        // }
-    // }
+    if (state_str)
+    {
+        const saved_state = JSON.parse(state_str)
+        const expected_keys = new Set(Object.keys(starting_state))
+        const saved_keys = new Set(Object.keys(saved_state))
+
+        const extra_keys = Array.from(saved_keys).filter(ek => !expected_keys.has(ek))
+        if (extra_keys.length) console.warn(`Extra ${extra_keys.length} keys: ${extra_keys}`)
+
+        const missing_keys = Array.from(expected_keys).filter(ek => !saved_keys.has(ek))
+        if (missing_keys.length)
+        {
+            console.error(`Missing ${missing_keys.length} keys: ${missing_keys}`)
+        }
+        else
+        {
+            const routing = starting_state.routing
+            starting_state = {
+                ...saved_state,
+                routing
+            }
+        }
+    }
 
     return starting_state
 }
