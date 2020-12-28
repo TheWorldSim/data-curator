@@ -12,7 +12,7 @@ export const statements_reducer = (state: RootState, action: AnyAction): RootSta
             id: action.id,
             content: action.content,
             datetime_created: action.datetime_created,
-            labels: [],
+            labels: action.labels,
         }
 
         state = {
@@ -43,6 +43,7 @@ const add_statement_type = "add_statement"
 interface AddStatementProps
 {
     content: string
+    labels: string[]
 }
 export const add_statement = (args: AddStatementProps): ActionAddStatement =>
 {
@@ -54,7 +55,7 @@ export const add_statement = (args: AddStatementProps): ActionAddStatement =>
         id,
         datetime_created,
         content: args.content,
-        labels: [],
+        labels: args.labels,
     }
 }
 

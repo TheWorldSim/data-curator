@@ -1,12 +1,10 @@
 import { FunctionComponent, h } from "preact"
 import { useState } from "preact/hooks"
 import { connect } from "react-redux"
-import { SearchWindow } from "../search/SearchWindow"
 
-import "./PatternAttributeListEntry.css"
 import type { Item, PatternAttribute, RootState } from "../state/State"
 import { get_id_map } from "../utils/get_id_map"
-import { description } from "../utils/item"
+import { ItemSelect } from "../search/ItemSelect"
 
 
 interface StateProps {
@@ -36,21 +34,16 @@ const map_state = (state: RootState, own_props: OwnProps): StateProps => {
 
 function _PatternAttributeListEntry (props: Props)
 {
-    const [display_search, set_display_search] = useState(false)
-
-    let type_id_css_class = "empty"
-    let type_id_desc = "Statement Type or Pattern"
-    if (props.attribute.type_id)
-    {
-        type_id_css_class = ""
-        const item = props.id_map[props.attribute.type_id]
-        type_id_desc = item ? description(item) : props.attribute.type_id
-    }
-
     if (!props.editable)
     {
         return [
-            <td>{type_id_desc}</td>,
+            <td>
+                <ItemSelect
+                    editable={false}
+                    item_id={props.attribute.type_id}
+                    filter="types"
+                />
+            </td>,
             <td>{props.attribute.alt_name}</td>,
             <td><input type="checkbox" title="Multiple values" checked={props.attribute.multiple} disabled={true}></input></td>,
         ]
@@ -75,10 +68,12 @@ function _PatternAttributeListEntry (props: Props)
 
     return [
         <td>
-            <div
-                class={"fake_text_input " + type_id_css_class}
-                onClick={() => set_display_search(true)}
-            >{type_id_desc}</div>
+            <ItemSelect
+                editable={true}
+                item_id={props.attribute.type_id}
+                filter="types"
+                on_change_item_id={on_change_type_id}
+            />
         </td>,
         <td>
             <input
@@ -95,14 +90,7 @@ function _PatternAttributeListEntry (props: Props)
                 checked={props.attribute.multiple}
                 onChange={on_change_multiple}
             ></input>
-        </td>,
-        display_search && <SearchWindow  // This seems pretty hacky
-            on_choose={(id: string) => {
-                on_change_type_id(id)
-                set_display_search(false)
-            }}
-            on_close={() => set_display_search(false)}
-        />
+        </td>
     ]
 }
 

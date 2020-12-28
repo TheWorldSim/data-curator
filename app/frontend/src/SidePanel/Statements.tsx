@@ -30,7 +30,8 @@ function _Statements (props: Props)
     }
 
     return <div>
-        Add statements:
+        <b>Add statements</b>
+        <hr />
         <NewStatementForm />
         <hr />
         Statements:

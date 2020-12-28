@@ -8,7 +8,7 @@ export function get_datetime ()
 
 export function get_new_id ()
 {
-    return Math.random().toString().slice(2)
+    return (parseInt(Math.random().toString().slice(2)) + 100000).toString()
 }
 
 

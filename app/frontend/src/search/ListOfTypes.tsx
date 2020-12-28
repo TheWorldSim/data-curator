@@ -3,24 +3,38 @@ import { connect, ConnectedProps } from "react-redux"
 
 import { PatternListEntry } from "../patterns/PatternListEntry"
 import { StatementListEntry } from "../statements/StatementListEntry"
-import type { RootState } from "../state/State"
+import type { Pattern, RootState } from "../state/State"
+
+
+export type ITEM_FILTERS = "simple_types" | "types"
 
 
 interface OwnProps
 {
-    filtered_by: string
+    filter_type: ITEM_FILTERS
+    filtered_by_string: string
     on_click: (id: string) => void
 }
 
 
 function map_state (state: RootState, own_props: OwnProps)
 {
-    const fi = own_props.filtered_by.toLowerCase()
+    const fi = own_props.filtered_by_string.toLowerCase()
+
+    const statements = state.statements.filter(s => s.id.startsWith(fi) || s.content.toLowerCase().includes(fi))
+    let patterns: Pattern[] = []
+
+    if (own_props.filter_type === "types")
+    {
+        patterns = state.patterns.filter(p => {
+            return p.id.startsWith(fi) || p.name.toLowerCase().includes(fi) || p.content.toLowerCase().includes(fi)
+        })
+    }
 
     return {
         // TODO memoize
-        statements: state.statements.filter(s => s.id.startsWith(fi) || s.content.toLowerCase().includes(fi)),
-        patterns: state.patterns.filter(p => p.id.startsWith(fi) || p.name.toLowerCase().includes(fi) || p.content.toLowerCase().includes(fi)),
+        statements,
+        patterns,
     }
 }
 

@@ -8,9 +8,17 @@
     padding: 2px 2px;
     font-family: Arial;
     font-size: 13.333px;
+    overflow: hidden;
 }
 
 .fake_text_input.empty
 {
     color: #666;
+}
+
+.fake_text_input.disabled
+{
+    color: rgb(84, 84, 84);
+    background-color: rgba(239, 239, 239, 0.3);
+    border-color: rgba(118, 118, 118, 0.3);
 }

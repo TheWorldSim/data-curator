@@ -2,6 +2,8 @@ import { FunctionComponent, h } from "preact"
 import { useState, useCallback } from "preact/hooks"
 import { connect, ConnectedProps } from "react-redux"
 
+import { LabelsList } from "../Labels/LabelsList"
+import { ItemSelect } from "../search/ItemSelect"
 import { ACTIONS } from "../state/store"
 
 
@@ -9,7 +11,7 @@ interface OwnProps {}
 
 
 const map_dispatch = {
-    add_statement: (content: string) => ACTIONS.add_statement({ content })
+    add_statement: (content: string, labels: string[]) => ACTIONS.add_statement({ content, labels })
 }
 
 
@@ -21,27 +23,54 @@ type Props = PropsFromRedux & {}
 
 function _NewStatementForm (props: Props)
 {
-    const [value, set_value] = useState("")
-    const value_changed = useCallback((event: h.JSX.TargetedEvent<HTMLInputElement, Event>) => {
-        set_value(event.currentTarget.value)
-    }, [value])
+    const [content, set_content] = useState("")
+    const [labels, set_labels] = useState<string[]>([])
+
+    const content_changed = useCallback((event: h.JSX.TargetedEvent<HTMLInputElement, Event>) => {
+        set_content(event.currentTarget.value)
+    }, [content])
+
+    function add_label (id: string)
+    {
+        set_labels([...labels, id])
+    }
 
     function add_statement ()
     {
-        props.add_statement(value)
-        set_value("")
+        props.add_statement(content, labels)
+        set_content("")
+        set_labels([])
     }
 
     return <div>
+        Statement content:
+        <br />
         <input
-            value={value}
-            onChange={value_changed}
+            placeholder="Statement content"
+            value={content}
+            onChange={content_changed}
             onKeyDown={e => e.key === "Enter" && add_statement()}
         ></input>
+
+        <br />
+        <br />
+        Labels:
+        <ItemSelect
+            editable={true}
+            item_id=""
+            filter="simple_types"
+            on_change_item_id={add_label}
+        />
+        <LabelsList labels={labels}/>
+
+        <br />
+        <br />
+
         <input
             type="button"
             onClick={add_statement}
-            value="Add"
+            value="Add statement"
+            disabled={!content}
         ></input>
     </div>
 }

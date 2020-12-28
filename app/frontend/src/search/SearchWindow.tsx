@@ -3,12 +3,13 @@ import { connect, ConnectedProps } from "react-redux"
 
 import "./SearchWindow.css"
 import type { RootState } from "../state/State"
-import { ListOfTypes } from "./ListOfTypes"
+import { ITEM_FILTERS, ListOfTypes } from "./ListOfTypes"
 import { useState } from "preact/hooks"
 
 
 interface OwnProps
 {
+    filter_type: ITEM_FILTERS
     on_choose: (id: string) => void
     on_close: () => void
 }
@@ -68,14 +69,14 @@ function _SearchWindow (props: Props)
                 type="text"
                 value={search_string}
                 onChange={e => set_search_string(e.currentTarget.value)}
-                // TODO make focused
             ></input>
 
             <br />
             <br />
 
             <ListOfTypes
-                filtered_by={search_string}
+                filter_type={props.filter_type}
+                filtered_by_string={search_string}
                 on_click={(id: string) => props.on_choose(id)}
             />
         </div>

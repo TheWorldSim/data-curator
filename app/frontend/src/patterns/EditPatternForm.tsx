@@ -43,6 +43,8 @@ function _EditPatternForm (props: Props)
             // delete_attribute={delete_attribute}
         />
 
+        <br />
+
         <input
             type="text"
             placeholder="Pattern content"

@@ -16,7 +16,7 @@ function map_state (state: RootState, { labels }: OwnProps)
     const statement_ids = new Set(labels)
 
     return {
-        statements: state.statements.filter(({ id }) => statement_ids.has(id))
+        label_statements: state.statements.filter(({ id }) => statement_ids.has(id))
     }
 }
 
@@ -28,7 +28,7 @@ type Props = ConnectedProps<typeof connector> & OwnProps
 function _LabelsList (props: Props)
 {
     return <div>
-        {props.statements.map(s => <Label statement={s} is_small={true} />)}
+        {props.label_statements.map(s => <Label statement={s} is_small={true} />)}
     </div>
 }
 
