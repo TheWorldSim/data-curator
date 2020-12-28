@@ -1,13 +1,24 @@
 import { h } from "preact"
 
+import "./DeleteButton.css"
 
-interface DeleteButtonProps
+
+interface OwnProps
 {
     delete: () => void
+    is_large?: boolean
 }
 
 
-export function DeleteButton (props: DeleteButtonProps)
+export function DeleteButton (props: OwnProps)
 {
-    return <input type="button" value="X" onClick={() => props.delete()}></input>
+    let value = "X"
+    if (props.is_large) value = "Delete"
+
+    return <input
+        type="button"
+        value={value}
+        onClick={() => props.delete()}
+        className={props.is_large ? "large" : ""}
+    ></input>
 }

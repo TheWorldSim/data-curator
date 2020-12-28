@@ -1,0 +1,9 @@
+
+.large
+{
+    background-color: pink;
+    border-radius: 3px;
+    border: thin solid darkred;
+    color: darkred;
+    cursor: pointer;
+}

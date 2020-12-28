@@ -153,6 +153,7 @@ export function config_store ()
     store.subscribe(() => {
         const state = store.getState()
         localStorage.setItem(KEY_FOR_LOCAL_STORAGE_STATE, JSON.stringify(state))
+        ;(window as any).store_state = state
     })
 
     window.onhashchange = (e: HashChangeEvent) =>

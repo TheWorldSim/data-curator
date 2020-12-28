@@ -1,15 +1,31 @@
-import { h } from "preact"
+import { FunctionalComponent, h } from "preact"
+import type { Dispatch } from "redux"
+import { connect, ConnectedProps } from "react-redux"
 
 import { LabelsList } from "../Labels/LabelsList"
+import { DeleteButton } from "../sharedf/DeleteButton"
 import type { Statement } from "../state/State"
+import { ACTIONS } from "../state/store"
 
 
-type Props = {
+interface OwnProps {
     statement: Statement
 }
 
 
-export function EditStatementForm (props: Props)
+const map_dispatch = (dispatch: Dispatch, props: OwnProps) => ({
+    delete_statement: () => {
+        dispatch(ACTIONS.delete_statement(props.statement.id))
+        dispatch(ACTIONS.change_route({ route: "statements", item_id: undefined }))
+    },
+})
+
+
+const connector = connect(null, map_dispatch)
+type Props = ConnectedProps<typeof connector> & OwnProps
+
+
+function _EditStatementForm (props: Props)
 {
     const labels = props.statement.labels
 
@@ -27,5 +43,13 @@ export function EditStatementForm (props: Props)
 
         Labels:
         <LabelsList labels={labels} />
+
+        <hr />
+
+        <DeleteButton delete={() => props.delete_statement()} is_large={true}/>
+
     </div>
 }
+
+
+export const EditStatementForm = connector(_EditStatementForm) as FunctionalComponent<OwnProps>
