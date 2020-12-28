@@ -1,18 +1,29 @@
-import { h } from "preact"
+import { FunctionComponent, h } from "preact"
 
+import { LabelsList } from "../Labels/LabelsList"
 import type { Statement } from "../state/State"
 
 
-interface Props {
+interface OwnProps {
     statement: Statement
     on_click: () => void
 }
 
 
-export function StatementListEntry (props: Props)
+function _StatementListEntry (props: OwnProps)
 {
-    return <div
-        style={{ cursor: "pointer" }}
-        onClick={props.on_click}
-    >{props.statement.content}</div>
+    return [
+        <td
+            style={{ cursor: "pointer" }}
+            onClick={() => props.on_click()}
+        >
+            {props.statement.content}
+        </td>,
+        <td>
+            <LabelsList labels={props.statement.labels}/>
+        </td>,
+    ]
 }
+
+
+export const StatementListEntry = _StatementListEntry as unknown as FunctionComponent<OwnProps>
