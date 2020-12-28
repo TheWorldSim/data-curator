@@ -1,4 +1,4 @@
-import { h } from "preact"
+import { FunctionComponent, h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
 
 import "./SearchWindow.css"
@@ -70,4 +70,4 @@ function _SearchWindow (props: Props)
 }
 
 
-export const SearchWindow = connector(_SearchWindow)
+export const SearchWindow = connector(_SearchWindow) as FunctionComponent<OwnProps>

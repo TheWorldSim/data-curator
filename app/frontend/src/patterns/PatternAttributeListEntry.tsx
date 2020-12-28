@@ -1,4 +1,4 @@
-import { h } from "preact"
+import { FunctionComponent, h } from "preact"
 import { useState } from "preact/hooks"
 import { connect } from "react-redux"
 import { SearchWindow } from "../search/SearchWindow"
@@ -104,7 +104,7 @@ function _PatternAttributeListEntry (props: Props)
 }
 
 const connector = connect(map_state)
-export const PatternAttributeListEntry = connector(_PatternAttributeListEntry)
+export const PatternAttributeListEntry = connector(_PatternAttributeListEntry) as FunctionComponent<OwnProps>
 
 
 export const PatternAttributeListHeader = () => <tr style={{ fontSize: "small", textAlign: "center" }}>

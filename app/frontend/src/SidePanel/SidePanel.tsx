@@ -1,9 +1,12 @@
-import { h } from "preact"
+import { FunctionComponent, h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
 
 import type { RootState } from "../state/State"
 import { Patterns } from "./Patterns"
 import { Statements } from "./Statements"
+
+
+interface OwnProps {}
 
 
 const map_state = (state: RootState) => ({
@@ -13,7 +16,7 @@ const map_state = (state: RootState) => ({
 const connector = connect(map_state)
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-type Props = PropsFromRedux & {}
+type Props = PropsFromRedux & OwnProps
 
 
 function _SidePanel (props: Props)
@@ -38,4 +41,4 @@ function _SidePanel (props: Props)
 }
 
 
-export const SidePanel = connector(_SidePanel)
+export const SidePanel = connector(_SidePanel) as FunctionComponent<OwnProps>

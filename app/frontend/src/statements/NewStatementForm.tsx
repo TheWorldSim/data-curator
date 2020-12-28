@@ -1,8 +1,11 @@
-import { h } from "preact"
+import { FunctionComponent, h } from "preact"
 import { useState, useCallback } from "preact/hooks"
 import { connect, ConnectedProps } from "react-redux"
 
 import { ACTIONS } from "../state/store"
+
+
+interface OwnProps {}
 
 
 const map_dispatch = {
@@ -44,4 +47,4 @@ function _NewStatementForm (props: Props)
 }
 
 
-export const NewStatementForm = connector(_NewStatementForm)
+export const NewStatementForm = connector(_NewStatementForm) as FunctionComponent<OwnProps>

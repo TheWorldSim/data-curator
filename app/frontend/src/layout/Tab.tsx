@@ -1,9 +1,14 @@
-import { h } from "preact"
+import { FunctionComponent, h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
 
 import { ACTIONS } from "../state/store"
 import type { RootState, ROUTE_TYPES } from "../state/State"
 import "./Tab.css"
+
+
+interface OwnProps {
+    id: ROUTE_TYPES
+}
 
 
 function get_title (id: ROUTE_TYPES)
@@ -31,9 +36,8 @@ const map_dispatch = {
 const connector = connect(map_state, map_dispatch)
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-type Props = PropsFromRedux & {
-    id: ROUTE_TYPES
-}
+
+type Props = PropsFromRedux & OwnProps
 
 
 function _Tab (props: Props)
@@ -47,4 +51,4 @@ function _Tab (props: Props)
 }
 
 
-export const Tab = connector(_Tab)
+export const Tab = connector(_Tab) as FunctionComponent<OwnProps>

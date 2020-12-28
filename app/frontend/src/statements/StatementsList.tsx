@@ -1,10 +1,13 @@
-import { h } from "preact"
+import { FunctionComponent, h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
 
 import type { RootState } from "../state/State"
 import { StatementListEntry } from "./StatementListEntry"
 import { ACTIONS } from "../state/store"
 import { DeleteButton } from "../sharedf/DeleteButton"
+
+
+interface OwnProps {}
 
 
 const map_state = (state: RootState) => ({
@@ -20,7 +23,7 @@ const map_dispatch = {
 const connector = connect(map_state, map_dispatch)
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-type Props = PropsFromRedux & {}
+type Props = PropsFromRedux & OwnProps
 
 
 function _StatementsList (props: Props)
@@ -35,4 +38,4 @@ function _StatementsList (props: Props)
 }
 
 
-export const StatementsList = connector(_StatementsList)
+export const StatementsList = connector(_StatementsList) as FunctionComponent<OwnProps>

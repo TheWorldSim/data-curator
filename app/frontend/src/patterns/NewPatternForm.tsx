@@ -1,10 +1,13 @@
-import { h } from "preact"
+import { h, FunctionComponent } from "preact"
 import { useState, useCallback } from "preact/hooks"
 import { connect, ConnectedProps } from "react-redux"
 
 import type { PatternAttribute } from "../state/State"
 import { ACTIONS } from "../state/store"
 import { EditablePatternAttributesList } from "./EditablePatternAttributesList"
+
+
+interface OwnProps {}
 
 
 const map_dispatch = {
@@ -15,7 +18,7 @@ const map_dispatch = {
 const connector = connect(null, map_dispatch)
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-type Props = PropsFromRedux & {}
+type Props = PropsFromRedux & OwnProps
 
 
 function _NewPatternForm (props: Props)
@@ -85,4 +88,4 @@ function _NewPatternForm (props: Props)
 }
 
 
-export const NewPatternForm = connector(_NewPatternForm)
+export const NewPatternForm = connector(_NewPatternForm) as FunctionComponent<OwnProps>

@@ -1,4 +1,4 @@
-import { Component, h } from "preact"
+import { Component, FunctionComponent, h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
 
 import { PatternListEntry } from "../patterns/PatternListEntry"
@@ -60,4 +60,4 @@ class _ListOfTypes extends Component<Props, State>
 }
 
 
-export const ListOfTypes = connector(_ListOfTypes)
+export const ListOfTypes = connector(_ListOfTypes) as FunctionComponent<OwnProps>
