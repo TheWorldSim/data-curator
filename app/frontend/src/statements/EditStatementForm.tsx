@@ -46,7 +46,7 @@ function _EditStatementForm (props: Props)
 
         <hr />
 
-        <DeleteButton delete={() => props.delete_statement()} is_large={true}/>
+        <DeleteButton on_delete={() => props.delete_statement()} is_large={true}/>
 
     </div>
 }

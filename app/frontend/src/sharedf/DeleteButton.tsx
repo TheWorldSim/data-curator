@@ -5,7 +5,7 @@ import "./DeleteButton.css"
 
 interface OwnProps
 {
-    delete: () => void
+    on_delete: () => void
     is_large?: boolean
 }
 
@@ -18,7 +18,7 @@ export function DeleteButton (props: OwnProps)
     return <input
         type="button"
         value={value}
-        onClick={() => props.delete()}
+        onClick={() => props.on_delete()}
         className={props.is_large ? "large" : ""}
     ></input>
 }

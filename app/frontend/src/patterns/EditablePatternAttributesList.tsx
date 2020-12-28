@@ -50,7 +50,7 @@ function _EditablePatternAttributesList (props: Props)
             {props.attributes.map((attribute, i) => <tr> {/* TODO set key */}
                 <PatternAttributeListEntry attribute={attribute} on_change={change_attribute(i)} editable={true} />
                 <td>
-                    <DeleteButton delete={() => props.delete_attribute(i) } />
+                    <DeleteButton on_delete={() => props.delete_attribute(i) } />
                 </td>
             </tr>)}
         </table>

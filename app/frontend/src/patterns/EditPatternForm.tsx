@@ -1,21 +1,28 @@
-import { h } from "preact"
-import { useState, useCallback } from "preact/hooks"
+import { FunctionalComponent, h } from "preact"
+import type { Dispatch } from "redux"
 import { connect, ConnectedProps } from "react-redux"
+import { DeleteButton } from "../sharedf/DeleteButton"
 
-import type { Pattern, PatternAttribute } from "../state/State"
+import type { Pattern } from "../state/State"
 import { ACTIONS } from "../state/store"
 import { PatternAttributesList } from "./PatternAttributesList"
 
 
-// const map_dispatch = {}
-
-
-// const connector = connect(null, map_dispatch)
-// type PropsFromRedux = ConnectedProps<typeof connector>
-
-type Props = { //PropsFromRedux & {
+interface OwnProps
+{
     pattern: Pattern
 }
+
+
+const map_dispatch = (dispatch: Dispatch, props: OwnProps) =>
+{
+    return {
+        delete_pattern: () => dispatch(ACTIONS.delete_pattern(props.pattern.id))
+    }
+}
+
+const connector = connect(null, map_dispatch)
+type Props = ConnectedProps<typeof connector> & OwnProps
 
 
 function _EditPatternForm (props: Props)
@@ -44,7 +51,9 @@ function _EditPatternForm (props: Props)
             disabled={true}
         ></input>
 
-        <br/>
+        <hr/>
+
+        <DeleteButton on_delete={() => props.delete_pattern()} is_large={true}/>
 
         {/* <input
             type="button"
@@ -56,4 +65,4 @@ function _EditPatternForm (props: Props)
 }
 
 
-export const EditPatternForm = _EditPatternForm // connector(_EditPatternForm)
+export const EditPatternForm = connector(_EditPatternForm) as FunctionalComponent<OwnProps>

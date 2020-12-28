@@ -11,10 +11,10 @@ interface Props {
 
 export function PatternListEntry (props: Props)
 {
-    return <div
+    return <td
         style={{ cursor: "pointer" }}
         onClick={props.on_click}
     >
         {props.pattern.name}
-    </div>
+    </td>
 }

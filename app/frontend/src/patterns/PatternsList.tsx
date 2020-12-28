@@ -29,12 +29,13 @@ type Props = PropsFromRedux & OwnProps
 function _PatternsList (props: Props)
 {
 
-    return <ul style={{ listStyle: "none" }}>
-        {props.patterns.map(pattern => <li>
-            <PatternListEntry pattern={pattern} on_click={() => props.pattern_selected(pattern.id)} />
-            <DeleteButton delete={() => props.delete_pattern(pattern.id)}/>
-        </li>)}
-    </ul>
+    return <table>
+        <tbody>
+            {props.patterns.map(pattern => <tr>
+                <PatternListEntry pattern={pattern} on_click={() => props.pattern_selected(pattern.id)} />
+            </tr>)}
+        </tbody>
+    </table>
 }
 
 
