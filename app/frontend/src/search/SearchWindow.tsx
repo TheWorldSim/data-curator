@@ -28,6 +28,13 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux & OwnProps
 
 
+function focus_search_box (html_id: string)
+{
+    const el = document.getElementById(html_id)
+    if (el) el.focus()
+}
+
+
 function calc_should_close (props: Props, time_stamp_first_rendered: number)
 {
     const is_escape = props.last_key === "Escape"
@@ -40,18 +47,24 @@ function calc_should_close (props: Props, time_stamp_first_rendered: number)
 function _SearchWindow (props: Props)
 {
 
-    const [time_stamp_first_rendered] = useState(performance.now())
+    const time_stamp = performance.now()
+    const [time_stamp_first_rendered] = useState(time_stamp)
     const [search_string, set_search_string] = useState("")
+    const first_render = time_stamp === time_stamp_first_rendered
+
+    const id_search_box = "search_box"
+    if (first_render) setTimeout(() => focus_search_box(id_search_box), 0)
 
     const should_close = calc_should_close(props, time_stamp_first_rendered)
     if (should_close) setTimeout(() => props.on_close(), 0)
 
     return <div id="search_background">
-        <div id="search_box">
+        <div id="search_container">
             Search
             <div id="search_close" onClick={() => props.on_close()}><span>X</span></div>
 
             <input
+                id={id_search_box}
                 type="text"
                 value={search_string}
                 onChange={e => set_search_string(e.currentTarget.value)}

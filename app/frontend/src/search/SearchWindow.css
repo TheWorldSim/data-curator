@@ -9,7 +9,7 @@
     background-color: rgba(200, 200, 200, 0.3);
 }
 
-#search_box
+#search_container
 {
     position: fixed;
     left: 50%;

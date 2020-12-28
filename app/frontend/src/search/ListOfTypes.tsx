@@ -15,7 +15,7 @@ interface OwnProps
 
 function map_state (state: RootState, own_props: OwnProps)
 {
-    const fi = own_props.filtered_by
+    const fi = own_props.filtered_by.toLowerCase()
 
     return {
         // TODO memoize
