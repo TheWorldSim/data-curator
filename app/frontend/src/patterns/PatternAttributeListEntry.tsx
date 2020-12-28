@@ -42,6 +42,7 @@ function _PatternAttributeListEntry (props: Props)
     let type_id_desc = "Statement Type or Pattern"
     if (props.attribute.type_id)
     {
+        type_id_css_class = ""
         const item = props.id_map[props.attribute.type_id]
         type_id_desc = item ? description(item) : props.attribute.type_id
     }
@@ -55,9 +56,8 @@ function _PatternAttributeListEntry (props: Props)
         ]
     }
 
-    function on_change_type_id (e: h.JSX.TargetedEvent<HTMLInputElement, Event>)
+    function on_change_type_id (type_id: string)
     {
-        const type_id = e.currentTarget.value
         if (props.editable) props.on_change({ ...props.attribute, type_id })
     }
 
@@ -97,7 +97,10 @@ function _PatternAttributeListEntry (props: Props)
             ></input>
         </td>,
         display_search && <SearchWindow  // This seems pretty hacky
-            on_change={(v: string) => console.log("change ", v)}
+            on_choose={(id: string) => {
+                on_change_type_id(id)
+                set_display_search(false)
+            }}
             on_close={() => set_display_search(false)}
         />
     ]
