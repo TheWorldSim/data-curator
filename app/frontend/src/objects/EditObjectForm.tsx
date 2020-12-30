@@ -6,6 +6,8 @@ import { DeleteButton } from "../sharedf/DeleteButton"
 import type { Objekt } from "../state/State"
 import { ACTIONS } from "../state/store"
 import { ObjectAttributesList } from "./ObjectAttributesList"
+import { object_content } from "./object_content"
+import { SelectPattern } from "../patterns/SelectPattern"
 
 
 interface OwnProps
@@ -29,19 +31,16 @@ function _EditObjectForm (props: Props)
 {
 
     return <div>
-        <input
-            type="text"
-            placeholder="Object name"
-            // value={props.object.name}
-            // onChange={name_changed}
+        <SelectPattern
+            pattern_id={props.object.pattern_id}
             disabled={true}
-        ></input>
-
-        <ObjectAttributesList
-            attributes={props.object.attributes}
-            // change_attributes={change_attributes}
-            // delete_attribute={delete_attribute}
         />
+
+        <hr />
+
+        <div>
+            { object_content({ object: props.object }) }
+        </div>
 
         <br />
 
@@ -52,6 +51,14 @@ function _EditObjectForm (props: Props)
             // onChange={content_changed}
             disabled={true}
         ></input>
+
+        <hr/>
+
+        <ObjectAttributesList
+            attributes={props.object.attributes}
+            // change_attributes={change_attributes}
+            // delete_attribute={delete_attribute}
+        />
 
         <hr/>
 

@@ -1,4 +1,5 @@
-import type { ObjectAttribute, Objekt, Statement } from "../state/State"
+import { merge_pattern } from "../state/objects"
+import { CoreObject, is_id_attribute, is_value_attribute, ObjectAttribute, Objekt, Pattern, Statement } from "../state/State"
 import { config_store } from "../state/store"
 
 
@@ -79,13 +80,11 @@ function get_content_from_attribute (attribute: ObjectAttribute, parts: number[]
 {
     if (parts.length)
     {
-        if (!attribute.id) return "?"
+        if (is_value_attribute(attribute) || !attribute.id) return "?"
     }
     else
     {
-        if (attribute.value) return attribute.value
-
-        if (!attribute.id) return "?"
+        if (is_value_attribute(attribute)) return attribute.value || "?"
 
         const res = convert_id_to_content(attribute.id)
         if (typeof res === "string") return res
@@ -125,18 +124,29 @@ function test <T> (got: T, expected: T)
 }
 
 
-function get_object_for_test (args: Partial<Objekt>)
+function get_pattern_for_test (args: Partial<Pattern>): Pattern
 {
     return {
-        id: "o1",
+        id: "p1",
+        name: "Pattern",
         datetime_created: new Date(),
         content: "abc",
         attributes: [],
-        labels: [],
-        pattern_id: "p1",
-        pattern_name: "p1",
         ...args,
     }
+}
+
+
+function get_object_for_test (args: Partial<CoreObject>, patterns: Pattern[]): Objekt
+{
+    return merge_pattern({
+        id: "o1",
+        datetime_created: new Date(),
+        attributes: [],
+        labels: [],
+        pattern_id: "p1",
+        ...args,
+    }, patterns)
 }
 
 
@@ -147,29 +157,34 @@ function run_tests ()
     const datetime_created = new Date()
     const statement: Statement = { id: "1", datetime_created, content: "stat1", labels: [] }
 
-
-    const obj1: Objekt = get_object_for_test({ content: "abc" })
+    let patterns: Pattern[] = [{ id: "p1", content: "abc" }].map(get_pattern_for_test)
+    const obj1: Objekt = get_object_for_test({ pattern_id: "p1" }, patterns)
     const res1 = object_content({ object: obj1 })
     test(res1, "abc")
 
 
+    patterns = [{ id: "p2", content: "@@abc(0) c(1)" }].map(get_pattern_for_test)
     store = config_store(false, { statements: [statement], patterns: [], objects: [] })
 
-    const obj2: Objekt = get_object_for_test({ content: "@@abc(0) c(1)", attributes: [
-        { tid: "", value: " val" },
-        { tid: "", id: "1" },
-    ] })
+    const obj2: Objekt = get_object_for_test({ pattern_id: "p2", attributes: [
+        { pidx: 0, value: " val" },
+        { pidx: 0, id: "1" },
+    ] }, patterns)
     const res2 = object_content({ object: obj2 })
     test(res2, "ab val stat1")
 
 
-    const obj3: Objekt = get_object_for_test({ id: "o3", content: "@@a c(0) c(1)", attributes: [
-        { tid: "", value: "val2" },
-        { tid: "", id: "1" },
-    ] })
-    const obj3b: Objekt = get_object_for_test({ content: "@@b c(0)", attributes: [
-        { tid: "", id: "o3" },
-    ] })
+    patterns = [
+        { id: "p30", content: "@@a c(0) c(1)" },
+        { id: "p31", content: "@@b c(0)" },
+    ].map(get_pattern_for_test)
+    const obj3: Objekt = get_object_for_test({ id: "o3", pattern_id: "p30", attributes: [
+        { pidx: 0, value: "val2" },
+        { pidx: 1, id: "1" },
+    ] }, patterns)
+    const obj3b: Objekt = get_object_for_test({ pattern_id: "p31", attributes: [
+        { pidx: 0, id: "o3" },
+    ] }, patterns)
     store = config_store(false, { statements: [statement], patterns: [], objects: [obj3] })
     const res3a = object_content({ object: obj3b })
     test(res3a, "b a val2 stat1")
@@ -179,42 +194,56 @@ function run_tests ()
     test(res3c, "@@b c(0)")
 
 
-    const obj4: Objekt = get_object_for_test({ id: "o4", content: "@@c c(0) c(1)", attributes: [
-        { tid: "", value: "val2" },
-        { tid: "", id: "1" },
-    ] })
-    const obj4b: Objekt = get_object_for_test({ id: "o5", content: "@@b c(0)", attributes: [
-        { tid: "", id: "o4" },
-    ] })
-    const obj4c: Objekt = get_object_for_test({ content: "@@a c(0)", attributes: [
-        { tid: "", id: "o5" },
-    ] })
+    patterns = [
+        { id: "p40", content: "@@c c(0) c(1)" },
+        { id: "p41", content: "@@b c(0)" },
+        { id: "p42", content: "@@a c(0)" },
+    ].map(get_pattern_for_test)
+    const obj4: Objekt = get_object_for_test({ id: "o4", pattern_id: "p40", attributes: [
+        { pidx: 0, value: "val2" },
+        { pidx: 1, id: "1" },
+    ] }, patterns)
+    const obj4b: Objekt = get_object_for_test({ id: "o5", pattern_id: "p41", attributes: [
+        { pidx: 0, id: "o4" },
+    ] }, patterns)
+    const obj4c: Objekt = get_object_for_test({ pattern_id: "p42", attributes: [
+        { pidx: 0, id: "o5" },
+    ] }, patterns)
     store = config_store(false, { statements: [statement], patterns: [], objects: [obj4, obj4b] })
     const res4a = object_content({ object: obj4c, depth: 3 })
     test(res4a, "a b c val2 stat1")
 
 
-    const obj5a: Objekt = get_object_for_test({ id: "o5", content: "@@sub: c(0)", attributes: [
-        { tid: "", value: "o5 val" },
-    ] })
-    const obj5b: Objekt = get_object_for_test({ content: "@@a c(0.0)", attributes: [
-        { tid: "", id: "o5" },
-    ] })
+    patterns = [
+        { id: "p50", content: "@@sub: c(0)" },
+        { id: "p51", content: "@@a c(0.0)" },
+    ].map(get_pattern_for_test)
+    const obj5a: Objekt = get_object_for_test({ id: "o5", pattern_id: "p50", attributes: [
+        { pidx: 0, value: "o5 val" },
+    ] }, patterns)
+    const obj5b: Objekt = get_object_for_test({ pattern_id: "p51", attributes: [
+        { pidx: 0, id: "o5" },
+    ] }, patterns)
     store = config_store(false, { statements: [statement], patterns: [], objects: [obj5a] })
     const res5 = object_content({ object: obj5b })
     test(res5, "a o5 val")
 
 
-    const obj6: Objekt = get_object_for_test({ id: "o4", content: "@@c c(0) c(1)", attributes: [
-        { tid: "", value: "val2" },
-        { tid: "", id: "1" },
-    ] })
-    const obj6b: Objekt = get_object_for_test({ id: "o5", content: "@@part1: c(0.0) part2: c(0.1)", attributes: [
-        { tid: "", id: "o4" },
-    ] })
-    const obj6c: Objekt = get_object_for_test({ content: "@@a c(0)", attributes: [
-        { tid: "", id: "o5" },
-    ] })
+    patterns = [
+        { id: "p60", content: "@@c c(0) c(1)" },
+        { id: "p61", content: "@@part1: c(0.0) part2: c(0.1)" },
+        { id: "p62", content: "@@a c(0)" },
+    ].map(get_pattern_for_test)
+    const obj6: Objekt = get_object_for_test({ id: "o4", pattern_id: "p60", attributes: [
+        { pidx: 0,value: "val2" },
+        { pidx: 1, id: "1" },
+    ] }, patterns)
+    const obj6b: Objekt = get_object_for_test({ id: "o5", pattern_id: "p61", attributes: [
+        { pidx: 0, id: "o4" },
+    ] }, patterns)
+    const obj6c: Objekt = get_object_for_test({ pattern_id: "p62", attributes: [
+        { pidx: 0, id: "o5" },
+    ] }, patterns)
     store = config_store(false, { statements: [statement], patterns: [], objects: [obj6, obj6b] })
     const res6 = object_content({ object: obj6c, depth: 3 })
     test(res6, "a part1: val2 part2: stat1")

@@ -1,7 +1,7 @@
 import { FunctionComponent, h } from "preact"
 import { connect } from "react-redux"
 
-import type { Item, ObjectAttribute, RootState } from "../state/State"
+import { is_id_attribute, is_value_attribute, Item, ObjectAttribute, RootState } from "../state/State"
 import { get_id_map } from "../utils/get_id_map"
 import { ItemSelect } from "../search/ItemSelect"
 
@@ -33,22 +33,27 @@ const map_state = (state: RootState, own_props: OwnProps): StateProps => {
 
 function _ObjectAttributeListEntry (props: Props)
 {
-    return <td>thing</td>
 
-    // if (!props.editable)
-    // {
-    //     return [
-    //         <td>
-    //             <ItemSelect
-    //                 editable={false}
-    //                 item_id={props.attribute.type_id}
-    //                 filter="types"
-    //             />
-    //         </td>,
-    //         <td>{props.attribute.alt_name}</td>,
-    //         <td><input type="checkbox" title="Multiple values" checked={props.attribute.multiple} disabled={true}></input></td>,
-    //     ]
-    // }
+    return [
+        <td>
+            <ItemSelect
+                editable={false}
+                item_id={props.attribute.pattern.type_id}
+                filter="types"
+            />
+        </td>,
+        <td>
+            {is_id_attribute(props.attribute) && <ItemSelect
+                editable={false}
+                item_id={props.attribute.id}
+                filter="types"
+            />}
+            {is_value_attribute(props.attribute) && <input
+                value={props.attribute.value}
+                disabled={true}
+            />}
+        </td>,
+    ]
 
     // function on_change_type_id (type_id: string)
     // {
@@ -97,10 +102,3 @@ function _ObjectAttributeListEntry (props: Props)
 
 const connector = connect(map_state)
 export const ObjectAttributeListEntry = connector(_ObjectAttributeListEntry) as FunctionComponent<OwnProps>
-
-
-export const ObjectAttributeListHeader = () => <tr style={{ fontSize: "small", textAlign: "center" }}>
-    <td></td>
-    <td></td>
-    <td>M</td>
-</tr>

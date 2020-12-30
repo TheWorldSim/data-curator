@@ -2,7 +2,7 @@ import { createStore, Action, Reducer, AnyAction, Store } from "redux"
 
 import { statements_reducer, statement_actions } from "./statements"
 import { patterns_reducer, pattern_actions } from "./patterns"
-import type { Objekt, Pattern, RootState, Statement } from "./State"
+import type { CoreObject, Objekt, Pattern, RootState, Statement } from "./State"
 import {
     get_current_route_params,
     parse_url_for_routing_params,
@@ -11,6 +11,7 @@ import {
 } from "./routing"
 import { ActionKeyDownArgs, global_key_press_actions, global_key_press_reducer } from "./global_key_press"
 import { CORE_IDS, STATEMENT_IDS } from "./core_data"
+import { object_actions, merge_pattern } from "./objects"
 
 
 const KEY_FOR_LOCAL_STORAGE_STATE = "state"
@@ -27,12 +28,13 @@ function get_default_state (): RootState
         labels: [CORE_IDS.Type],  // All are given label of type
     }))
 
+
     const patterns: Pattern[] = [
         {
             id: CORE_IDS.Person,
             datetime_created,
             name: "Person",
-            content: `@@0 @@1`,
+            content: "@@c(0) c(1)",
             attributes: [
                 { type_id: "", alt_name: "First name" },
                 { type_id: "", alt_name: "Last name" },
@@ -42,7 +44,7 @@ function get_default_state (): RootState
             id: CORE_IDS.Group,
             datetime_created,
             name: "Group",
-            content: `@@0`,
+            content: "@@c(0)",
             attributes: [
                 { type_id: "", alt_name: "Group" },
                 // TO DO: add more fields like URL, physical address etc
@@ -52,14 +54,14 @@ function get_default_state (): RootState
             id: CORE_IDS["Person(s) or Group(s)"],
             datetime_created,
             name: "Person(s) or Group(s)",
-            content: "${a[0].join(', ')}${(a[0].length && a[1].length) ? ', ' : ''}${a[1].join(', ')}",
+            content: "@@cm(0), cm(1)",
             attributes: [
                 { type_id: CORE_IDS["Person"], alt_name: "Person(s)", multiple: true },
                 { type_id: CORE_IDS["Group"], alt_name: "Group(s)", multiple: true },
             ]
         },
         {
-            id: CORE_IDS["Date"],
+            id: CORE_IDS.Date,
             datetime_created,
             name: "Date",
             content: "@@c(0)-c(1)-c(2) c(3):c(4):c(5) UTC",
@@ -82,10 +84,10 @@ function get_default_state (): RootState
             ]
         },
         {
-            id: CORE_IDS["Document"],
+            id: CORE_IDS.Document,
             datetime_created,
             name: "Document",
-            content: `"@@a[0].content + ' - ' + a[1].content + ', ' + a[2].content"`,
+            content: "@@c(0) - c(1), c(2)",
             attributes: [
                 { type_id: "", alt_name: "Title" },
                 { type_id: CORE_IDS["Person(s) or Group(s)"], alt_name: "Author(s)" },
@@ -95,6 +97,7 @@ function get_default_state (): RootState
             ]
         },
     ]
+
 
     statements.push({
         id: "1000",
@@ -122,31 +125,27 @@ function get_default_state (): RootState
     })
 
 
-    const objects: Objekt[] = [
+    const core_objects: CoreObject[] = [
         {
             id: "o0",
             datetime_created,
-            pattern_id: CORE_IDS["Group"],
-            content: "@@c(0)",
-            pattern_name: "Group",
+            pattern_id: CORE_IDS.Group,
             attributes: [
-                { tid: "", id: "1001" }
+                { pidx: 0, id: "1001" }
             ],
             labels: [],
         },
         {
             id: "o1",
             datetime_created,
-            pattern_id: CORE_IDS["Date"],
-            content: "@@c(0)-c(1)-c(2) c(3):c(4):c(5) UTC",
-            pattern_name: "Date",
+            pattern_id: CORE_IDS.Date,
             attributes: [
-                { tid: CORE_IDS.Year, id: "1002" },
-                { tid: CORE_IDS["Month of year"], value: "10" },
-                { tid: CORE_IDS["Day of month"], value: "15" },
-                { tid: CORE_IDS["Hour of day"] },
-                { tid: CORE_IDS["Minute of hour"] },
-                { tid: CORE_IDS["Seconds of minute"] },
+                { pidx: 0, id: "1002" },
+                { pidx: 1, value: "10" },
+                { pidx: 2, value: "15" },
+                { pidx: 3, value: "" },
+                { pidx: 4, value: "" },
+                { pidx: 5, value: "" },
             ],
             labels: [],
         },
@@ -154,10 +153,8 @@ function get_default_state (): RootState
             id: "o2",
             datetime_created,
             pattern_id: CORE_IDS["Short date"],
-            content: "@@c(0.0)-c(0.1)-c(0.2)",
-            pattern_name: "Short date",
             attributes: [
-                { tid: CORE_IDS.Date, id: "o1" },
+                { pidx: 0, id: "o1" },
             ],
             labels: [],
         },
@@ -165,18 +162,18 @@ function get_default_state (): RootState
             id: "o3",
             datetime_created,
             pattern_id: CORE_IDS.Document,
-            content: "@@c(0) - c(1), c(2)",
-            pattern_name: "Document",
             attributes: [
-                { tid: "", id: "1000" },
-                { tid: CORE_IDS["Person(s) or Group(s)"], id: "1001" },
-                { tid: CORE_IDS["Short date"], id: "o2" },
-                { tid: CORE_IDS.URL, id: "1003" },
-                { tid: CORE_IDS.DOI, id: "" },
+                { pidx: 0, id: "1000" },
+                { pidx: 1, id: "1001" },
+                { pidx: 2, id: "o2" },
+                { pidx: 3, id: "1003" },
+                { pidx: 4, id: "" },
             ],
             labels: [],
-        }
+        },
     ]
+    const objects = core_objects.map(o => merge_pattern(o, patterns))
+
 
     let starting_state: RootState = {
         statements,
@@ -274,6 +271,7 @@ export const ACTIONS =
 {
     ...pattern_actions,
     ...statement_actions,
+    ...object_actions,
     ...routing_actions,
     ...global_key_press_actions,
 }

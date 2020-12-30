@@ -2,7 +2,7 @@ import { FunctionComponent, h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
 
 import "./SearchWindow.css"
-import type { RootState } from "../state/State"
+import type { Item, RootState } from "../state/State"
 import { ITEM_FILTERS, ListOfTypes } from "./ListOfTypes"
 import { useState } from "preact/hooks"
 
@@ -10,7 +10,7 @@ import { useState } from "preact/hooks"
 interface OwnProps
 {
     filter_type: ITEM_FILTERS
-    on_choose: (id: string) => void
+    on_choose: (item: Item) => void
     on_close: () => void
 }
 
@@ -77,7 +77,7 @@ function _SearchWindow (props: Props)
             <ListOfTypes
                 filter_type={props.filter_type}
                 filtered_by_string={search_string}
-                on_click={(id: string) => props.on_choose(id)}
+                on_click={(item: Item) => props.on_choose(item)}
             />
         </div>
     </div>

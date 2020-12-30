@@ -27,18 +27,35 @@ export interface PatternAttribute
 }
 
 
-export interface Objekt extends Statement
+export interface CoreObject
 {
-    attributes: ObjectAttribute[]
+    id: string
+    datetime_created: Date
+    labels: string[]  // statement_ids[]
+    attributes: CoreObjectAttribute[]
     pattern_id: string
-    pattern_name: string  // denormalised from Pattern along with `content`
 }
-export type ObjectAttribute =
+export interface Objekt extends CoreObject
 {
-    tid: string  // statement_type_id  // denormalised from Pattern attribute(s)
-    id?: string   // statement_id
-    value?: string
+    pattern_name: string  // denormalised from Pattern
+    content: string       // denormalised from Pattern
+    attributes: ObjectAttribute[]
 }
+export interface CoreObjectIdAttribute {
+    pidx: number
+    id: string /* statement_id */
+}
+export interface CoreObjectValueAttribute {
+    pidx: number
+    value: string
+}
+export type CoreObjectAttribute = CoreObjectIdAttribute | CoreObjectValueAttribute
+export type ObjectAttribute = CoreObjectAttribute & {
+    pattern: PatternAttribute
+}
+
+export const is_id_attribute = (a: CoreObjectAttribute): a is CoreObjectIdAttribute => a.hasOwnProperty("id")
+export const is_value_attribute = (a: CoreObjectAttribute): a is CoreObjectValueAttribute => a.hasOwnProperty("value")
 
 
 export type Item = Statement | Pattern | Objekt

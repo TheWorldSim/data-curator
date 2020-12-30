@@ -1,10 +1,11 @@
 import { h } from "preact"
 
-import type { ObjectAttribute } from "../state/State"
+import type { ObjectAttribute, PatternAttribute } from "../state/State"
 import { DeleteButton } from "../sharedf/DeleteButton"
-import { ObjectAttributeListEntry, ObjectAttributeListHeader } from "./ObjectAttributeListEntry"
+import { ObjectAttributeListEntry } from "./ObjectAttributeListEntry"
 
 interface OwnProps {
+    pattern_attributes: PatternAttribute[]
     attributes: ObjectAttribute[]
     change_attributes: (new_attributes: ObjectAttribute[]) => void
     delete_attribute: (index: number) => void
@@ -13,15 +14,6 @@ interface OwnProps {
 
 function _EditableObjectAttributesList (props: OwnProps)
 {
-
-    function add_attribute ()
-    {
-        const new_blank_attribute: ObjectAttribute = {
-            tid: "",
-            id: "",
-        }
-        props.change_attributes([...props.attributes, new_blank_attribute])
-    }
 
     const change_attribute = (index: number) => (attribute: ObjectAttribute) =>
     {
@@ -32,15 +24,10 @@ function _EditableObjectAttributesList (props: OwnProps)
 
     return <div>
         <table>
-            {!!props.attributes.length && <ObjectAttributeListHeader />}
             {props.attributes.map((attribute, i) => <tr> {/* TODO set key */}
                 <ObjectAttributeListEntry attribute={attribute} on_change={change_attribute(i)} editable={true} />
-                <td>
-                    <DeleteButton on_delete={() => props.delete_attribute(i) } />
-                </td>
             </tr>)}
         </table>
-        <input type="button" value="Add attribute" onClick={add_attribute} />
     </div>
 }
 

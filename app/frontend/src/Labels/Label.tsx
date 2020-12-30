@@ -1,18 +1,29 @@
 import { h } from "preact"
 
 import "./Label.css"
-import type { Statement } from "../state/State"
+import type { Pattern, Statement } from "../state/State"
 
 
-interface Props
-{
+interface StatementProps {
     statement: Statement
-    is_small: boolean
+}
+
+interface PatternProps {
+    pattern: Pattern
+}
+
+type Props = { is_small: boolean } & (StatementProps | PatternProps)
+
+const is_statement_props = (props: StatementProps | PatternProps): props is StatementProps => {
+    return props.hasOwnProperty("statement")
 }
 
 export function Label (props: Props)
 {
-    return <div className={"label " + (props.is_small ? "small" : "")}>
-        {props.statement.content}
+    const label = is_statement_props(props) ? props.statement.content : props.pattern.name
+    const css_class = "label " + (props.is_small ? "small " : " ") + (is_statement_props(props) ? "statement" : "pattern")
+
+    return <div className={css_class}>
+        {label}
     </div>
 }

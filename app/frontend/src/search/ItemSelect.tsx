@@ -3,7 +3,7 @@ import { useState } from "preact/hooks"
 import { connect, ConnectedProps } from "react-redux"
 
 import "./ItemSelect.css"
-import type { RootState } from "../state/State"
+import type { Item, RootState } from "../state/State"
 import { get_id_map } from "../utils/get_id_map"
 import { description } from "../utils/item"
 import { SearchWindow } from "./SearchWindow"
@@ -19,7 +19,8 @@ type OwnProps =
     editable: true
     item_id: string
     filter: ITEM_FILTERS
-    on_change_item_id: (id: string) => void
+    on_change_item_id?: (id: string) => void
+    on_change_item?: (item: Item) => void
 }
 
 
@@ -36,10 +37,17 @@ const connector = connect(map_state)
 type Props = ConnectedProps<typeof connector> & OwnProps
 
 
+const placeholder_map = {
+    "simple_types": "Statement Type",
+    "types": "Statement Type or Pattern",
+    "patterns": "Pattern",
+}
+
+
 function _ItemSelect (props: Props)
 {
     let item_id_css_class = "empty"
-    const placeholder = (props.filter === "types") ? "Statement Type or Pattern" : "Statement Type"
+    const placeholder = placeholder_map[props.filter]
     let item_id_desc: string | h.JSX.Element | undefined = undefined
 
     if (props.item_id)
@@ -52,7 +60,7 @@ function _ItemSelect (props: Props)
     if (!props.editable)
     {
         return <div class={"fake_text_input disabled " + item_id_css_class}>
-            {item_id_desc || placeholder}
+            {item_id_desc || ""}
         </div>
     }
 
@@ -68,8 +76,9 @@ function _ItemSelect (props: Props)
 
         {display_search && <SearchWindow
             filter_type={props.filter}
-            on_choose={(id: string) => {
-                props.on_change_item_id(id)
+            on_choose={(item: Item) => {
+                props.on_change_item_id && props.on_change_item_id(item.id)
+                props.on_change_item && props.on_change_item(item)
                 set_display_search(false)
             }}
             on_close={() => set_display_search(false)}

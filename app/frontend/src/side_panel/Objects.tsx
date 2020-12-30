@@ -2,9 +2,8 @@ import { FunctionComponent, h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
 
 import type { RootState } from "../state/State"
-import { EditObjectForm } from "../objects/EditObjectForm"
 import { ObjectsList } from "../objects/ObjectsList"
-import { NewObjectForm } from "../objects/NewObjectForm"
+import { ObjectForm } from "../objects/ObjectForm"
 
 
 interface OwnProps {}
@@ -22,17 +21,15 @@ type Props = PropsFromRedux & OwnProps
 
 function _Objects (props: Props)
 {
-    if (props.object)
-    {
-        return <div>
-            <EditObjectForm object={props.object} />
-        </div>
-    }
+    // if (props.object)
+    // {
+    //     return <div>
+    //         <ObjectForm object={props.object} />
+    //     </div>
+    // }
 
     return <div>
-        <b>Add objects</b>
-        <hr />
-        <NewObjectForm />
+        <ObjectForm object={props.object}/>
         <hr />
         Objects:
         <ObjectsList />

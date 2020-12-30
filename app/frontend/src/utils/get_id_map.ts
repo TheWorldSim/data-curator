@@ -1,4 +1,4 @@
-import type { RootState, Item, Objekt } from "../state/State"
+import { RootState, Item, Objekt, is_id_attribute, CoreObjectIdAttribute } from "../state/State"
 
 
 const statement_id_regex = new RegExp(/^\d/)
@@ -63,8 +63,7 @@ function get_ids_from_objects_attributes (objects: Objekt[])
 
 export function get_ids_from_object_attributes (object: Objekt)
 {
-    const maybe_ids = object.attributes.map(({ id }) => id)
-    const ids: string[] = maybe_ids.filter(id => !!id) as any
+    const id_attributes = object.attributes.filter(is_id_attribute) as CoreObjectIdAttribute[]
+    const ids: string[] = id_attributes.map(({ id }) => id)
     return ids
 }
-

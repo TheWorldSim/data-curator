@@ -1,7 +1,7 @@
 import { h } from "preact"
 
 import type { ObjectAttribute } from "../state/State"
-import { ObjectAttributeListEntry, ObjectAttributeListHeader } from "./ObjectAttributeListEntry"
+import { ObjectAttributeListEntry } from "./ObjectAttributeListEntry"
 
 
 type Props = {
@@ -12,7 +12,6 @@ type Props = {
 export function ObjectAttributesList (props: Props)
 {
     return <table>
-        <ObjectAttributeListHeader />
         {props.attributes.map((attribute, i) => <tr>
             <ObjectAttributeListEntry attribute={attribute} editable={false} />
         </tr>)}

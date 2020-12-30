@@ -25,12 +25,13 @@ type Props = ConnectedProps<typeof connector> & OwnProps
 
 function _ObjectDescription (props: Props)
 {
-    const pattern_name = props.pattern?.name || "?"
+    const labels = [ ...props.object.labels]
+    if (props.pattern?.id) labels.push(props.pattern.id)
 
     return <div>
-        {pattern_name}: {object_content({ object: props.object })}
+        {object_content({ object: props.object })}
         <div style={{ display: "inline-block"}}>
-            <LabelsList labels={props.object.labels} />
+            <LabelsList labels={labels} />
         </div>
     </div>
 }
