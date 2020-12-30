@@ -33,23 +33,24 @@ const map_state = (state: RootState, own_props: OwnProps): StateProps => {
 
 function _ObjectAttributeListEntry (props: Props)
 {
+    const attribute = props.attribute
 
     return [
         <td>
             <ItemSelect
                 editable={false}
-                item_id={props.attribute.pattern.type_id}
+                item_id={attribute.pattern.type_id}
                 filter="types"
             />
         </td>,
         <td>
-            {is_id_attribute(props.attribute) && <ItemSelect
+            {is_id_attribute(attribute) && <ItemSelect
                 editable={false}
-                item_id={props.attribute.id}
+                item_id={attribute.id}
                 filter="types"
             />}
-            {is_value_attribute(props.attribute) && <input
-                value={props.attribute.value}
+            {is_value_attribute(attribute) && <input
+                value={attribute.value}
                 disabled={true}
             />}
         </td>,

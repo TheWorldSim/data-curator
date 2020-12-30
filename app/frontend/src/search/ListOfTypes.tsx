@@ -69,10 +69,10 @@ class _ListOfTypes extends Component<Props, State>
         return <table>
             <tbody>
                 {this.props.statements.map(s => <tr key={s.id}>
-                    <StatementListEntry statement={s} on_click={() => this.props.on_click(s)} />
+                    { StatementListEntry({ statement: s, on_click: () => this.props.on_click(s) }) }
                 </tr>)}
                 {this.props.patterns.map(p => <tr key={p.id}>
-                    <PatternListEntry pattern={p} on_click={() => this.props.on_click(p)} />
+                    { PatternListEntry({ pattern: p, on_click: () => this.props.on_click(p) }) }
                 </tr>)}
             </tbody>
         </table>

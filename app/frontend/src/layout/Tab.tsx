@@ -1,9 +1,9 @@
 import { FunctionComponent, h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
 
-import { ACTIONS } from "../state/store"
 import type { RootState, ROUTE_TYPES } from "../state/State"
 import "./Tab.css"
+import { Link } from "../utils/Link"
 
 
 interface OwnProps {
@@ -24,16 +24,10 @@ function get_title (id: ROUTE_TYPES)
 
 
 const map_state = (state: RootState) => ({
-    route: state.routing.route
+    current_route: state.routing.route
 })
 
-
-const map_dispatch = {
-    change_route: (route: ROUTE_TYPES) => ACTIONS.change_route({ route, item_id: undefined })
-}
-
-
-const connector = connect(map_state, map_dispatch)
+const connector = connect(map_state)
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 
@@ -43,10 +37,14 @@ type Props = PropsFromRedux & OwnProps
 function _Tab (props: Props)
 {
     const title = get_title(props.id)
-    const css_class = "tab " + (props.route === props.id ? "selected" : "")
+    const css_class = "tab " + (props.current_route === props.id ? "selected" : "")
 
-    return <div class={css_class} onClick={() => props.change_route(props.id)}>
-        {title}
+    return <div
+        class={css_class}
+    >
+        <Link route={props.id}>
+            {title}
+        </Link>
     </div>
 }
 

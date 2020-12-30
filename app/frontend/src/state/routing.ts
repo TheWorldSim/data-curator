@@ -24,6 +24,13 @@ export function get_current_route_params (): RoutingState
 }
 
 
+export function get_route (args: { route: ROUTE_TYPES, item_id?: string }): string
+{
+    const element_route = args.item_id ? `/${args.item_id}` : ""
+    return "#" + args.route + element_route
+}
+
+
 export const routing_reducer = (state: RootState, action: AnyAction): RootState =>
 {
 
@@ -42,8 +49,7 @@ export const routing_reducer = (state: RootState, action: AnyAction): RootState 
     }
 
     // Putting this side effect here seems wrong, perhaps best as a store.subscribe?
-    const element_route = state.routing.item_id ? `/${state.routing.item_id}` : ""
-    const route = state.routing.route + element_route
+    const route = get_route(state.routing)
     window.location.hash = route
 
     return state

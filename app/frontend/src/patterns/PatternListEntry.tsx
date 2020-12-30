@@ -1,20 +1,20 @@
 import { h } from "preact"
 
 import type { Pattern } from "../state/State"
+import { Link } from "../utils/Link"
 
 
-interface Props {
+interface OwnProps {
     pattern: Pattern
-    on_click: () => void
+    on_click?: () => void
 }
 
 
-export function PatternListEntry (props: Props)
+export function PatternListEntry (props: OwnProps)
 {
-    return <td
-        style={{ cursor: "pointer" }}
-        onClick={props.on_click}
-    >
-        {props.pattern.name}
+    return <td>
+        <Link route="patterns" item_id={props.pattern.id} on_click={props.on_click}>
+            {props.pattern.name}
+        </Link>
     </td>
 }
