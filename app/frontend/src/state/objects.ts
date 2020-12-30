@@ -43,9 +43,9 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
 
     if (is_update_object(action))
     {
-        const object = state.objects.find(({ id }) => id === action.id)
+        const object_exists = !!state.objects.find(({ id }) => id === action.id)
 
-        if (!object)
+        if (!object_exists)
         {
             console.error(`No object for id: "${action.id}"`)
             return state
@@ -53,7 +53,10 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
 
         const replacement_object = action
         delete replacement_object.type
-        const objects = replace_element(state.objects, replacement_object, ({ id }) => id === action.id)
+        let objects = replace_element(state.objects, replacement_object, ({ id }) => id === action.id)
+
+        // Bust all render caches
+        objects = objects.map(o => ({ ...o }))
 
         state = {
             ...state,
