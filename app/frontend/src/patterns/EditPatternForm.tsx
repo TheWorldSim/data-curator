@@ -46,6 +46,7 @@ function _EditPatternForm (props: Props)
         <br />
 
         <input
+            style={{ width: 400 }}
             type="text"
             placeholder="Pattern content"
             value={props.pattern.content}

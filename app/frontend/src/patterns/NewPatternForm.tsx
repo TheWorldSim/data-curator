@@ -71,6 +71,7 @@ function _NewPatternForm (props: Props)
         <br />
 
         <input
+            style={{ width: 400 }}
             type="text"
             placeholder="Pattern content"
             value={content}

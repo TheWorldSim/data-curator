@@ -43,7 +43,7 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
 
     if (is_update_object(action))
     {
-        const object = state.objects.find(({ id }) => id !== action.id)
+        const object = state.objects.find(({ id }) => id === action.id)
 
         if (!object)
         {
@@ -51,7 +51,9 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
             return state
         }
 
-        const objects = replace_element(state.objects, object, ({ id }) => id !== action.id)
+        const replacement_object = action
+        delete replacement_object.type
+        const objects = replace_element(state.objects, replacement_object, ({ id }) => id === action.id)
 
         state = {
             ...state,

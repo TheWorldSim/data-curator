@@ -25,7 +25,12 @@ function _EditableObjectAttributesList (props: OwnProps)
     return <div>
         <table>
             {props.attributes.map((attribute, i) => <tr> {/* TODO set key */}
-                <ObjectAttributeListEntry attribute={attribute} on_change={change_attribute(i)} editable={true} />
+                <ObjectAttributeListEntry
+                    attribute={attribute}
+                    on_change={change_attribute(i)}
+                    editable={true}
+                    editable_type={false}
+                />
             </tr>)}
         </table>
     </div>

@@ -14,9 +14,11 @@ type OwnProps = {
     attribute: ObjectAttribute
     on_change: (attribute: ObjectAttribute) => void
     editable: true
+    editable_type: boolean
 } | {
     attribute: ObjectAttribute
     editable: false
+    editable_type?: false
 }
 
 type Props = StateProps & OwnProps
@@ -35,31 +37,53 @@ function _ObjectAttributeListEntry (props: Props)
 {
     const attribute = props.attribute
 
+    function on_change_id (id: string)
+    {
+        if (props.editable)
+        {
+            const changed_attribute = { ...props.attribute, id }
+            delete (changed_attribute as any).value
+            props.on_change(changed_attribute)
+        }
+    }
+
+    function on_change_value (value: string)
+    {
+        if (props.editable)
+        {
+            const changed_attribute = { ...props.attribute, value }
+            delete (changed_attribute as any).id
+            props.on_change(changed_attribute)
+        }
+    }
+
     return [
         <td>
             <ItemSelect
-                editable={false}
+                editable={!!props.editable_type}
                 item_id={attribute.pattern.type_id}
                 filter="types"
             />
         </td>,
         <td>
+            {attribute.pattern.alt_name}
+        </td>,
+        <td>
             {is_id_attribute(attribute) && <ItemSelect
-                editable={false}
+                editable={props.editable}
                 item_id={attribute.id}
                 filter="types"
+                on_change_item_id={on_change_id}
             />}
             {is_value_attribute(attribute) && <input
                 value={attribute.value}
-                disabled={true}
+                disabled={!props.editable}
+                onChange={e => on_change_value(e.currentTarget.value)}
             />}
         </td>,
     ]
 
-    // function on_change_type_id (type_id: string)
-    // {
-    //     if (props.editable) props.on_change({ ...props.attribute, type_id })
-    // }
+
 
     // function on_change_alt_name (e: h.JSX.TargetedEvent<HTMLInputElement, Event>)
     // {

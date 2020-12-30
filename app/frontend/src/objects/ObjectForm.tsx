@@ -8,6 +8,7 @@ import { AddObjectProps, convert_from_pattern_attributes, UpdateObjectProps } fr
 import type { ObjectAttribute, Objekt, Pattern, PatternAttribute } from "../state/State"
 import { ACTIONS } from "../state/store"
 import { EditableObjectAttributesList } from "./EditableObjectAttributesList"
+import { object_content } from "./object_content"
 
 
 type OwnProps = {
@@ -47,6 +48,7 @@ function _ObjectForm (props: Props)
     function update_object (args: Partial<UpdateObjectProps>) { set_object({ ...object, ...args }) }
 
     if (props.object && props.object.id !== object.id) reset_form_data()
+    if (!props.object && object.id !== undefined) reset_form_data()
 
     const set_pattern = useCallback((pattern: Pattern) => {
         update_object({
@@ -57,16 +59,16 @@ function _ObjectForm (props: Props)
         })
 
         set_pattern_attributes(pattern.attributes)
-    }, [object.pattern_id])
+    }, [object])
 
     const content_changed = useCallback((event: h.JSX.TargetedEvent<HTMLInputElement, Event>) => {
         set_object({ ...object, content: event.currentTarget.value })
-    }, [object.content])
+    }, [object])
 
 
     const change_attributes = useCallback((new_attributes: ObjectAttribute[]) => {
         set_object({ ...object, attributes: new_attributes })
-    }, [object.attributes])
+    }, [object])
 
     function delete_attribute (index: number)
     {
@@ -74,7 +76,7 @@ function _ObjectForm (props: Props)
         set_object({ ...object, attributes: new_attributes })
     }
 
-    function add_object ()
+    function upsert_object ()
     {
         props.object ? props.update_object(object) : props.add_object(object)
     }
@@ -113,6 +115,7 @@ function _ObjectForm (props: Props)
         <br />
 
         <input
+            style={{ width: 400 }}
             type="text"
             placeholder="Object content"
             value={object.content}
@@ -122,9 +125,15 @@ function _ObjectForm (props: Props)
 
         <br/><br />
 
+        <div>
+            {object_content({ object })}
+        </div>
+
+        <br/><br />
+
         <input
             type="button"
-            onClick={add_object}
+            onClick={upsert_object}
             value={(props.object ? "Update" : "Add") + " object"}
             disabled={!object.content}
         ></input>

@@ -11,7 +11,7 @@ import {
 } from "./routing"
 import { ActionKeyDownArgs, global_key_press_actions, global_key_press_reducer } from "./global_key_press"
 import { CORE_IDS, STATEMENT_IDS } from "./core_data"
-import { object_actions, merge_pattern } from "./objects"
+import { object_actions, merge_pattern, objects_reducer } from "./objects"
 
 
 const KEY_FOR_LOCAL_STORAGE_STATE = "state"
@@ -220,6 +220,7 @@ const root_reducer: Reducer<RootState, any> = ((state: RootState, action: AnyAct
     state = statements_reducer(state, action)
     state = routing_reducer(state, action)
     state = global_key_press_reducer(state, action)
+    state = objects_reducer(state, action)
 
     return state
 }) as any
