@@ -2,7 +2,7 @@ import { h } from "preact"
 
 import "./App.css"
 import { MainArea } from "./layout/MainArea"
-import { SidePanel } from "./SidePanel/SidePanel"
+import { SidePanel } from "./side_panel/SidePanel"
 
 
 function App() {

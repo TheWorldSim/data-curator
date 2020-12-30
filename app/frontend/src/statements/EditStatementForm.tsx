@@ -2,7 +2,7 @@ import { FunctionalComponent, h } from "preact"
 import type { Dispatch } from "redux"
 import { connect, ConnectedProps } from "react-redux"
 
-import { LabelsList } from "../Labels/LabelsList"
+import { LabelsList } from "../labels/LabelsList"
 import { DeleteButton } from "../sharedf/DeleteButton"
 import type { Statement } from "../state/State"
 import { ACTIONS } from "../state/store"

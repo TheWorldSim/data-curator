@@ -2,7 +2,7 @@ import { FunctionComponent, h } from "preact"
 import { useState, useCallback } from "preact/hooks"
 import { connect, ConnectedProps } from "react-redux"
 
-import { LabelsList } from "../Labels/LabelsList"
+import { LabelsList } from "../labels/LabelsList"
 import { ItemSelect } from "../search/ItemSelect"
 import { ACTIONS } from "../state/store"
 

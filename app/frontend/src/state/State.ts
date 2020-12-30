@@ -29,24 +29,19 @@ export interface PatternAttribute
 
 export interface Objekt extends Statement
 {
-    attributes: ObjectAttribute[]  // string[]  // statement_ids[]
+    attributes: ObjectAttribute[]
     pattern_id: string
+    pattern_name: string  // denormalised from Pattern along with `content`
 }
-export interface ObjectAttribute
+export type ObjectAttribute =
 {
-    tid: string  // statement_type_id
-    id: string   // statement_id
+    tid: string  // statement_type_id  // denormalised from Pattern attribute(s)
+    id?: string   // statement_id
+    value?: string
 }
 
 
 export type Item = Statement | Pattern | Objekt
-
-export function is_statement (s: Item): s is Statement
-{ return !is_object(s) && !is_item(s) }
-export function is_item (s: Item): s is Item
-{ return s.hasOwnProperty("name") }
-export function is_object (s: Item): s is Objekt
-{ return s.hasOwnProperty("pattern_id") }
 
 
 export type ROUTE_TYPES = "filter" | "statements" | "objects" | "patterns" | "creation_context"

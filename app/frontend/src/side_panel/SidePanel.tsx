@@ -2,6 +2,7 @@ import { FunctionComponent, h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
 
 import type { RootState } from "../state/State"
+import { Objects } from "./Objects"
 import { Patterns } from "./Patterns"
 import { Statements } from "./Statements"
 
@@ -28,9 +29,7 @@ function _SidePanel (props: Props)
 
         {props.route === "statements" && <Statements />}
 
-        {props.route === "objects" && <div>
-            Add Objects:
-        </div>}
+        {props.route === "objects" && <Objects />}
 
         {props.route === "patterns" && <Patterns />}
 

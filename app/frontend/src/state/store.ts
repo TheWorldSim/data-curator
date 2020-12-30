@@ -1,8 +1,8 @@
-import { createStore, Action, Reducer, AnyAction } from "redux"
+import { createStore, Action, Reducer, AnyAction, Store } from "redux"
 
 import { statements_reducer, statement_actions } from "./statements"
 import { patterns_reducer, pattern_actions } from "./patterns"
-import type { Pattern, RootState, Statement } from "./State"
+import type { Objekt, Pattern, RootState, Statement } from "./State"
 import {
     get_current_route_params,
     parse_url_for_routing_params,
@@ -10,7 +10,7 @@ import {
     routing_actions,
 } from "./routing"
 import { ActionKeyDownArgs, global_key_press_actions, global_key_press_reducer } from "./global_key_press"
-import { CORE_IDS } from "./core_data"
+import { CORE_IDS, STATEMENT_IDS } from "./core_data"
 
 
 const KEY_FOR_LOCAL_STORAGE_STATE = "state"
@@ -20,69 +20,49 @@ function get_default_state (): RootState
 {
     const datetime_created = new Date("2020-12-22")
 
-    const statement_contents: {[id: string]: string} = {
-        [CORE_IDS.Type]: "Type",
-        [CORE_IDS.Title]: "Title",
-        [CORE_IDS.DOI]: "DOI",
-        [CORE_IDS.URL]: "URL",
-        [CORE_IDS.Year]: "Year",
-        [CORE_IDS["Month of year"]]: "Month of year",
-        [CORE_IDS["Day of month"]]: "Day of month",
-        [CORE_IDS["Hour of day"]]:  "Hour of day",
-        [CORE_IDS["Minute of hour"]]:  "Minute of hour",
-        [CORE_IDS["Seconds of minute"]]:  "Seconds of minute",
-    }
-    const statements: Statement[] = Object.keys(statement_contents).map(id => ({
-        id,
-        content: statement_contents[id],
+    const statements: Statement[] = Object.keys(STATEMENT_IDS).map(handle => ({
+        id: (STATEMENT_IDS as any)[handle],
+        content: handle,
         datetime_created,
         labels: [CORE_IDS.Type],  // All are given label of type
     }))
 
     const patterns: Pattern[] = [
         {
-            id: CORE_IDS.Author,
-            datetime_created: datetime_created,
-            name: "Author",
+            id: CORE_IDS.Person,
+            datetime_created,
+            name: "Person",
             content: `@@0 @@1`,
             attributes: [
-                { type_id: CORE_IDS["First name"], alt_name: "" },
-                { type_id: CORE_IDS["Last name"], alt_name: "" },
-            ]
-        },
-        {
-            id: CORE_IDS.Authors,
-            datetime_created: datetime_created,
-            name: "Authors",
-            content: "@@0",
-            attributes: [
-                { type_id: CORE_IDS["Author"], alt_name: "Authors", multiple: true },
+                { type_id: "", alt_name: "First name" },
+                { type_id: "", alt_name: "Last name" },
             ]
         },
         {
             id: CORE_IDS.Group,
-            datetime_created: datetime_created,
+            datetime_created,
             name: "Group",
             content: `@@0`,
             attributes: [
                 { type_id: "", alt_name: "Group" },
+                // TO DO: add more fields like URL, physical address etc
             ]
         },
         {
-            id: CORE_IDS["Author(s) or Group"],
-            datetime_created: datetime_created,
-            name: "Author(s) or Group",
-            content: `@@0@@1`,
+            id: CORE_IDS["Person(s) or Group(s)"],
+            datetime_created,
+            name: "Person(s) or Group(s)",
+            content: "${a[0].join(', ')}${(a[0].length && a[1].length) ? ', ' : ''}${a[1].join(', ')}",
             attributes: [
-                { type_id: CORE_IDS["Authors"], alt_name: "" },
-                { type_id: CORE_IDS["Group"], alt_name: "" },
+                { type_id: CORE_IDS["Person"], alt_name: "Person(s)", multiple: true },
+                { type_id: CORE_IDS["Group"], alt_name: "Group(s)", multiple: true },
             ]
         },
         {
             id: CORE_IDS["Date"],
-            datetime_created: datetime_created,
+            datetime_created,
             name: "Date",
-            content: `@@0-@@1-@@2 @@3:@@4:@@5 @@6ns +@@7`,
+            content: "@@c(0)-c(1)-c(2) c(3):c(4):c(5) UTC",
             attributes: [
                 { type_id: CORE_IDS.Year, alt_name: "" },
                 { type_id: CORE_IDS["Month of year"], alt_name: "" },
@@ -90,27 +70,25 @@ function get_default_state (): RootState
                 { type_id: CORE_IDS["Hour of day"], alt_name: "" },
                 { type_id: CORE_IDS["Minute of hour"], alt_name: "" },
                 { type_id: CORE_IDS["Seconds of minute"], alt_name: "" },
-                { type_id: CORE_IDS.Nanoseconds, alt_name: "" },
-                { type_id: CORE_IDS.Timezone, alt_name: "" },
             ]
         },
         {
             id: CORE_IDS["Short date"],
-            datetime_created: datetime_created,
+            datetime_created,
             name: "Short Date",
-            content: `@@@0.0-@@@0.1-@@@0.2`,
+            content: "@@c(0.0)-c(0.1)-c(0.2)",
             attributes: [
                 { type_id: CORE_IDS.Date, alt_name: "" },
             ]
         },
         {
             id: CORE_IDS["Document"],
-            datetime_created: datetime_created,
+            datetime_created,
             name: "Document",
-            content: `@@0 - @@1, @@2`,
+            content: `"@@a[0].content + ' - ' + a[1].content + ', ' + a[2].content"`,
             attributes: [
-                { type_id: CORE_IDS.Title, alt_name: "" },
-                { type_id: CORE_IDS["Author(s) or Group"], alt_name: "" },
+                { type_id: "", alt_name: "Title" },
+                { type_id: CORE_IDS["Person(s) or Group(s)"], alt_name: "Author(s)" },
                 { type_id: CORE_IDS["Short date"], alt_name: "Published date" },
                 { type_id: CORE_IDS.URL, alt_name: "" },
                 { type_id: CORE_IDS.DOI, alt_name: "" },
@@ -118,16 +96,98 @@ function get_default_state (): RootState
         },
     ]
 
+    statements.push({
+        id: "1000",
+        datetime_created,
+        content: "Coronavirus disease (COVID-19): Herd immunity, lockdowns and COVID-19",
+        labels: [],
+    })
+    statements.push({
+        id: "1001",
+        datetime_created,
+        content: "WHO",
+        labels: [CORE_IDS.Group],
+    })
+    statements.push({
+        id: "1002",
+        datetime_created,
+        content: "2020",
+        labels: [CORE_IDS.Year],
+    })
+    statements.push({
+        id: "1003",
+        datetime_created,
+        content: "https://www.who.int/news-room/q-a-detail/herd-immunity-lockdowns-and-covid-19",
+        labels: [CORE_IDS.URL],
+    })
+
+
+    const objects: Objekt[] = [
+        {
+            id: "o0",
+            datetime_created,
+            pattern_id: CORE_IDS["Group"],
+            content: "@@c(0)",
+            pattern_name: "Group",
+            attributes: [
+                { tid: "", id: "1001" }
+            ],
+            labels: [],
+        },
+        {
+            id: "o1",
+            datetime_created,
+            pattern_id: CORE_IDS["Date"],
+            content: "@@c(0)-c(1)-c(2) c(3):c(4):c(5) UTC",
+            pattern_name: "Date",
+            attributes: [
+                { tid: CORE_IDS.Year, id: "1002" },
+                { tid: CORE_IDS["Month of year"], value: "10" },
+                { tid: CORE_IDS["Day of month"], value: "15" },
+                { tid: CORE_IDS["Hour of day"] },
+                { tid: CORE_IDS["Minute of hour"] },
+                { tid: CORE_IDS["Seconds of minute"] },
+            ],
+            labels: [],
+        },
+        {
+            id: "o2",
+            datetime_created,
+            pattern_id: CORE_IDS["Short date"],
+            content: "@@c(0.0)-c(0.1)-c(0.2)",
+            pattern_name: "Short date",
+            attributes: [
+                { tid: CORE_IDS.Date, id: "o1" },
+            ],
+            labels: [],
+        },
+        {
+            id: "o3",
+            datetime_created,
+            pattern_id: CORE_IDS.Document,
+            content: "@@c(0) - c(1), c(2)",
+            pattern_name: "Document",
+            attributes: [
+                { tid: "", id: "1000" },
+                { tid: CORE_IDS["Person(s) or Group(s)"], id: "1001" },
+                { tid: CORE_IDS["Short date"], id: "o2" },
+                { tid: CORE_IDS.URL, id: "1003" },
+                { tid: CORE_IDS.DOI, id: "" },
+            ],
+            labels: [],
+        }
+    ]
+
     let starting_state: RootState = {
         statements,
         patterns,
-        objects: [],
+        objects,
         routing: get_current_route_params(),
         global_key_press: { last_key: undefined, last_key_time_stamp: undefined },
     }
 
 
-    const state_str = 0 ? "" : localStorage.getItem(KEY_FOR_LOCAL_STORAGE_STATE)
+    const state_str = 1 ? "" : localStorage.getItem(KEY_FOR_LOCAL_STORAGE_STATE)
 
     if (state_str)
     {
@@ -157,22 +217,27 @@ function get_default_state (): RootState
 }
 
 
-const root_reducer: Reducer<RootState, any> = (state: RootState | undefined, action: AnyAction) =>
+const root_reducer: Reducer<RootState, any> = ((state: RootState, action: AnyAction) =>
 {
-    state = state || get_default_state()
-
     state = patterns_reducer(state, action)
     state = statements_reducer(state, action)
     state = routing_reducer(state, action)
     state = global_key_press_reducer(state, action)
 
     return state
-}
+}) as any
 
 
-export function config_store ()
+let store: Store<RootState, Action<any>>
+export function config_store (use_cache: boolean = true, preloaded_state: Partial<RootState> | undefined = undefined)
 {
-    const store = createStore<RootState, Action, {}, {}>(root_reducer)
+    if (store && use_cache) return store
+
+    const preloaded: RootState = {
+        ...get_default_state(),
+        ...(preloaded_state || {})
+    }
+    store = createStore<RootState, Action, {}, {}>(root_reducer, preloaded)
 
     store.subscribe(() => {
         const state = store.getState()

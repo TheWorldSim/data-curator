@@ -2,7 +2,7 @@ import { FunctionComponent, h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
 
 import type { RootState } from "../state/State"
-import { PatternListEntry } from "./PatternListEntry"
+import { ObjectListEntry } from "./ObjectListEntry"
 import { ACTIONS } from "../state/store"
 
 
@@ -10,12 +10,12 @@ interface OwnProps {}
 
 
 const map_state = (state: RootState) => ({
-    patterns: state.patterns
+    objects: state.objects
 })
 
 
 const map_dispatch = {
-    pattern_selected: (item_id: string) => ACTIONS.change_route({ route: "patterns", item_id }),
+    object_selected: (item_id: string) => ACTIONS.change_route({ route: "objects", item_id }),
 }
 
 
@@ -25,17 +25,16 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux & OwnProps
 
 
-function _PatternsList (props: Props)
+function _ObjectsList (props: Props)
 {
-
     return <table>
         <tbody>
-            {props.patterns.map(pattern => <tr>
-                <PatternListEntry pattern={pattern} on_click={() => props.pattern_selected(pattern.id)} />
+            {props.objects.map(object => <tr>
+                <ObjectListEntry object={object} on_click={() => props.object_selected(object.id)} />
             </tr>)}
         </tbody>
     </table>
 }
 
 
-export const PatternsList = connector(_PatternsList) as FunctionComponent<OwnProps>
+export const ObjectsList = connector(_ObjectsList) as FunctionComponent<OwnProps>

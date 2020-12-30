@@ -1,6 +1,6 @@
 import { FunctionComponent, h } from "preact"
 
-import { LabelsList } from "../Labels/LabelsList"
+import { LabelsList } from "../labels/LabelsList"
 import type { Statement } from "../state/State"
 
 

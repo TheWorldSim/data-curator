@@ -30,7 +30,8 @@ function _Patterns (props: Props)
     }
 
     return <div>
-        Add patterns:
+        <b>Add patterns</b>
+        <hr />
         <NewPatternForm />
         <hr />
         Patterns:
