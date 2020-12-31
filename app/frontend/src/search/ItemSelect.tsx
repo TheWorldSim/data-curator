@@ -41,6 +41,7 @@ const placeholder_map = {
     "simple_types": "Statement Type",
     "types": "Statement Type or Pattern",
     "patterns": "Pattern",
+    "all_concrete": "All instances",
 }
 
 

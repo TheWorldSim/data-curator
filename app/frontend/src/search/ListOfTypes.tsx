@@ -3,11 +3,12 @@ import { connect, ConnectedProps } from "react-redux"
 
 import { PatternListEntry } from "../patterns/PatternListEntry"
 import { StatementListEntry } from "../statements/StatementListEntry"
-import type { Item, Pattern, RootState } from "../state/State"
+import type { Item, RootState } from "../state/State"
 import { CORE_IDS } from "../state/core_data"
+import { ObjectListEntry } from "../objects/ObjectListEntry"
 
 
-export type ITEM_FILTERS = "simple_types" | "types" | "patterns"
+export type ITEM_FILTERS = "simple_types" | "types" | "patterns" | "all_concrete"
 
 
 interface OwnProps
@@ -24,23 +25,46 @@ function map_state (state: RootState, own_props: OwnProps)
     const fi = filtered_by_string.toLowerCase()
 
     let statements = state.statements
-        .filter(s => s.labels.includes(CORE_IDS.Type))
-        .filter(s => s.id.startsWith(fi) || s.content.toLowerCase().includes(fi))
-    let patterns: Pattern[] = []
+    let patterns = state.patterns
+    let objects = state.objects
+
+    if (filter_type === "simple_types" || filter_type === "types")
+    {
+        statements = statements
+            .filter(s => s.labels.includes(CORE_IDS.Type))
+    }
+    else if (filter_type === "patterns")
+    {
+        statements = []
+    }
+
+    statements = statements.filter(s => s.id.startsWith(fi) || s.content.toLowerCase().includes(fi))
+
 
     if (filter_type === "types" || filter_type === "patterns")
     {
-        patterns = state.patterns.filter(p => {
+        patterns = patterns.filter(p => {
             return p.id.startsWith(fi) || p.name.toLowerCase().includes(fi) || p.content.toLowerCase().includes(fi)
         })
     }
+    else
+    {
+        patterns = []
+    }
 
-    if (filter_type === "patterns") statements = []
+
+    if (filter_type !== "all_concrete")
+    {
+        objects = []
+    }
+
+    objects = objects.filter(o => o.id.startsWith(fi) || o.content.toLowerCase().includes(fi))
 
     return {
         // TODO memoize
         statements,
         patterns,
+        objects,
     }
 }
 
@@ -73,6 +97,9 @@ class _ListOfTypes extends Component<Props, State>
                 </tr>)}
                 {this.props.patterns.map(p => <tr key={p.id}>
                     { PatternListEntry({ pattern: p, on_click: () => this.props.on_click(p) }) }
+                </tr>)}
+                {this.props.objects.map(o => <tr key={o.id}>
+                    { ObjectListEntry({ object: o, on_click: () => this.props.on_click(o) }) }
                 </tr>)}
             </tbody>
         </table>

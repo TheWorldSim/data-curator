@@ -72,7 +72,7 @@ function _ObjectAttributeListEntry (props: Props)
             {is_id_attribute(attribute) && <ItemSelect
                 editable={props.editable}
                 item_id={attribute.id}
-                filter="types"
+                filter="all_concrete"
                 on_change_item_id={on_change_id}
             />}
             {is_value_attribute(attribute) && <input
