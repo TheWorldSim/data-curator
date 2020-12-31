@@ -48,7 +48,7 @@ interface AddStatementProps
 export const add_statement = (args: AddStatementProps): ActionAddStatement =>
 {
     const datetime_created = get_datetime()
-    const id = get_new_id()
+    const id = "s" + get_new_id()
 
     return {
         type: add_statement_type,

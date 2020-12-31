@@ -1,6 +1,6 @@
 
 let statement_id = 0
-const sid = () => (statement_id++).toString()
+const sid = () => "s" + (statement_id++).toString()
 let pattern_id = 0
 const pid = () => "p" + (pattern_id++).toString()
 

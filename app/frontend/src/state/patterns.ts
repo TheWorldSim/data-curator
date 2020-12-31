@@ -49,7 +49,7 @@ interface AddPatternArgs
 }
 export const add_pattern = (args: AddPatternArgs): ActionAddPattern =>
 {
-    const id = get_new_id()
+    const id = "p" + get_new_id()
     const datetime_created = get_datetime()
 
     return {

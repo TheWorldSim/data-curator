@@ -10,6 +10,7 @@
 
 #side_panel
 {
+  overflow: scroll; /* quick hack */
   width: 30%;
   position: fixed;
   right: 0;

@@ -101,25 +101,25 @@ function get_default_state (): RootState
 
 
     statements.push({
-        id: "1000",
+        id: "s1000",
         datetime_created,
         content: "Coronavirus disease (COVID-19): Herd immunity, lockdowns and COVID-19",
         labels: [],
     })
     statements.push({
-        id: "1001",
+        id: "s1001",
         datetime_created,
         content: "WHO",
         labels: [CORE_IDS.Group],
     })
     statements.push({
-        id: "1002",
+        id: "s1002",
         datetime_created,
         content: "2020",
         labels: [CORE_IDS.Year],
     })
     statements.push({
-        id: "1003",
+        id: "s1003",
         datetime_created,
         content: "https://www.who.int/news-room/q-a-detail/herd-immunity-lockdowns-and-covid-19",
         labels: [CORE_IDS.URL],
@@ -190,7 +190,7 @@ function get_default_state (): RootState
     }
 
 
-    const state_str = 1 ? "" : localStorage.getItem(KEY_FOR_LOCAL_STORAGE_STATE)
+    const state_str = 1 ? localStorage.getItem(KEY_FOR_LOCAL_STORAGE_STATE) : ""
 
     if (state_str)
     {

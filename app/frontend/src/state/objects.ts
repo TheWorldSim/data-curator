@@ -95,7 +95,7 @@ export interface AddObjectProps
 export const add_object = (args: AddObjectProps): ActionAddObject =>
 {
     const datetime_created = get_datetime()
-    const id = get_new_id()
+    const id = "o" + get_new_id()
 
     return {
         type: add_object_type,

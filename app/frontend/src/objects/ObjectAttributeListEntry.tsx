@@ -69,17 +69,19 @@ function _ObjectAttributeListEntry (props: Props)
             {attribute.pattern.alt_name}
         </td>,
         <td>
-            {is_id_attribute(attribute) && <ItemSelect
-                editable={props.editable}
-                item_id={attribute.id}
+            <ItemSelect
+                editable={props.editable && (is_id_attribute(attribute) || !attribute.value)}
+                item_id={(is_id_attribute(attribute) && attribute.id) || ""}
                 filter="all_concrete"
                 on_change_item_id={on_change_id}
-            />}
-            {is_value_attribute(attribute) && <input
-                value={attribute.value}
-                disabled={!props.editable}
+            />
+        </td>,
+        <td>
+            <input
+                disabled={!(props.editable && (is_value_attribute(attribute) || !attribute.id))}
+                value={(is_value_attribute(attribute) && attribute.value) || ""}
                 onChange={e => on_change_value(e.currentTarget.value)}
-            />}
+            />
         </td>,
     ]
 
