@@ -18,7 +18,7 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
 {
     if (is_add_object(action))
     {
-        const new_object: ObjectWithCache = action
+        const new_object: ObjectWithCache = { ...action }
         delete (new_object as any).type
 
         state = {
@@ -45,13 +45,30 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
             return state
         }
 
-        const replacement_object: ObjectWithCache = action
+        const replacement_object: ObjectWithCache = { ...action }
         delete (replacement_object as any).type
         let objects = replace_element(state.objects, replacement_object, ({ id }) => id === action.id)
 
         state = {
             ...state,
             objects,
+        }
+    }
+
+    if (is_add_object(action) || is_delete_object(action) || is_update_object(action))
+    {
+        // bust the cache
+        state = {
+            ...state,
+            objects: state.objects.map(o => ({ ...o, rendered: "", needs_rendering: true })),
+        }
+    }
+
+    if (is_update_objects(action))
+    {
+        state = {
+            ...state,
+            objects: action.objects,
         }
     }
 
@@ -158,12 +175,40 @@ const is_update_object = (action: AnyAction): action is ActionUpdateObject => {
 }
 
 
+
+//
+
+interface ActionUpdateObjects extends Action {
+    objects: ObjectWithCache[]
+}
+
+const update_objects_type = "update_objects"
+
+
+export interface UpdateObjectsProps
+{
+    objects: ObjectWithCache[]
+}
+export const update_objects = (args: UpdateObjectsProps): ActionUpdateObjects =>
+{
+    return {
+        type: update_objects_type,
+        objects: args.objects,
+    }
+}
+
+const is_update_objects = (action: AnyAction): action is ActionUpdateObjects => {
+    return action.type === update_objects_type
+}
+
+
 //
 
 export const object_actions = {
     add_object,
     delete_object,
     update_object,
+    update_objects,
 }
 
 

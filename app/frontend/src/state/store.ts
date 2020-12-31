@@ -222,6 +222,8 @@ function get_default_state (): RootState
 
 const root_reducer: Reducer<RootState, any> = ((state: RootState, action: AnyAction) =>
 {
+    console.log("reducer", action)
+
     state = patterns_reducer(state, action)
     state = statements_reducer(state, action)
     state = routing_reducer(state, action)
@@ -237,10 +239,10 @@ export function config_store (use_cache: boolean = true, preloaded_state: Partia
 {
     if (store && use_cache) return store
 
-    const preloaded: RootState = {
+    const preloaded: RootState = render_all_objects({
         ...get_default_state(),
         ...(preloaded_state || {})
-    }
+    })
     store = createStore<RootState, Action, {}, {}>(root_reducer, preloaded)
 
     store.subscribe(() => {
@@ -248,6 +250,8 @@ export function config_store (use_cache: boolean = true, preloaded_state: Partia
         localStorage.setItem(KEY_FOR_LOCAL_STORAGE_STATE, JSON.stringify(state))
         ;(window as any).store_state = state
     })
+
+    store.subscribe(render_all_objects_and_update_store)
 
     window.onhashchange = (e: HashChangeEvent) =>
     {
@@ -273,6 +277,46 @@ export function config_store (use_cache: boolean = true, preloaded_state: Partia
 
     return store
 }
+
+
+function render_all_objects_and_update_store ()
+{
+    const state = store.getState()
+
+    const { objects } = render_all_objects(state)
+
+    if (objects !== state.objects)
+    {
+        store.dispatch(ACTIONS.update_objects({ objects }))
+    }
+}
+
+
+function render_all_objects (state: RootState): RootState
+{
+    let updated_one_or_more = false
+
+    const updated_objects = state.objects.map(object => {
+        if (!object.needs_rendering) return object
+
+        updated_one_or_more = true
+
+        const rendered = render_object({ object, state })
+        return {
+            ...object,
+            rendered,
+            needs_rendering: false,
+        }
+    })
+
+    if (!updated_one_or_more) return state
+
+    return {
+        ...state,
+        objects: updated_objects,
+    }
+}
+
 
 export const ACTIONS =
 {

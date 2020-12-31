@@ -1,3 +1,5 @@
+import type { Store, Action } from "redux"
+
 import { merge_pattern } from "../state/objects"
 import {
     CoreObject,
@@ -5,6 +7,7 @@ import {
     ObjectAttribute,
     ObjectWithCache,
     Pattern,
+    RootState,
     Statement,
 } from "../state/State"
 import { config_store } from "../state/store"
@@ -17,13 +20,18 @@ interface OwnProps
 }
 
 
-let store = config_store()  // mutable reference to store for tests to run
+let store: Store<RootState, Action<any>>  // mutable reference to store for tests to run
 
 
 export function object_content ({ object, depth }: OwnProps)
 {
+    if (!object.needs_rendering) return object.rendered
+
+    if (!store) store = config_store()
+
     return render_object({ object, state: store.getState(), depth })
 }
+
 
 interface RenderState
 {
@@ -42,7 +50,7 @@ interface RenderObjectArgs
 
 export function render_object (args: RenderObjectArgs)
 {
-    if (!args.object.needs_rendering) args.object.rendered
+    if (!args.object.needs_rendering) return args.object.rendered
 
     const depth = args.depth === undefined ? 3 : args.depth
     let content = args.object.content
