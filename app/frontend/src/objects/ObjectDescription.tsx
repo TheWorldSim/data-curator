@@ -2,12 +2,12 @@ import { FunctionalComponent, h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
 
 import { LabelsList } from "../labels/LabelsList"
-import type { Objekt, RootState } from "../state/State"
+import type { ObjectWithCache, RootState } from "../state/State"
 import { object_content } from "./object_content"
 
 
 interface OwnProps {
-    object: Objekt
+    object: ObjectWithCache
 }
 
 

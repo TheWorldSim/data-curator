@@ -25,7 +25,7 @@ function _StatementsList (props: Props)
     return <table>
         <tbody>
             {props.statements.map(statement => <tr>
-                <StatementListEntry statement={statement}/>
+                { StatementListEntry({statement}) }
             </tr>)}
         </tbody>
     </table>

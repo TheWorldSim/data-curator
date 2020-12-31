@@ -12,6 +12,7 @@ import {
 import { ActionKeyDownArgs, global_key_press_actions, global_key_press_reducer } from "./global_key_press"
 import { CORE_IDS, STATEMENT_IDS } from "./core_data"
 import { object_actions, merge_pattern, objects_reducer } from "./objects"
+import { render_object } from "../objects/object_content"
 
 
 const KEY_FOR_LOCAL_STORAGE_STATE = "state"
@@ -173,6 +174,11 @@ function get_default_state (): RootState
         },
     ]
     const objects = core_objects.map(o => merge_pattern(o, patterns))
+        .map(object => ({
+            ...object,
+            rendered: "",
+            needs_rendering: true,
+        }))
 
 
     let starting_state: RootState = {

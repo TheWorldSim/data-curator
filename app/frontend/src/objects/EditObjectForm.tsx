@@ -3,8 +3,7 @@ import type { Dispatch } from "redux"
 import { connect, ConnectedProps } from "react-redux"
 import { DeleteButton } from "../sharedf/DeleteButton"
 
-import type { Objekt } from "../state/State"
-import { ACTIONS } from "../state/store"
+import type { ObjectWithCache } from "../state/State"
 import { ObjectAttributesList } from "./ObjectAttributesList"
 import { object_content } from "./object_content"
 import { SelectPattern } from "../patterns/SelectPattern"
@@ -12,7 +11,7 @@ import { SelectPattern } from "../patterns/SelectPattern"
 
 interface OwnProps
 {
-    object: Objekt
+    object: ObjectWithCache
 }
 
 

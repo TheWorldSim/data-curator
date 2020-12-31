@@ -58,7 +58,7 @@ function map_state (state: RootState, own_props: OwnProps)
         objects = []
     }
 
-    objects = objects.filter(o => o.id.startsWith(fi) || o.content.toLowerCase().includes(fi))
+    objects = objects.filter(o => o.id.startsWith(fi) || o.content.toLowerCase().includes(fi) || o.rendered.toLowerCase().includes(fi))
 
     return {
         // TODO memoize

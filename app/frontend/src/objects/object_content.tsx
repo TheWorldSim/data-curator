@@ -1,31 +1,60 @@
 import { merge_pattern } from "../state/objects"
-import { CoreObject, is_id_attribute, is_value_attribute, ObjectAttribute, Objekt, Pattern, Statement } from "../state/State"
+import {
+    CoreObject,
+    is_value_attribute,
+    ObjectAttribute,
+    ObjectWithCache,
+    Pattern,
+    Statement,
+} from "../state/State"
 import { config_store } from "../state/store"
 
 
 interface OwnProps
 {
-    object: Objekt
+    object: ObjectWithCache
     depth?: number
 }
 
 
-let store = config_store()  // mutable for tests
+let store = config_store()  // mutable reference to store for tests to run
 
 
 export function object_content ({ object, depth }: OwnProps)
 {
-    depth = depth === undefined ? 3 : depth
-    let content = object.content
+    return render_object({ object, state: store.getState(), depth })
+}
+
+interface RenderState
+{
+    objects: ObjectWithCache[]
+    statements: Statement[]
+    patterns: Pattern[]
+}
+
+interface RenderObjectArgs
+{
+    object: ObjectWithCache
+    state: RenderState
+    depth?: number
+}
+
+
+export function render_object (args: RenderObjectArgs)
+{
+    if (!args.object.needs_rendering) args.object.rendered
+
+    const depth = args.depth === undefined ? 3 : args.depth
+    let content = args.object.content
     if (!content.startsWith("@@")) return content
 
-    const rendered_content = render_content(content, object.attributes, depth)
+    const rendered_content = render_content(args.state, content, args.object.attributes, depth)
 
     return rendered_content
 }
 
 
-function render_content (content: string, attributes: ObjectAttribute[], depth: number)
+function render_content (state: RenderState, content: string, attributes: ObjectAttribute[], depth: number)
 {
     if (depth <= 0) return content
 
@@ -44,7 +73,7 @@ function render_content (content: string, attributes: ObjectAttribute[], depth: 
     {
         rendered_content += match.value[1]
         const attribute_index_lookup = match.value[2]  // 0 or 0.0 etc
-        rendered_content += attribute_content(attribute_index_lookup, attributes, depth)
+        rendered_content += attribute_content(state, attribute_index_lookup, attributes, depth)
 
         const new_match = iter.next()
         if (new_match.done)
@@ -59,11 +88,11 @@ function render_content (content: string, attributes: ObjectAttribute[], depth: 
 }
 
 
-function attribute_content (attribute_index_lookup: string, attributes: ObjectAttribute[], depth: number)
+function attribute_content (state: RenderState, attribute_index_lookup: string, attributes: ObjectAttribute[], depth: number)
 {
     const { attribute, parts } = get_attribute_from_index_lookup(attribute_index_lookup, attributes)
 
-    return get_content_from_attribute(attribute, parts, depth)
+    return get_content_from_attribute(state, attribute, parts, depth)
 }
 
 
@@ -76,7 +105,7 @@ function get_attribute_from_index_lookup (attribute_index_lookup: string, attrib
 }
 
 
-function get_content_from_attribute (attribute: ObjectAttribute, parts: number[], depth: number)
+function get_content_from_attribute (state: RenderState, attribute: ObjectAttribute, parts: number[], depth: number)
 {
     if (parts.length)
     {
@@ -86,22 +115,20 @@ function get_content_from_attribute (attribute: ObjectAttribute, parts: number[]
     {
         if (is_value_attribute(attribute)) return attribute.value || "?"
 
-        const res = convert_id_to_content(attribute.id)
+        const res = convert_id_to_content(state, attribute.id)
         if (typeof res === "string") return res
     }
 
-    const res = convert_id_to_content(attribute.id)
+    const res = convert_id_to_content(state, attribute.id)
     if (typeof res === "string") return res
     const content = parts.length ? `@@c(${parts.join(".")})` : res.content
 
-    return render_content(content, res.attributes, depth)
+    return render_content(state, content, res.attributes, depth)
 }
 
 
-function convert_id_to_content (item_id: string)
+function convert_id_to_content (state: RenderState, item_id: string)
 {
-    const state = store.getState()
-
     const statement = state.statements.find(({ id }) => id === item_id)
 
     if (statement) return statement.content
@@ -137,9 +164,9 @@ function get_pattern_for_test (args: Partial<Pattern>): Pattern
 }
 
 
-function get_object_for_test (args: Partial<CoreObject>, patterns: Pattern[]): Objekt
+function get_object_for_test (args: Partial<CoreObject>, patterns: Pattern[]): ObjectWithCache
 {
-    return merge_pattern({
+    const object = merge_pattern({
         id: "o1",
         datetime_created: new Date(),
         attributes: [],
@@ -147,18 +174,20 @@ function get_object_for_test (args: Partial<CoreObject>, patterns: Pattern[]): O
         pattern_id: "p1",
         ...args,
     }, patterns)
+
+    return { ...object, rendered: "", needs_rendering: true }
 }
 
 
 function run_tests ()
 {
-    const inital_state = store.getState()
+    const initial_state = store.getState()
 
     const datetime_created = new Date()
     const statement: Statement = { id: "1", datetime_created, content: "stat1", labels: [] }
 
     let patterns: Pattern[] = [{ id: "p1", content: "abc" }].map(get_pattern_for_test)
-    const obj1: Objekt = get_object_for_test({ pattern_id: "p1" }, patterns)
+    const obj1: ObjectWithCache = get_object_for_test({ pattern_id: "p1" }, patterns)
     const res1 = object_content({ object: obj1 })
     test(res1, "abc")
 
@@ -166,7 +195,7 @@ function run_tests ()
     patterns = [{ id: "p2", content: "@@abc(0) c(1)" }].map(get_pattern_for_test)
     store = config_store(false, { statements: [statement], patterns: [], objects: [] })
 
-    const obj2: Objekt = get_object_for_test({ pattern_id: "p2", attributes: [
+    const obj2: ObjectWithCache = get_object_for_test({ pattern_id: "p2", attributes: [
         { pidx: 0, value: " val" },
         { pidx: 0, id: "1" },
     ] }, patterns)
@@ -178,11 +207,11 @@ function run_tests ()
         { id: "p30", content: "@@a c(0) c(1)" },
         { id: "p31", content: "@@b c(0)" },
     ].map(get_pattern_for_test)
-    const obj3: Objekt = get_object_for_test({ id: "o3", pattern_id: "p30", attributes: [
+    const obj3: ObjectWithCache = get_object_for_test({ id: "o3", pattern_id: "p30", attributes: [
         { pidx: 0, value: "val2" },
         { pidx: 1, id: "1" },
     ] }, patterns)
-    const obj3b: Objekt = get_object_for_test({ pattern_id: "p31", attributes: [
+    const obj3b: ObjectWithCache = get_object_for_test({ pattern_id: "p31", attributes: [
         { pidx: 0, id: "o3" },
     ] }, patterns)
     store = config_store(false, { statements: [statement], patterns: [], objects: [obj3] })
@@ -199,14 +228,14 @@ function run_tests ()
         { id: "p41", content: "@@b c(0)" },
         { id: "p42", content: "@@a c(0)" },
     ].map(get_pattern_for_test)
-    const obj4: Objekt = get_object_for_test({ id: "o4", pattern_id: "p40", attributes: [
+    const obj4: ObjectWithCache = get_object_for_test({ id: "o4", pattern_id: "p40", attributes: [
         { pidx: 0, value: "val2" },
         { pidx: 1, id: "1" },
     ] }, patterns)
-    const obj4b: Objekt = get_object_for_test({ id: "o5", pattern_id: "p41", attributes: [
+    const obj4b: ObjectWithCache = get_object_for_test({ id: "o5", pattern_id: "p41", attributes: [
         { pidx: 0, id: "o4" },
     ] }, patterns)
-    const obj4c: Objekt = get_object_for_test({ pattern_id: "p42", attributes: [
+    const obj4c: ObjectWithCache = get_object_for_test({ pattern_id: "p42", attributes: [
         { pidx: 0, id: "o5" },
     ] }, patterns)
     store = config_store(false, { statements: [statement], patterns: [], objects: [obj4, obj4b] })
@@ -218,10 +247,10 @@ function run_tests ()
         { id: "p50", content: "@@sub: c(0)" },
         { id: "p51", content: "@@a c(0.0)" },
     ].map(get_pattern_for_test)
-    const obj5a: Objekt = get_object_for_test({ id: "o5", pattern_id: "p50", attributes: [
+    const obj5a: ObjectWithCache = get_object_for_test({ id: "o5", pattern_id: "p50", attributes: [
         { pidx: 0, value: "o5 val" },
     ] }, patterns)
-    const obj5b: Objekt = get_object_for_test({ pattern_id: "p51", attributes: [
+    const obj5b: ObjectWithCache = get_object_for_test({ pattern_id: "p51", attributes: [
         { pidx: 0, id: "o5" },
     ] }, patterns)
     store = config_store(false, { statements: [statement], patterns: [], objects: [obj5a] })
@@ -234,14 +263,14 @@ function run_tests ()
         { id: "p61", content: "@@part1: c(0.0) part2: c(0.1)" },
         { id: "p62", content: "@@a c(0)" },
     ].map(get_pattern_for_test)
-    const obj6: Objekt = get_object_for_test({ id: "o4", pattern_id: "p60", attributes: [
+    const obj6: ObjectWithCache = get_object_for_test({ id: "o4", pattern_id: "p60", attributes: [
         { pidx: 0,value: "val2" },
         { pidx: 1, id: "1" },
     ] }, patterns)
-    const obj6b: Objekt = get_object_for_test({ id: "o5", pattern_id: "p61", attributes: [
+    const obj6b: ObjectWithCache = get_object_for_test({ id: "o5", pattern_id: "p61", attributes: [
         { pidx: 0, id: "o4" },
     ] }, patterns)
-    const obj6c: Objekt = get_object_for_test({ pattern_id: "p62", attributes: [
+    const obj6c: ObjectWithCache = get_object_for_test({ pattern_id: "p62", attributes: [
         { pidx: 0, id: "o5" },
     ] }, patterns)
     store = config_store(false, { statements: [statement], patterns: [], objects: [obj6, obj6b] })
@@ -250,7 +279,7 @@ function run_tests ()
 
 
     // reset store just in case we run this in production by accident
-    store = config_store(false, inital_state)
+    store = config_store(false, initial_state)
 }
 
 // run_tests()

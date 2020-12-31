@@ -5,14 +5,14 @@ import { SelectPattern } from "../patterns/SelectPattern"
 
 import "./Objectform.css"
 import { AddObjectProps, convert_from_pattern_attributes, UpdateObjectProps } from "../state/objects"
-import type { ObjectAttribute, Objekt, Pattern, PatternAttribute } from "../state/State"
+import type { ObjectAttribute, ObjectWithCache, Pattern, PatternAttribute } from "../state/State"
 import { ACTIONS } from "../state/store"
 import { EditableObjectAttributesList } from "./EditableObjectAttributesList"
 import { object_content } from "./object_content"
 
 
 type OwnProps = {
-    object: Objekt | undefined
+    object: ObjectWithCache | undefined
 }
 
 
@@ -126,7 +126,7 @@ function _ObjectForm (props: Props)
         <br/><br />
 
         <div>
-            {object_content({ object })}
+            {object_content({ object: { ...object, rendered: "", needs_rendering: true } })}
         </div>
 
         <br/><br />

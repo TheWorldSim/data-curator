@@ -10,6 +10,7 @@ import type {
     Pattern,
     CoreObjectAttribute,
     CoreObject,
+    ObjectWithCache,
 } from "./State"
 
 
@@ -17,15 +18,8 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
 {
     if (is_add_object(action))
     {
-        const new_object: Objekt = {
-            id: action.id,
-            datetime_created: action.datetime_created,
-            pattern_id: action.pattern_id,
-            pattern_name: action.pattern_name,
-            content: action.content,
-            attributes: action.attributes,
-            labels: [],
-        }
+        const new_object: ObjectWithCache = action
+        delete (new_object as any).type
 
         state = {
             ...state,
@@ -51,12 +45,9 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
             return state
         }
 
-        const replacement_object = action
-        delete replacement_object.type
+        const replacement_object: ObjectWithCache = action
+        delete (replacement_object as any).type
         let objects = replace_element(state.objects, replacement_object, ({ id }) => id === action.id)
-
-        // Bust all render caches
-        objects = objects.map(o => ({ ...o }))
 
         state = {
             ...state,
@@ -70,7 +61,7 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
 
 //
 
-interface ActionAddObject extends Action, Objekt {}
+interface ActionAddObject extends Action, ObjectWithCache {}
 
 const add_object_type = "add_object"
 
@@ -98,6 +89,9 @@ export const add_object = (args: AddObjectProps): ActionAddObject =>
         content: args.content,
         attributes: args.attributes,
         labels: [],
+
+        rendered: "",
+        needs_rendering: true,
     }
 }
 
@@ -126,7 +120,7 @@ const is_delete_object = (action: AnyAction): action is ActionDeleteObject => {
 
 //
 
-interface ActionUpdateObject extends Action, Objekt {}
+interface ActionUpdateObject extends Action, ObjectWithCache {}
 
 const update_object_type = "update_object"
 
@@ -152,7 +146,10 @@ export const update_object = (args: UpdateObjectProps): ActionUpdateObject =>
         pattern_name: args.pattern_name,
         content: args.content,
         attributes: args.attributes,
-        labels: [],
+        labels: args.labels,
+
+        rendered: "",
+        needs_rendering: true,
     }
 }
 

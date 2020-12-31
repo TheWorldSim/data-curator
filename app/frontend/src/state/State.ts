@@ -41,6 +41,11 @@ export interface Objekt extends CoreObject
     content: string       // denormalised from Pattern
     attributes: ObjectAttribute[]
 }
+export interface ObjectWithCache extends Objekt
+{
+    rendered: string
+    needs_rendering: boolean
+}
 export interface CoreObjectIdAttribute {
     pidx: number
     id: string /* statement_id */
@@ -58,7 +63,7 @@ export const is_id_attribute = (a: CoreObjectAttribute): a is CoreObjectIdAttrib
 export const is_value_attribute = (a: CoreObjectAttribute): a is CoreObjectValueAttribute => a.hasOwnProperty("value")
 
 
-export type Item = Statement | Pattern | Objekt
+export type Item = Statement | Pattern | ObjectWithCache
 
 
 export type ROUTE_TYPES = "filter" | "statements" | "objects" | "patterns" | "creation_context"
@@ -81,7 +86,7 @@ export interface RootState
 {
     statements: Statement[]
     patterns: Pattern[]
-    objects: Objekt[]
+    objects: ObjectWithCache[]
     routing: RoutingState
     global_key_press: GlobalKeyPress
 }

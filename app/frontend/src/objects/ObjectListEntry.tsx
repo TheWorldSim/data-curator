@@ -1,12 +1,12 @@
 import { h } from "preact"
 
-import type { Objekt } from "../state/State"
+import type { ObjectWithCache } from "../state/State"
 import { Link } from "../utils/Link"
 import { ObjectDescription } from "./ObjectDescription"
 
 
 interface OwnProps {
-    object: Objekt
+    object: ObjectWithCache
     on_click?: () => void
 }
 

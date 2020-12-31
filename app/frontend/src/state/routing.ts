@@ -5,7 +5,7 @@ import { ALLOWED_ROUTES, RootState, ROUTE_TYPES, RoutingState } from "./State"
 
 export function parse_url_for_routing_params (url: string): RoutingState
 {
-    const hash = url.split("#")[1]
+    const hash = url.split("#")[1] || ""
     const parts = hash.split("/")
     const route = parts[0] as ROUTE_TYPES
     const item_id = parts[1]
