@@ -189,6 +189,13 @@ function get_object_for_test (args: Partial<CoreObject>, patterns: Pattern[]): O
 
 function run_tests ()
 {
+    setTimeout(_run_tests, 0)
+}
+
+function _run_tests ()
+{
+    if (!store) store = config_store()
+
     const initial_state = store.getState()
 
     const datetime_created = new Date()

@@ -1,8 +1,10 @@
 
 let statement_id = 0
-const sid = () => "s" + (statement_id++).toString()
+export const sid = () => "s" + (statement_id++).toString()
 let pattern_id = 0
 const pid = () => "p" + (pattern_id++).toString()
+let object_id = 0
+export const oid = () => "o" + (object_id++).toString()
 
 
 export const STATEMENT_IDS = {
@@ -29,6 +31,9 @@ export const PATTERN_IDS = {
     Date: pid(),
     "Short date": pid(),
     Document: pid(),
+    Project: pid(),
+    Actions: pid(),
+    "Reference statement": pid(),
 }
 
 
