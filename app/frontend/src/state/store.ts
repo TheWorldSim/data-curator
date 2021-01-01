@@ -26,7 +26,7 @@ function get_default_state (): RootState
 {
     let starting_state = get_starting_state()
 
-    const use_browser_state = 1
+    const use_browser_state = 0
     const state_str = use_browser_state ? localStorage.getItem(KEY_FOR_LOCAL_STORAGE_STATE) : ""
 
     if (state_str)

@@ -1,5 +1,6 @@
 import type { Store, Action } from "redux"
 
+import { test } from "../utils/test"
 import { merge_pattern } from "../state/objects"
 import {
     CoreObject,
@@ -150,13 +151,6 @@ function convert_id_to_content (state: RenderState, item_id: string)
 
 
 // ################################## Tests ##################################
-
-
-function test <T> (got: T, expected: T)
-{
-    if (got === expected) console.log("pass")
-    else console.error(`fail: ${got} !== ${expected}`)
-}
 
 
 function get_pattern_for_test (args: Partial<Pattern>): Pattern

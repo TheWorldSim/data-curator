@@ -21,12 +21,6 @@ type Props = PropsFromRedux & OwnProps
 
 function _Objects (props: Props)
 {
-    // if (props.object)
-    // {
-    //     return <div>
-    //         <ObjectForm object={props.object} />
-    //     </div>
-    // }
 
     return <div>
         <ObjectForm object={props.object}/>

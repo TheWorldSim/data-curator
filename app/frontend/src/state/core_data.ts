@@ -20,6 +20,7 @@ export const STATEMENT_IDS = {
     "Seconds of minute": sid(),
     "Nanoseconds": sid(),
     "Timezone": sid(),
+    "Action status": sid(),
 }
 
 
@@ -28,11 +29,11 @@ export const PATTERN_IDS = {
     // Persons: pid(),
     Group: pid(),
     "Person(s) or Group(s)": pid(),
-    Date: pid(),
-    "Short date": pid(),
+    Datetime: pid(),
+    "Date": pid(),
     Document: pid(),
     Project: pid(),
-    Actions: pid(),
+    Action: pid(),
     "Reference statement": pid(),
 }
 

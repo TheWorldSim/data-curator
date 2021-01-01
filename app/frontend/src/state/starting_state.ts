@@ -7,6 +7,7 @@ import type { CoreObject, Pattern, RootState, Statement } from "./State"
 export function get_starting_state (): RootState
 {
     const datetime_created = new Date("2020-12-22")
+    const dt2 = new Date("2020-12-31")
 
     const statements: Statement[] = Object.keys(STATEMENT_IDS).map(handle => ({
         id: (STATEMENT_IDS as any)[handle],
@@ -48,9 +49,9 @@ export function get_starting_state (): RootState
             ]
         },
         {
-            id: CORE_IDS.Date,
+            id: CORE_IDS.Datetime,
             datetime_created,
-            name: "Date",
+            name: "Date time",
             content: "@@c(0)-c(1)-c(2) c(3):c(4):c(5) UTC",
             attributes: [
                 { type_id: CORE_IDS.Year, alt_name: "" },
@@ -62,12 +63,12 @@ export function get_starting_state (): RootState
             ]
         },
         {
-            id: CORE_IDS["Short date"],
+            id: CORE_IDS.Date,
             datetime_created,
-            name: "Short Date",
+            name: "Date",
             content: "@@c(0.0)-c(0.1)-c(0.2)",
             attributes: [
-                { type_id: CORE_IDS.Date, alt_name: "" },
+                { type_id: CORE_IDS.Datetime, alt_name: "" },
             ]
         },
         {
@@ -78,20 +79,20 @@ export function get_starting_state (): RootState
             attributes: [
                 { type_id: "", alt_name: "Title" },
                 { type_id: CORE_IDS["Person(s) or Group(s)"], alt_name: "Author(s)" },
-                { type_id: CORE_IDS["Short date"], alt_name: "Published date" },
+                { type_id: CORE_IDS.Date, alt_name: "Published date" },
                 { type_id: CORE_IDS.URL, alt_name: "" },
                 { type_id: CORE_IDS.DOI, alt_name: "" },
             ]
         },
         {
             id: CORE_IDS.Project,
-            datetime_created,
+            datetime_created: dt2,
             name: "Project",
             content: "@@Project: c(0) - c(4)",
             attributes: [
                 { type_id: "", alt_name: "What is it" },
                 { type_id: "", alt_name: "Who cares? (impact)" },
-                { type_id: CORE_IDS.Actions, alt_name: "What are the next step(s)", multiple: true },
+                { type_id: CORE_IDS.Action, alt_name: "What are the next step(s)", multiple: true },
                 { type_id: CORE_IDS["Person(s) or Group(s)"], alt_name: "Allies", multiple: true },
                 { type_id: "", alt_name: "Status" },
                 { type_id: "", alt_name: "Why are we rejecting it for now" },
@@ -99,8 +100,20 @@ export function get_starting_state (): RootState
             ]
         },
         {
+            id: CORE_IDS.Action,
+            datetime_created: dt2,
+            name: "Action",
+            content: "@@c(0)",
+            attributes: [
+                { type_id: "", alt_name: "Name" },
+                { type_id: CORE_IDS.Project, alt_name: "Project(s)", multiple: true },
+                { type_id: "", alt_name: "Description" },
+                { type_id: CORE_IDS["Action status"], alt_name: "Status" },
+            ]
+        },
+        {
             id: CORE_IDS["Reference statement"],
-            datetime_created,
+            datetime_created: dt2,
             name: "Referenced statement",
             content: "@@Ref: c(1.1) - c(0)",
             attributes: [
@@ -116,11 +129,17 @@ export function get_starting_state (): RootState
         title_covid_who: sid(),
         year_2020: sid(),
         url_who_covid: sid(),
+        status_action_icebox: sid(),
+        status_action_todo: sid(),
+        status_action_in_progress: sid(),
+        status_action_done: sid(),
 
         group_who: oid(),
         date_2020_10_15: oid(),
         date_2020_10_15_short: oid(),
         document_who_covid: oid(),
+        document_who_covid_video: oid(),
+        refstat_who_measles_95_herd: oid(),
     }
 
     statements.push({
@@ -142,6 +161,32 @@ export function get_starting_state (): RootState
         labels: [CORE_IDS.URL],
     })
 
+    // Action status
+    statements.push({
+        id: OTHER_IDS.status_action_icebox,
+        datetime_created: dt2,
+        content: "Icebox",
+        labels: [CORE_IDS["Action status"]],
+    })
+    statements.push({
+        id: OTHER_IDS.status_action_todo,
+        datetime_created: dt2,
+        content: "Todo",
+        labels: [CORE_IDS["Action status"]],
+    })
+    statements.push({
+        id: OTHER_IDS.status_action_in_progress,
+        datetime_created: dt2,
+        content: "In progress",
+        labels: [CORE_IDS["Action status"]],
+    })
+    statements.push({
+        id: OTHER_IDS.status_action_done,
+        datetime_created: dt2,
+        content: "Done",
+        labels: [CORE_IDS["Action status"]],
+    })
+
 
     const core_objects: CoreObject[] = [
         {
@@ -156,7 +201,7 @@ export function get_starting_state (): RootState
         {
             id: OTHER_IDS.date_2020_10_15,
             datetime_created,
-            pattern_id: CORE_IDS.Date,
+            pattern_id: CORE_IDS.Datetime,
             attributes: [
                 { pidx: 0, id: OTHER_IDS.year_2020 },
                 { pidx: 1, value: "10" },
@@ -170,7 +215,7 @@ export function get_starting_state (): RootState
         {
             id: OTHER_IDS.date_2020_10_15_short,
             datetime_created,
-            pattern_id: CORE_IDS["Short date"],
+            pattern_id: CORE_IDS.Date,
             attributes: [
                 { pidx: 0, id: OTHER_IDS.date_2020_10_15 },
             ],
@@ -188,6 +233,30 @@ export function get_starting_state (): RootState
                 { pidx: 4, id: "" },
             ],
             labels: [],
+        },
+        {
+            id: OTHER_IDS.document_who_covid_video,
+            datetime_created: dt2,
+            pattern_id: CORE_IDS.Document,
+            attributes: [
+                { pidx: 0, value: "WHO's Science in 5 on COVID-19 - Herd Immunity" },
+                { pidx: 1, id: OTHER_IDS.group_who },
+                { pidx: 2, value: "2020-08-28" },
+                { pidx: 3, value: "https://youtu.be/U47SaDAmyrE" },
+                { pidx: 4, id: "" },
+            ],
+            labels: [OTHER_IDS.document_who_covid],
+        },
+        {
+            id: OTHER_IDS.refstat_who_measles_95_herd,
+            datetime_created: dt2,
+            pattern_id: CORE_IDS["Reference statement"],
+            attributes: [
+                { pidx: 0, value: "To achieve herd immunity in the population, for measles, you need about 95% of the people to have immunity or antibodies" },
+                { pidx: 1, id: OTHER_IDS.document_who_covid_video },
+                { pidx: 2, value: "https://youtu.be/U47SaDAmyrE?t=56" },
+            ],
+            labels: [OTHER_IDS.document_who_covid],
         },
     ]
     const objects = core_objects.map(o => merge_pattern(o, patterns))
