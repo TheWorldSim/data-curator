@@ -66,11 +66,25 @@ export const is_value_attribute = (a: CoreObjectAttribute): a is CoreObjectValue
 export type Item = Statement | Pattern | ObjectWithCache
 
 
-export type ROUTE_TYPES = "filter" | "statements" | "objects" | "patterns" | "creation_context"
-export const ALLOWED_ROUTES: ROUTE_TYPES[] = ["filter", "statements", "objects", "patterns", "creation_context"]
+export type ROUTE_TYPES = (
+    "filter"
+    | "statements"
+    | "objects"
+    | "patterns"
+    | "creation_context"
+    )
+export type SUB_ROUTE_TYPES = "objects_bulk_import"
+export const ALLOWED_ROUTES: ROUTE_TYPES[] = [
+    "filter",
+    "statements",
+    "objects",
+    "patterns",
+    "creation_context",
+]
 export interface RoutingState
 {
     route: ROUTE_TYPES
+    sub_route: SUB_ROUTE_TYPES | undefined
     item_id: string | undefined
 }
 

@@ -22,7 +22,7 @@ function save_state (state: RootState)
 }
 
 
-function get_default_state (): RootState
+function get_initial_state (): RootState
 {
     let starting_state = get_starting_state()
 
@@ -73,17 +73,18 @@ const root_reducer: Reducer<RootState, any> = ((state: RootState, action: AnyAct
 
 
 let store: Store<RootState, Action<any>>
-export function config_store (use_cache: boolean = true, preloaded_state: Partial<RootState> | undefined = undefined)
+export function config_store (use_cache: boolean = true, override_preloaded_state: Partial<RootState> | undefined = undefined)
 {
     if (store && use_cache) return store
 
-    const preloaded: RootState = render_all_objects({
-        ...get_default_state(),
-        ...(preloaded_state || {})
+    const preloaded_state: RootState = render_all_objects({
+        ...get_initial_state(),
+        ...(override_preloaded_state || {})
     })
-    store = createStore<RootState, Action, {}, {}>(root_reducer, preloaded)
+    store = createStore<RootState, Action, {}, {}>(root_reducer, preloaded_state)
 
-    store.subscribe(() => {
+    store.subscribe(() =>
+    {
         const state = store.getState()
         save_state(state)
         ;(window as any).store_state = state

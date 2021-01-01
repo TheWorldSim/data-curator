@@ -19,6 +19,9 @@ type OwnProps = {
 const map_dispatch = {
     add_object: (args: AddObjectProps) => ACTIONS.add_object(args),
     update_object: (args: UpdateObjectProps) => ACTIONS.update_object(args),
+    show_bulk_import: () => ACTIONS.change_route({
+        route: "objects", sub_route: "objects_bulk_import", item_id: undefined
+    }),
 }
 
 
@@ -88,7 +91,14 @@ function _ObjectForm (props: Props)
     }
 
     return <div>
-        <b>{props.object ? "Edit" : "Add"} object</b>
+        <b>{props.object ? "Edit object" : "Add object"}</b>
+
+        <input
+            type="button"
+            style={{ float: "right" }}
+            value="Bulk import"
+            onClick={props.show_bulk_import}
+        ></input>
 
         <hr />
 

@@ -16,7 +16,9 @@ interface OwnProps {
 
 
 const map_dispatch = (dispatch: Dispatch, own_props: OwnProps) => ({
-    link_clicked: () => dispatch(ACTIONS.change_route({ route: own_props.route, item_id: own_props.item_id }))
+    link_clicked: () => dispatch(ACTIONS.change_route({
+        route: own_props.route, sub_route: undefined, item_id: own_props.item_id
+    }))
 })
 
 
