@@ -97,6 +97,18 @@ export function config_store (use_cache: boolean = true, preloaded_state: Partia
         store.dispatch(ACTIONS.change_route(routing_params))
     }
 
+    window.onbeforeunload = () =>
+    {
+        const state = store.getState()
+        delete (state as any).routing
+        delete (state as any).global_key_press
+        const backup_state = JSON.stringify(state)
+        fetch("http://localhost:4000/api/v1/save_state/", {
+            method: "post",
+            body: backup_state,
+        })
+    }
+
     document.onkeydown = (e) =>
     {
         const action_args: ActionKeyDownArgs = {

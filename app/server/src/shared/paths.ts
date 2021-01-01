@@ -60,5 +60,8 @@ export class PATHS {
         USERS_GET: (userId: string = template_path_for_hapi(HAPI_PATH_IDS.USERS_ID)) => {
             return PATHS._API_V1 + "/users/" + userId
         },
+
+        //
+        SAVE_STATE: PATHS._API_V1 + "/save_state/"
     }
 }
