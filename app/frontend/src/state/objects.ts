@@ -64,11 +64,44 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
         }
     }
 
-    if (is_update_objects(action))
+    if (is_replace_all_objects(action))
     {
         state = {
             ...state,
             objects: action.objects,
+        }
+    }
+
+    if (is_upsert_objects(action))
+    {
+        const existing_ids: Set<string> = new Set()
+        state.objects.forEach(o => {
+            if (existing_ids.has(o.id)) console.error(`Duplicate objects found for id: ${o.id}`)
+            existing_ids.add(o.id)
+        })
+
+        const object_ids_to_update: {[id: string]: ObjectWithCache} = {}
+        const objects_to_insert: ObjectWithCache[] = []
+        action.objects.forEach(o => {
+            if (existing_ids.has(o.id)) object_ids_to_update[o.id] = o
+            else objects_to_insert.push(o)
+        })
+
+        const objects: ObjectWithCache[] = state.objects.map(o => {
+            if (object_ids_to_update.hasOwnProperty(o.id))
+            {
+                o = {
+                    ...o,
+                    ...object_ids_to_update[o.id],
+                }
+            }
+
+            return o
+        }).concat(objects_to_insert)
+
+        state = {
+            ...state,
+            objects,
         }
     }
 
@@ -144,18 +177,18 @@ interface ActionUpdateObject extends Action, ObjectWithCache {}
 const update_object_type = "update_object"
 
 
-export interface UpdateObjectProps
-{
-    id: string
-    datetime_created: Date
-    pattern_id: string
-    pattern_name: string
-    content: string
+export interface UpdateObjectProps extends Objekt {}
+// {
+//     id: string
+//     datetime_created: Date
+//     pattern_id: string
+//     pattern_name: string
+//     content: string
 
-    attributes: ObjectAttribute[]
-    labels: string[]
-    external_ids: { [application: string]: string }
-}
+//     attributes: ObjectAttribute[]
+//     labels: string[]
+//     external_ids: { [application: string]: string }
+// }
 export const update_object = (args: UpdateObjectProps): ActionUpdateObject =>
 {
     return {
@@ -179,30 +212,59 @@ const is_update_object = (action: AnyAction): action is ActionUpdateObject => {
 }
 
 
-
 //
 
-interface ActionUpdateObjects extends Action {
+interface ActionUpsertObjects extends Action {
     objects: ObjectWithCache[]
 }
 
-const update_objects_type = "update_objects"
+const upsert_objects_type = "upsert_objects"
+
+
+export interface UpsertObjectsProps
+{
+    objects: ObjectWithCache[]
+}
+export const upsert_objects = (args: UpsertObjectsProps): ActionUpsertObjects =>
+{
+    return {
+        type: upsert_objects_type,
+        objects: args.objects.map(o => ({
+            ...o,
+            rendered: "",
+            needs_rendering: true,
+        })),
+    }
+}
+
+const is_upsert_objects = (action: AnyAction): action is ActionUpsertObjects => {
+    return action.type === upsert_objects_type
+}
+
+
+//
+
+interface ActionReplaceAllObjects extends Action {
+    objects: ObjectWithCache[]
+}
+
+const replace_all_objects_type = "replace_all_objects"
 
 
 export interface UpdateObjectsProps
 {
     objects: ObjectWithCache[]
 }
-export const update_objects = (args: UpdateObjectsProps): ActionUpdateObjects =>
+export const replace_all_objects = (args: UpdateObjectsProps): ActionReplaceAllObjects =>
 {
     return {
-        type: update_objects_type,
+        type: replace_all_objects_type,
         objects: args.objects,
     }
 }
 
-const is_update_objects = (action: AnyAction): action is ActionUpdateObjects => {
-    return action.type === update_objects_type
+const is_replace_all_objects = (action: AnyAction): action is ActionReplaceAllObjects => {
+    return action.type === replace_all_objects_type
 }
 
 
@@ -212,7 +274,8 @@ export const object_actions = {
     add_object,
     delete_object,
     update_object,
-    update_objects,
+    upsert_objects,
+    replace_all_objects,
 }
 
 

@@ -138,7 +138,7 @@ function render_all_objects_and_update_store ()
 
     if (objects !== state.objects)
     {
-        store.dispatch(ACTIONS.update_objects({ objects }))
+        store.dispatch(ACTIONS.replace_all_objects({ objects }))
     }
 }
 
