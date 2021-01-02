@@ -285,9 +285,9 @@ export function convert_from_pattern_attributes (attributes: PatternAttribute[])
 }
 
 
-function merge_pattern_attributes (attributes: CoreObjectAttribute[], pattern: Pattern): ObjectAttribute[]
+export function merge_pattern_attributes (attributes: CoreObjectAttribute[], pattern: Pattern): ObjectAttribute[]
 {
-    return attributes.map((a, i) => ({ ...a, pattern: pattern.attributes[i] }))
+    return attributes.map(a => ({ ...a, pattern: pattern.attributes[a.pidx] }))
 }
 
 export function merge_pattern (object: CoreObject, patterns: Pattern[]): Objekt
