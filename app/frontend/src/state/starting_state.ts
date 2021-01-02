@@ -197,6 +197,7 @@ export function get_starting_state (): RootState
                 { pidx: 0, value: "WHO" }
             ],
             labels: [],
+            external_ids: {},
         },
         {
             id: OTHER_IDS.date_2020_10_15,
@@ -211,6 +212,7 @@ export function get_starting_state (): RootState
                 { pidx: 5, value: "" },
             ],
             labels: [],
+            external_ids: {},
         },
         {
             id: OTHER_IDS.date_2020_10_15_short,
@@ -220,6 +222,7 @@ export function get_starting_state (): RootState
                 { pidx: 0, id: OTHER_IDS.date_2020_10_15 },
             ],
             labels: [],
+            external_ids: {},
         },
         {
             id: OTHER_IDS.document_who_covid,
@@ -233,6 +236,7 @@ export function get_starting_state (): RootState
                 { pidx: 4, id: "" },
             ],
             labels: [],
+            external_ids: {},
         },
         {
             id: OTHER_IDS.document_who_covid_video,
@@ -246,6 +250,7 @@ export function get_starting_state (): RootState
                 { pidx: 4, id: "" },
             ],
             labels: [OTHER_IDS.document_who_covid],
+            external_ids: {},
         },
         {
             id: OTHER_IDS.refstat_who_measles_95_herd,
@@ -257,6 +262,7 @@ export function get_starting_state (): RootState
                 { pidx: 2, value: "https://youtu.be/U47SaDAmyrE?t=56" },
             ],
             labels: [OTHER_IDS.document_who_covid],
+            external_ids: {},
         },
     ]
     const objects = core_objects.map(o => merge_pattern(o, patterns))

@@ -173,6 +173,7 @@ function get_object_for_test (args: Partial<CoreObject>, patterns: Pattern[]): O
         datetime_created: new Date(),
         attributes: [],
         labels: [],
+        external_ids: {},
         pattern_id: "p1",
         ...args,
     }, patterns)

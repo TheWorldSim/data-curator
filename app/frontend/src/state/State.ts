@@ -34,6 +34,7 @@ export interface CoreObject
     labels: string[]  // statement_ids[]
     attributes: CoreObjectAttribute[]
     pattern_id: string
+    external_ids: { [application: string]: string }
 }
 export interface Objekt extends CoreObject
 {
@@ -46,6 +47,7 @@ export interface ObjectWithCache extends Objekt
     rendered: string
     needs_rendering: boolean
 }
+
 export interface CoreObjectIdAttribute {
     pidx: number
     id: string /* statement_id */

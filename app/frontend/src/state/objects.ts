@@ -91,6 +91,7 @@ export interface AddObjectProps
 
     attributes: ObjectAttribute[]
     labels: string[]
+    external_ids: { [application: string]: string },
 }
 export const add_object = (args: AddObjectProps): ActionAddObject =>
 {
@@ -105,7 +106,8 @@ export const add_object = (args: AddObjectProps): ActionAddObject =>
         pattern_name: args.pattern_name,
         content: args.content,
         attributes: args.attributes,
-        labels: [],
+        labels: args.labels,
+        external_ids: args.external_ids,
 
         rendered: "",
         needs_rendering: true,
@@ -152,6 +154,7 @@ export interface UpdateObjectProps
 
     attributes: ObjectAttribute[]
     labels: string[]
+    external_ids: { [application: string]: string }
 }
 export const update_object = (args: UpdateObjectProps): ActionUpdateObject =>
 {
@@ -164,6 +167,7 @@ export const update_object = (args: UpdateObjectProps): ActionUpdateObject =>
         content: args.content,
         attributes: args.attributes,
         labels: args.labels,
+        external_ids: args.external_ids,
 
         rendered: "",
         needs_rendering: true,

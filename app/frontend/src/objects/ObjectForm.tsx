@@ -40,6 +40,7 @@ const blank_state: UpdateObjectProps = {
 
     attributes: [],
     labels: [],
+    external_ids: {},
 }
 
 function _ObjectForm (props: Props)
