@@ -26,7 +26,7 @@ export const id_is_object = (id: string | undefined) => !!id && object_id_regex.
 
 export const id_is_valid = (id: string | undefined) =>
 {
-    return id_is_statement(id) && id_is_pattern(id) && id_is_object(id)
+    return id_is_statement(id) || id_is_pattern(id) || id_is_object(id)
 }
 
 export function bounded (num: number, min: number, max: number): number
