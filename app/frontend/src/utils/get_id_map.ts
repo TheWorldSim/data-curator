@@ -1,14 +1,5 @@
 import { RootState, Item, Objekt, is_id_attribute, CoreObjectIdAttribute } from "../state/State"
-
-
-const statement_id_regex = new RegExp(/^s\d/)
-const id_is_statement = (id: string) => statement_id_regex.test(id)
-
-const pattern_id_regex = new RegExp(/^p\d/)
-const id_is_pattern = (id: string) => pattern_id_regex.test(id)
-
-const object_id_regex = new RegExp(/^o\d/)
-const id_is_object = (id: string) => object_id_regex.test(id)
+import { id_is_object, id_is_statement, id_is_pattern } from "./utils"
 
 
 export type ID_ITEM_MAP = {[id: string]: Item}

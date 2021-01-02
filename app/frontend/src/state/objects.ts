@@ -1,7 +1,7 @@
 import type { Action, AnyAction } from "redux"
 import { replace_element } from "../utils/list"
 
-import { get_datetime, get_new_id } from "../utils/utils"
+import { get_datetime, get_new_object_id } from "../utils/utils"
 import type {
     RootState,
     Objekt,
@@ -129,7 +129,7 @@ export interface AddObjectProps
 export const add_object = (args: AddObjectProps): ActionAddObject =>
 {
     const datetime_created = get_datetime()
-    const id = "o" + get_new_id()
+    const id = get_new_object_id()
 
     return {
         type: add_object_type,
@@ -178,17 +178,6 @@ const update_object_type = "update_object"
 
 
 export interface UpdateObjectProps extends Objekt {}
-// {
-//     id: string
-//     datetime_created: Date
-//     pattern_id: string
-//     pattern_name: string
-//     content: string
-
-//     attributes: ObjectAttribute[]
-//     labels: string[]
-//     external_ids: { [application: string]: string }
-// }
 export const update_object = (args: UpdateObjectProps): ActionUpdateObject =>
 {
     return {
@@ -231,6 +220,7 @@ export const upsert_objects = (args: UpsertObjectsProps): ActionUpsertObjects =>
         type: upsert_objects_type,
         objects: args.objects.map(o => ({
             ...o,
+            id: o.id || get_new_object_id(),
             rendered: "",
             needs_rendering: true,
         })),

@@ -94,7 +94,7 @@ export function config_store (use_cache: boolean = true, override_preloaded_stat
 
     window.onhashchange = (e: HashChangeEvent) =>
     {
-        const routing_params = parse_url_for_routing_params(e.newURL)
+        const routing_params = parse_url_for_routing_params({ url: e.newURL, state: store.getState() })
         store.dispatch(ACTIONS.change_route(routing_params))
     }
 

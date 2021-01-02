@@ -277,7 +277,7 @@ export function get_starting_state (): RootState
         statements,
         patterns,
         objects,
-        routing: get_current_route_params(),
+        routing: get_current_route_params({ statements, patterns, objects }),
         global_key_press: { last_key: undefined, last_key_time_stamp: undefined },
     }
 

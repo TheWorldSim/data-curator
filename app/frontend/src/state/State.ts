@@ -74,7 +74,7 @@ export type ROUTE_TYPES = (
     | "objects"
     | "patterns"
     | "creation_context"
-    )
+)
 export type SUB_ROUTE_TYPES = "objects_bulk_import"
 export const ALLOWED_ROUTES: ROUTE_TYPES[] = [
     "filter",
@@ -83,6 +83,13 @@ export const ALLOWED_ROUTES: ROUTE_TYPES[] = [
     "patterns",
     "creation_context",
 ]
+export const ALLOWED_SUB_ROUTES: {[k in ROUTE_TYPES]: SUB_ROUTE_TYPES[]} = {
+    "filter": [],
+    "statements": [],
+    "objects": ["objects_bulk_import"],
+    "patterns": [],
+    "creation_context": [],
+}
 export interface RoutingState
 {
     route: ROUTE_TYPES
@@ -98,11 +105,14 @@ export interface GlobalKeyPress
 }
 
 
-export interface RootState
+export interface RootStateCore
 {
     statements: Statement[]
     patterns: Pattern[]
     objects: ObjectWithCache[]
+}
+export interface RootState extends RootStateCore
+{
     routing: RoutingState
     global_key_press: GlobalKeyPress
 }

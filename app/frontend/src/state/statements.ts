@@ -1,6 +1,6 @@
 import type { Action, AnyAction } from "redux"
 
-import { get_datetime, get_new_id } from "../utils/utils"
+import { get_datetime, get_new_statement_id } from "../utils/utils"
 import type { RootState, Statement } from "./State"
 
 
@@ -48,7 +48,7 @@ interface AddStatementProps
 export const add_statement = (args: AddStatementProps): ActionAddStatement =>
 {
     const datetime_created = get_datetime()
-    const id = "s" + get_new_id()
+    const id = get_new_statement_id()
 
     return {
         type: add_statement_type,
