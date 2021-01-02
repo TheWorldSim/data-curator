@@ -1,11 +1,11 @@
 import { FunctionComponent, h } from "preact"
+import { useState } from "preact/hooks"
 import { connect, ConnectedProps } from "react-redux"
 import { CORE_IDS } from "../state/core_data"
 
 import { merge_pattern_attributes } from "../state/objects"
 import type { ObjectWithCache, Pattern, RootState } from "../state/State"
 import { ACTIONS } from "../state/store"
-import { get_new_id } from "../utils/utils"
 
 
 interface OwnProps {}
@@ -33,7 +33,23 @@ type Props = ConnectedProps<typeof connector> & OwnProps
 
 function _ObjectBulkImport (props: Props)
 {
-    const get_data = get_data_from_air_table(props.patterns.action, props.objects, props.upsert_objects)
+    const [status, set_status] = useState("")
+
+    const on_new_objects = (objects: ObjectWithCache[]) =>
+    {
+        set_status(`Successfully fetched ${objects.length} objects`)
+
+        props.upsert_objects(objects)
+        setTimeout(() => {
+            set_status("")
+        }, 2000)
+    }
+
+    const get_data = () =>
+    {
+        set_status("Fetching objects from AirTable API")
+        get_data_from_air_table(props.patterns.action, props.objects, on_new_objects)
+    }
 
     return <div>
         <b>Object Bulk Import</b>
@@ -46,7 +62,16 @@ function _ObjectBulkImport (props: Props)
 
         <br /><br />
 
-        <input type="button" value="Get data" onClick={get_data}></input>
+        <input
+            type="button"
+            value="Get data"
+            onClick={get_data}
+            disabled={!!status}
+        ></input>
+
+        <br />
+
+        {status && <b>Status: {status}</b>}
 
     </div>
 }
@@ -58,7 +83,7 @@ export const ObjectBulkImport = connector(_ObjectBulkImport) as FunctionComponen
 const external_id_key = "airtable"
 
 
-function get_data_from_air_table (pattern: Pattern, existing_objects: ObjectWithCache[], upsert_objects: (objects: ObjectWithCache[]) => void)
+function get_data_from_air_table (pattern: Pattern, existing_objects: ObjectWithCache[], on_new_objects: (objects: ObjectWithCache[]) => void)
 {
     const auth_key = localStorage.getItem("airtable_auth_key")
     const app = localStorage.getItem("airtable_app")
@@ -66,19 +91,16 @@ function get_data_from_air_table (pattern: Pattern, existing_objects: ObjectWith
     const view = localStorage.getItem("airtable_view")
     const url = `https://api.airtable.com/v0/${app}/${table}?maxRecords=100&view=${view}`
 
-    return () =>
-    {
-        fetch(url, { headers: { "Authorization": `Bearer ${auth_key}` } })
-        .then(d => d.json())
-        .then((d: { records: AirtableActions[] }) => {
-            const objects = d.records.map(airtable_action => {
-                const predicate = find_object_by_airtable_id(airtable_action.id)
-                const existing_object = existing_objects.find(predicate)
-                return transform_airtable_action({ pattern, airtable_action, existing_object })
-            })
-            upsert_objects(objects)
+    fetch(url, { headers: { "Authorization": `Bearer ${auth_key}` } })
+    .then(d => d.json())
+    .then((d: { records: AirtableActions[] }) => {
+        const objects = d.records.map(airtable_action => {
+            const predicate = find_object_by_airtable_id(airtable_action.id)
+            const existing_object = existing_objects.find(predicate)
+            return transform_airtable_action({ pattern, airtable_action, existing_object })
         })
-    }
+        on_new_objects(objects)
+    })
 }
 
 
@@ -127,10 +149,8 @@ function transform_airtable_action (args: TransformAirtableActionArgs): ObjectWi
     const aa = args.airtable_action
     const eo = args.existing_object
 
-    console.log(eo ? "Found existing" : "Not found existing")
-
     return {
-        id: eo ? eo.id : get_new_id(),
+        id: (eo && eo.id) || "",
         datetime_created: eo ? eo.datetime_created : new Date(aa.createdTime),
         labels: [],
         pattern_id: pattern.id,
