@@ -48,7 +48,7 @@ export function state_routes (server: Server)
             if (existing !== to_save_str)
             {
                 writeFileSync(file_name_latest, to_save_str)
-                writeFileSync(`./state_backup/${new Date().toISOString()}.json`, to_save_str)
+                // writeFileSync(`./state_backup/versions/${new Date().toISOString()}.json`, to_save_str)
             }
 
             server.log(LOG_TAGS.INFO, "Saving state")
