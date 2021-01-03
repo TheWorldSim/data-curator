@@ -20,14 +20,25 @@
     margin-top: -125px;
     background-color: white;
     border: thin solid #777;
+    /* overflow: scroll; */
+}
+
+#search_container tbody
+{
+    position: absolute;
+    top: 60px;
+    height: 190px;
+    display: block;
+    overflow: scroll;
 }
 
 #search_close
 {
     position: absolute;
-    right: 10px;
+    right: 5px;
+    top: 5px;
     width: 30px;
-    height: 30px;
+    height: 22px;
     text-align: center;
     border-radius: 2px;
     border: thin solid #777;

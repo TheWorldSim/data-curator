@@ -31,7 +31,7 @@ function map_state (state: RootState, own_props: OwnProps)
     if (filter_type === "simple_types" || filter_type === "types")
     {
         statements = statements
-            .filter(s => s.labels.includes(CORE_IDS.Type))
+            .filter(s => s.labels.includes(CORE_IDS.sType))
     }
     else if (filter_type === "patterns")
     {

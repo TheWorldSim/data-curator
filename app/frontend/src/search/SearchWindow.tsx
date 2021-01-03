@@ -73,6 +73,7 @@ function _SearchWindow (props: Props)
 
             <br />
             <br />
+            <hr />
 
             <ListOfTypes
                 filter_type={props.filter_type}
