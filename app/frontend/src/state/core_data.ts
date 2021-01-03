@@ -8,33 +8,33 @@ export const oid = () => "o" + (object_id++).toString()
 
 
 export const STATEMENT_IDS = {
-    Type: sid(),
-    Title: sid(),
-    DOI: sid(),
-    URL: sid(),
-    Year: sid(),
-    "Month of year": sid(),
-    "Day of month": sid(),
-    "Hour of day": sid(),
-    "Minute of hour": sid(),
-    "Seconds of minute": sid(),
-    "Nanoseconds": sid(),
-    "Timezone": sid(),
-    "Action status": sid(),
+    sType: sid(),
+    sTitle: sid(),
+    sDOI: sid(),
+    sURL: sid(),
+    sYear: sid(),
+    "sMonth of year": sid(),
+    "sDay of month": sid(),
+    "sHour of day": sid(),
+    "sMinute of hour": sid(),
+    "sSeconds of minute": sid(),
+    "sNanoseconds": sid(),
+    "sTimezone": sid(),
+    "sAction status": sid(),
 }
 
 
 export const PATTERN_IDS = {
-    Person: pid(),
+    pPerson: pid(),
     // Persons: pid(),
-    Group: pid(),
-    "Person(s) or Group(s)": pid(),
-    Datetime: pid(),
-    "Date": pid(),
-    Document: pid(),
-    Project: pid(),
-    Action: pid(),
-    "Reference statement": pid(),
+    pGroup: pid(),
+    "pPerson(s) or Group(s)": pid(),
+    pDatetime: pid(),
+    "pDate": pid(),
+    pDocument: pid(),
+    pProject: pid(),
+    pAction: pid(),
+    "pReference statement": pid(),
 }
 
 

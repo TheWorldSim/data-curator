@@ -12,8 +12,8 @@ interface OwnProps {}
 
 
 const map_state = (state: RootState) => {
-    const action = state.patterns.find(({ id }) => id === CORE_IDS.Action)
-    if (!action) throw new Error(`Pattern "Action" for id: ${CORE_IDS.Action} not found`)
+    const action = state.patterns.find(({ id }) => id === CORE_IDS.pAction)
+    if (!action) throw new Error(`Pattern "Action" for id: ${CORE_IDS.pAction} not found`)
 
     return {
         objects: state.objects,
@@ -91,14 +91,20 @@ function get_data_from_air_table (pattern: Pattern, existing_objects: ObjectWith
     const view = localStorage.getItem("airtable_view")
     const url = `https://api.airtable.com/v0/${app}/${table}?maxRecords=100&view=${view}`
 
+    const { temporary_ids, get_temp_id } = temp_id_factory()
+
     fetch(url, { headers: { "Authorization": `Bearer ${auth_key}` } })
     .then(d => d.json())
-    .then((d: { records: AirtableActions[] }) => {
-        const objects = d.records.map(airtable_action => {
+    .then((d: { records: AirtableActions[] }) =>
+    {
+
+        const objects = d.records.map(airtable_action =>
+        {
             const predicate = find_object_by_airtable_id(airtable_action.id)
             const existing_object = existing_objects.find(predicate)
-            return transform_airtable_action({ pattern, airtable_action, existing_object })
+            return transform_airtable_action({ pattern, get_temp_id, airtable_action, existing_object })
         })
+
         on_new_objects(objects)
     })
 }
@@ -138,6 +144,7 @@ interface AirtableActions
 interface TransformAirtableActionArgs
 {
     pattern: Pattern
+    get_temp_id: TempIdFunc
     airtable_action: AirtableActions
     existing_object?: ObjectWithCache
 }
@@ -145,7 +152,7 @@ interface TransformAirtableActionArgs
 function transform_airtable_action (args: TransformAirtableActionArgs): ObjectWithCache
 {
     const pattern = args.pattern
-    if (pattern.id !== CORE_IDS.Action) throw new Error(`transform_airtable_action requires Action pattern`)
+    if (pattern.id !== CORE_IDS.pAction) throw new Error(`transform_airtable_action requires Action pattern`)
     const aa = args.airtable_action
     const eo = args.existing_object
 
@@ -162,8 +169,35 @@ function transform_airtable_action (args: TransformAirtableActionArgs): ObjectWi
             { pidx: 1, value: "<project id>" },
             { pidx: 2, value: aa.fields.Description },
             { pidx: 3, value: aa.fields.Status || "" },
+            ...(aa.fields["Encompasing Action"] || []).map(id => ({
+                pidx: 4, id: args.get_temp_id(id),
+            })),
+            { pidx: 5, value: args.get_temp_id((aa.fields["Depends on Actions"] || [])[0]) },
         ], pattern),
         rendered: "",
         needs_rendering: true,
+    }
+}
+
+
+interface TempIdFunc {
+    (id: string | undefined): string
+}
+
+function temp_id_factory () {
+    const temporary_ids: { [id: string]: number } = {}
+
+    const get_temp_id: TempIdFunc = id => {
+        if (!id) return ""
+
+        if (!temporary_ids.hasOwnProperty(id)) temporary_ids[id] = 0
+        temporary_ids[id] += 1
+
+        return `temp_id: ${id}`
+    }
+
+    return {
+        temporary_ids,
+        get_temp_id,
     }
 }
