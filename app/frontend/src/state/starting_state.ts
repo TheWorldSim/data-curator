@@ -109,7 +109,7 @@ export function get_starting_state (): RootState
                 { type_id: CORE_IDS.pProject, alt_name: "Project(s)", multiple: true },
                 { type_id: "", alt_name: "Description" },
                 { type_id: CORE_IDS["sAction status"], alt_name: "Status" },
-                { type_id: CORE_IDS.pAction, alt_name: "Encompasing Action" },
+                { type_id: CORE_IDS.pAction, alt_name: "Encompassing Action" },
                 { type_id: CORE_IDS.pAction, alt_name: "Depends on Actions", multiple: true },
             ]
         },

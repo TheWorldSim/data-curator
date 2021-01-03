@@ -135,7 +135,7 @@ interface AirtableActions
         Description: string
         Name: string
         Projects: string[]
-        ["Encompasing Action"]: string[]  // should only be 0 or 1 value
+        ["Encompassing Action"]: string[]  // should only be 0 or 1 value
         ["Action Type"]: "Is Spike" | "Is Conditional" | undefined
         ["Depends on Actions"]: string[]  // 0+ values
         ["Total time (h)"]: number
@@ -159,7 +159,7 @@ function transform_airtable_action (args: TransformAirtableActionArgs): ObjectWi
     const aa = args.airtable_action
     const eo = args.existing_object
 
-    return {
+    const new_action_object = {
         id: (eo && eo.id) || get_new_object_id(),
         datetime_created: eo ? eo.datetime_created : new Date(aa.createdTime),
         labels: [],
@@ -172,14 +172,16 @@ function transform_airtable_action (args: TransformAirtableActionArgs): ObjectWi
             { pidx: 1, value: "<project id>" },
             { pidx: 2, value: aa.fields.Description },
             { pidx: 3, value: aa.fields.Status || "" },
-            ...(aa.fields["Encompasing Action"] || []).map(id => ({
-                pidx: 4, id: args.get_temp_id(id),
+            { pidx: 4, id: args.get_temp_id((aa.fields["Encompassing Action"] || [])[0]) },
+            ...(aa.fields["Depends on Actions"] || [""]).map(id => ({
+                pidx: 5, id: id && args.get_temp_id(id),
             })),
-            { pidx: 5, id: args.get_temp_id((aa.fields["Depends on Actions"] || [])[0]) },
         ], pattern),
         rendered: "",
         needs_rendering: true,
     }
+
+    return new_action_object
 }
 
 
