@@ -1,0 +1,10 @@
+
+table
+{
+    border-collapse: collapse;
+}
+
+.match
+{
+    border: thin solid red;
+}

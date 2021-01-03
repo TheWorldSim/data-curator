@@ -19,6 +19,7 @@ type OwnProps =
     editable: true
     item_id: string
     filter: ITEM_FILTERS
+    filter_specific_type_id?: string
     on_change_item_id?: (id: string) => void
     on_change_item?: (item: Item) => void
 }
@@ -76,6 +77,7 @@ function _ItemSelect (props: Props)
         </div>
 
         {display_search && <SearchWindow
+            specific_type_id={props.filter_specific_type_id}
             filter_type={props.filter}
             on_choose={(item: Item) => {
                 props.on_change_item_id && props.on_change_item_id(item.id)

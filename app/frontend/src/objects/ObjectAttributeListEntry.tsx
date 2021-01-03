@@ -4,6 +4,7 @@ import { connect } from "react-redux"
 import { is_id_attribute, is_value_attribute, Item, ObjectAttribute, RootState } from "../state/State"
 import { get_id_map } from "../utils/get_id_map"
 import { ItemSelect } from "../search/ItemSelect"
+import { CORE_IDS } from "../state/core_data"
 
 
 interface StateProps {
@@ -62,7 +63,8 @@ function _ObjectAttributeListEntry (props: Props)
             <ItemSelect
                 editable={!!props.editable_type}
                 item_id={attribute.pattern.type_id}
-                filter="types"
+                filter="types" // TODO deprecate in favour of `filter_specific_type_id` by CORE_IDS.sType
+                filter_specific_type_id={CORE_IDS.sType}
             />
         </td>,
         <td>
@@ -73,6 +75,7 @@ function _ObjectAttributeListEntry (props: Props)
                 editable={props.editable && (is_id_attribute(attribute) || !attribute.value)}
                 item_id={(is_id_attribute(attribute) && attribute.id) || ""}
                 filter="all_concrete"
+                filter_specific_type_id={attribute.pattern.type_id}
                 on_change_item_id={on_change_id}
             />
         </td>,

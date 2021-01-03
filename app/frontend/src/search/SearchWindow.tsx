@@ -9,6 +9,7 @@ import { useState } from "preact/hooks"
 
 interface OwnProps
 {
+    specific_type_id?: string
     filter_type: ITEM_FILTERS
     on_choose: (item: Item) => void
     on_close: () => void
@@ -76,6 +77,7 @@ function _SearchWindow (props: Props)
             <hr />
 
             <ListOfTypes
+                specific_type_id={props.specific_type_id}
                 filter_type={props.filter_type}
                 filtered_by_string={search_string}
                 on_click={(item: Item) => props.on_choose(item)}

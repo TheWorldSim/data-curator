@@ -126,10 +126,14 @@ export function get_starting_state (): RootState
         },
     ]
 
-
+    const years = Array.from(Array(130)).map((_, i) => 1900 + i)
     const OTHER_IDS = {
         title_covid_who: sid(),
-        year_2020: sid(),
+        // Not yet convinced "year" is the level of granularity to model.
+        ...years.reduce((accum: {[year: string]: string}, i) => {
+            accum[`year_${i}`] = sid()
+            return accum
+        }, {}),
         url_who_covid: sid(),
         status_action_icebox: sid(),
         status_action_todo: sid(),
@@ -150,12 +154,12 @@ export function get_starting_state (): RootState
         content: "Coronavirus disease (COVID-19): Herd immunity, lockdowns and COVID-19",
         labels: [],
     })
-    statements.push({
-        id: OTHER_IDS.year_2020,
+    years.forEach(i => statements.push({
+        id: (OTHER_IDS as any)[`year_${i}`],
         datetime_created,
-        content: "2020",
+        content: `${i}`,
         labels: [CORE_IDS.sYear],
-    })
+    }))
     statements.push({
         id: OTHER_IDS.url_who_covid,
         datetime_created,
@@ -206,7 +210,7 @@ export function get_starting_state (): RootState
             datetime_created,
             pattern_id: CORE_IDS.pDatetime,
             attributes: [
-                { pidx: 0, id: OTHER_IDS.year_2020 },
+                { pidx: 0, id: (OTHER_IDS as any).year_2020 },
                 { pidx: 1, value: "10" },
                 { pidx: 2, value: "15" },
                 { pidx: 3, value: "" },

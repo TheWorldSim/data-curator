@@ -1,11 +1,13 @@
 import { Component, FunctionComponent, h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
 
+import "./ListOfTypes.css"
 import { PatternListEntry } from "../patterns/PatternListEntry"
 import { StatementListEntry } from "../statements/StatementListEntry"
-import type { Item, RootState } from "../state/State"
+import type { Item, ObjectWithCache, Pattern, RootState, Statement } from "../state/State"
 import { CORE_IDS } from "../state/core_data"
 import { ObjectListEntry } from "../objects/ObjectListEntry"
+import { id_is_object, id_is_pattern, id_is_statement } from "../utils/utils"
 
 
 export type ITEM_FILTERS = "simple_types" | "types" | "patterns" | "all_concrete"
@@ -13,9 +15,34 @@ export type ITEM_FILTERS = "simple_types" | "types" | "patterns" | "all_concrete
 
 interface OwnProps
 {
+    specific_type_id?: string
     filter_type: ITEM_FILTERS
     filtered_by_string: string
     on_click: (item: Item) => void
+}
+
+
+interface SearchProps
+{
+    search: {
+        weight: number
+        match: boolean
+    }
+}
+
+
+function add_search_props (item: Statement): Statement & SearchProps
+function add_search_props (item: Pattern): Pattern & SearchProps
+function add_search_props (item: ObjectWithCache): ObjectWithCache & SearchProps
+function add_search_props (item: Item): Item & SearchProps
+{
+    return {
+        ...item,
+        search: {
+            weight: 0,
+            match: true,
+        }
+    }
 }
 
 
@@ -24,9 +51,9 @@ function map_state (state: RootState, own_props: OwnProps)
     const { filtered_by_string, filter_type } = own_props
     const fi = filtered_by_string.toLowerCase()
 
-    let statements = state.statements
-    let patterns = state.patterns
-    let objects = state.objects
+    let statements: (Statement & SearchProps)[] = state.statements.map(i => add_search_props(i))
+    let patterns: (Pattern & SearchProps)[] = state.patterns.map(i => add_search_props(i))
+    let objects: (ObjectWithCache & SearchProps)[] = state.objects.map(add_search_props) as (ObjectWithCache & SearchProps)[]
 
     if (filter_type === "simple_types" || filter_type === "types")
     {
@@ -60,11 +87,39 @@ function map_state (state: RootState, own_props: OwnProps)
 
     objects = objects.filter(o => o.id.startsWith(fi) || o.content.toLowerCase().includes(fi) || o.rendered.toLowerCase().includes(fi))
 
+    let items: (Item & SearchProps)[] = []
+
+    items = items
+        .concat(statements)
+        .concat(patterns)
+        .concat(objects)
+
+    items = items
+        .map(i => {
+            if (!own_props.specific_type_id) return i
+
+            if (i.hasOwnProperty("labels"))
+            {
+                const t = i as (Statement | ObjectWithCache)
+                const match = t.labels.includes(own_props.specific_type_id)
+
+                if (match)
+                {
+                    i.search.weight += 1
+                }
+
+                i.search.match = match
+            }
+
+            return i
+        })
+
+    items = items
+        .sort(({ search: { weight: a } }, { search: { weight: b } }) => a === b ? 0 : (a > b ? -1 : 1))
+
     return {
         // TODO memoize
-        statements,
-        patterns,
-        objects,
+        items,
     }
 }
 
@@ -92,14 +147,21 @@ class _ListOfTypes extends Component<Props, State>
     {
         return <table>
             <tbody>
-                {this.props.statements.map(s => <tr key={s.id}>
-                    { StatementListEntry({ statement: s, on_click: () => this.props.on_click(s) }) }
-                </tr>)}
-                {this.props.patterns.map(p => <tr key={p.id}>
-                    { PatternListEntry({ pattern: p, on_click: () => this.props.on_click(p) }) }
-                </tr>)}
-                {this.props.objects.map(o => <tr key={o.id}>
-                    { ObjectListEntry({ object: o, on_click: () => this.props.on_click(o) }) }
+                {this.props.items.map(item => <tr key={item.id} className={item.search.match ? "match" : ""}>
+                    { id_is_statement(item.id) && StatementListEntry({
+                        statement: item as Statement,
+                        on_click: () => this.props.on_click(item)
+                    }) }
+
+                    { id_is_pattern(item.id) && PatternListEntry({
+                        pattern: item as Pattern,
+                        on_click: () => this.props.on_click(item)
+                    }) }
+
+                    { id_is_object(item.id) && ObjectListEntry({
+                        object: item as ObjectWithCache,
+                        on_click: () => this.props.on_click(item)
+                    }) }
                 </tr>)}
             </tbody>
         </table>
