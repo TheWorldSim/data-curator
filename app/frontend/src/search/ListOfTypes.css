@@ -4,7 +4,13 @@ table
     border-collapse: collapse;
 }
 
+tbody
+{
+    width: 100%;
+    display: block;
+}
+
 .match
 {
-    border: thin solid red;
+    border: thin solid #DDF;
 }

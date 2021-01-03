@@ -12,9 +12,12 @@ interface OwnProps {
 
 export function PatternListEntry (props: OwnProps)
 {
-    return <td>
+    return [
+    <td>
         <Link route="patterns" item_id={props.pattern.id} on_click={props.on_click}>
             {props.pattern.name}
         </Link>
-    </td>
+    </td>,
+    <td></td>
+    ]
 }

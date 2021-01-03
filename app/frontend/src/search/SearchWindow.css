@@ -28,7 +28,6 @@
     position: absolute;
     top: 60px;
     height: 190px;
-    display: block;
     overflow: scroll;
 }
 
