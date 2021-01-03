@@ -29,6 +29,14 @@ export const statements_reducer = (state: RootState, action: AnyAction): RootSta
         }
     }
 
+    if (is_replace_all_statements(action))
+    {
+        state = {
+            ...state,
+            statements: action.statements
+        }
+    }
+
     return state
 }
 
@@ -45,7 +53,7 @@ interface AddStatementProps
     content: string
     labels: string[]
 }
-export const add_statement = (args: AddStatementProps): ActionAddStatement =>
+const add_statement = (args: AddStatementProps): ActionAddStatement =>
 {
     const datetime_created = get_datetime()
     const id = get_new_statement_id()
@@ -72,7 +80,7 @@ interface ActionDeleteStatement extends Action {
 
 const delete_statement_type = "delete_statement"
 
-export const delete_statement = (id: string): ActionDeleteStatement =>
+const delete_statement = (id: string): ActionDeleteStatement =>
 {
     return { type: delete_statement_type, id }
 }
@@ -82,7 +90,34 @@ const is_delete_statement = (action: AnyAction): action is ActionDeleteStatement
 }
 
 
+//
+
+interface ActionReplaceAllStatements extends Action {
+    statements: Statement[]
+}
+
+const replace_all_statements_type = "replace_all_statements"
+
+
+interface ReplaceAllStatementsProps
+{
+    statements: Statement[]
+}
+const replace_all_statements = (args: ReplaceAllStatementsProps): ActionReplaceAllStatements =>
+{
+    return {
+        type: replace_all_statements_type,
+        statements: args.statements,
+    }
+}
+
+const is_replace_all_statements = (action: AnyAction): action is ActionReplaceAllStatements => {
+    return action.type === replace_all_statements_type
+}
+
+
 export const statement_actions = {
     add_statement,
     delete_statement,
+    replace_all_statements,
 }

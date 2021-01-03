@@ -30,6 +30,14 @@ export const patterns_reducer = (state: RootState, action: AnyAction): RootState
         }
     }
 
+    if (is_replace_all_patterns(action))
+    {
+        state = {
+            ...state,
+            patterns: action.patterns
+        }
+    }
+
     return state
 }
 
@@ -47,7 +55,7 @@ interface AddPatternArgs
     content: string
     attributes: PatternAttribute[]
 }
-export const add_pattern = (args: AddPatternArgs): ActionAddPattern =>
+const add_pattern = (args: AddPatternArgs): ActionAddPattern =>
 {
     const id = get_new_pattern_id()
     const datetime_created = get_datetime()
@@ -75,7 +83,7 @@ interface ActionDeletePattern extends Action {
 
 const delete_pattern_type = "delete_pattern"
 
-export const delete_pattern = (id: string): ActionDeletePattern =>
+const delete_pattern = (id: string): ActionDeletePattern =>
 {
     return { type: delete_pattern_type, id }
 }
@@ -85,7 +93,36 @@ const is_delete_pattern = (action: AnyAction): action is ActionDeletePattern => 
 }
 
 
+//
+
+interface ActionReplaceAllPatterns extends Action {
+    patterns: Pattern[]
+}
+
+const replace_all_patterns_type = "replace_all_patterns"
+
+
+interface ReplaceAllPatternsProps
+{
+    patterns: Pattern[]
+}
+const replace_all_patterns = (args: ReplaceAllPatternsProps): ActionReplaceAllPatterns =>
+{
+    return {
+        type: replace_all_patterns_type,
+        patterns: args.patterns,
+    }
+}
+
+const is_replace_all_patterns = (action: AnyAction): action is ActionReplaceAllPatterns => {
+    return action.type === replace_all_patterns_type
+}
+
+
+//
+
 export const pattern_actions = {
     add_pattern,
     delete_pattern,
+    replace_all_patterns,
 }

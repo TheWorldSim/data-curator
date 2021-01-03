@@ -68,6 +68,14 @@ export const is_value_attribute = (a: CoreObjectAttribute): a is CoreObjectValue
 export type Item = Statement | Pattern | ObjectWithCache
 
 
+export type SYNC_STATUS = "LOADING" | "SAVING" | undefined
+export interface SyncState
+{
+    ready: boolean
+    status: SYNC_STATUS
+}
+
+
 export type ROUTE_TYPES = (
     "filter"
     | "statements"
@@ -113,6 +121,7 @@ export interface RootStateCore
 }
 export interface RootState extends RootStateCore
 {
+    sync: SyncState
     routing: RoutingState
     global_key_press: GlobalKeyPress
 }

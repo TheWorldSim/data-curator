@@ -126,7 +126,7 @@ export interface AddObjectProps
     labels: string[]
     external_ids: { [application: string]: string },
 }
-export const add_object = (args: AddObjectProps): ActionAddObject =>
+const add_object = (args: AddObjectProps): ActionAddObject =>
 {
     const datetime_created = get_datetime()
     const id = get_new_object_id()
@@ -160,7 +160,7 @@ interface ActionDeleteObject extends Action {
 
 const delete_object_type = "delete_object"
 
-export const delete_object = (id: string): ActionDeleteObject =>
+const delete_object = (id: string): ActionDeleteObject =>
 {
     return { type: delete_object_type, id }
 }
@@ -178,7 +178,7 @@ const update_object_type = "update_object"
 
 
 export interface UpdateObjectProps extends Objekt {}
-export const update_object = (args: UpdateObjectProps): ActionUpdateObject =>
+const update_object = (args: UpdateObjectProps): ActionUpdateObject =>
 {
     return {
         type: update_object_type,
@@ -210,11 +210,11 @@ interface ActionUpsertObjects extends Action {
 const upsert_objects_type = "upsert_objects"
 
 
-export interface UpsertObjectsProps
+interface UpsertObjectsProps
 {
     objects: ObjectWithCache[]
 }
-export const upsert_objects = (args: UpsertObjectsProps): ActionUpsertObjects =>
+const upsert_objects = (args: UpsertObjectsProps): ActionUpsertObjects =>
 {
     return {
         type: upsert_objects_type,
@@ -241,11 +241,11 @@ interface ActionReplaceAllObjects extends Action {
 const replace_all_objects_type = "replace_all_objects"
 
 
-export interface UpdateObjectsProps
+interface ReplaceAllObjectsProps
 {
     objects: ObjectWithCache[]
 }
-export const replace_all_objects = (args: UpdateObjectsProps): ActionReplaceAllObjects =>
+const replace_all_objects = (args: ReplaceAllObjectsProps): ActionReplaceAllObjects =>
 {
     return {
         type: replace_all_objects_type,

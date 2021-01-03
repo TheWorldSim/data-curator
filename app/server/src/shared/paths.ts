@@ -62,6 +62,6 @@ export class PATHS {
         },
 
         //
-        SAVE_STATE: PATHS._API_V1 + "/save_state/"
+        STATE: PATHS._API_V1 + "/state/"
     }
 }

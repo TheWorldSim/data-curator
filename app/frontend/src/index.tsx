@@ -11,7 +11,7 @@ const root = document.getElementById("root")
 const title = document.getElementsByTagName("title")[0]
 
 if (root) {
-  render(<Provider store={config_store()}><App /></Provider>, root)
+  render(<Provider store={config_store({ load_state_from_server: true })}><App /></Provider>, root)
 }
 
 if (title) {

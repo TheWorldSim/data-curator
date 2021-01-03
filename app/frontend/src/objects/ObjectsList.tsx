@@ -23,7 +23,7 @@ function _ObjectsList (props: Props)
     return <table>
         <tbody>
             {props.objects.map(object => <tr>
-                <ObjectListEntry object={object} />
+                { ObjectListEntry({object}) }
             </tr>)}
         </tbody>
     </table>

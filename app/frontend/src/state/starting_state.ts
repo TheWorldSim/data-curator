@@ -148,18 +148,18 @@ export function get_starting_state (): RootState
         refstat_who_measles_95_herd: oid(),
     }
 
-    statements.push({
-        id: OTHER_IDS.title_covid_who,
-        datetime_created,
-        content: "Coronavirus disease (COVID-19): Herd immunity, lockdowns and COVID-19",
-        labels: [],
-    })
     years.forEach(i => statements.push({
         id: (OTHER_IDS as any)[`year_${i}`],
         datetime_created,
         content: `${i}`,
         labels: [CORE_IDS.sYear],
     }))
+    statements.push({
+        id: OTHER_IDS.title_covid_who,
+        datetime_created,
+        content: "Coronavirus disease (COVID-19): Herd immunity, lockdowns and COVID-19",
+        labels: [],
+    })
     statements.push({
         id: OTHER_IDS.url_who_covid,
         datetime_created,
@@ -283,6 +283,7 @@ export function get_starting_state (): RootState
         statements,
         patterns,
         objects,
+        sync: { ready: false, status: "LOADING" },
         routing: get_current_route_params({ statements, patterns, objects }),
         global_key_press: { last_key: undefined, last_key_time_stamp: undefined },
     }

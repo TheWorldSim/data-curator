@@ -25,7 +25,7 @@ function _PatternsList (props: Props)
     return <table>
         <tbody>
             {props.patterns.map(pattern => <tr>
-                <PatternListEntry pattern={pattern} />
+                { PatternListEntry({pattern}) }
             </tr>)}
         </tbody>
     </table>
