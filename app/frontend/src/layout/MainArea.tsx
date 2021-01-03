@@ -2,6 +2,7 @@ import { Component, createRef, h } from "preact"
 
 import "./MainArea.css"
 import { MainContent } from "./MainContent"
+import { MainContentControls } from "./MainContentControls"
 import { TabsContainer } from "./TabsContainer"
 
 
@@ -34,6 +35,9 @@ export class MainArea extends Component {
             </div>
             <div id="main_content" ref={this.ref_main_content}>
                 <MainContent />
+            </div>
+            <div id="main_content_controls">
+                <MainContentControls />
             </div>
         </div>
     }
