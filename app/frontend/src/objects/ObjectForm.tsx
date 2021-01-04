@@ -9,6 +9,7 @@ import type { ObjectAttribute, ObjectWithCache, Pattern, PatternAttribute } from
 import { ACTIONS } from "../state/store"
 import { EditableObjectAttributesList } from "./EditableObjectAttributesList"
 import { object_content } from "./object_content"
+import { DeleteButton } from "../sharedf/DeleteButton"
 
 
 type OwnProps = {
@@ -19,6 +20,7 @@ type OwnProps = {
 const map_dispatch = {
     add_object: (args: AddObjectProps) => ACTIONS.add_object(args),
     update_object: (args: UpdateObjectProps) => ACTIONS.update_object(args),
+    delete_object: (id: string) => ACTIONS.delete_object(id),
     show_bulk_import: () => ACTIONS.change_route({
         route: "objects", sub_route: "objects_bulk_import", item_id: undefined
     }),
@@ -148,6 +150,14 @@ function _ObjectForm (props: Props)
             value={(props.object ? "Update" : "Add") + " object"}
             disabled={!object.content}
         ></input>
+
+        <div style={{ float: "right" }}>
+            <DeleteButton
+                on_delete={() => props.delete_object(object.id) }
+                is_large={true}
+                disabled={!object.id}
+            />
+        </div>
     </div>
 }
 

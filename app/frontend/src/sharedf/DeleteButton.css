@@ -6,4 +6,13 @@
     border: thin solid darkred;
     color: darkred;
     cursor: pointer;
+    padding: 2px 7px;
+}
+
+.disabled
+{
+    cursor: initial;
+    background-color: #ececec;
+    border-color: #cdcdcd;
+    color: #adadad;
 }
