@@ -55,8 +55,12 @@ export function MainContentControls ()
             title: "OpenCell CONTAIN paper submitted to biorxiv",
         },
         {
+            start: new Date("2020-06-02"),
+            title: "First call with IEEE on standardisation",
+        },
+        {
             start: new Date("2020-06-17"),
-            title: "First plan for a project on standardisation",
+            title: "First plan for a project to form a working group on standardisation",
         },
         {
             start: new Date("2020-06-21"),
