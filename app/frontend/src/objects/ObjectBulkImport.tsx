@@ -11,14 +11,22 @@ interface OwnProps {}
 
 
 const PATTERN_ACTION_V2 = "p6396372272707644"
+const PATTERN_EVENT = "p1980829678265834"
 const map_state = (state: RootState) => {
-    const action = state.patterns.find(({ id }) => id === PATTERN_ACTION_V2)
+    const pattern_action = state.patterns.find(({ id }) => id === PATTERN_ACTION_V2)
+    const pattern_event = state.patterns.find(({ id }) => id === PATTERN_EVENT)
+
     const ready = state.sync.ready
-    if (!action && ready) throw new Error(`Pattern "Action" for id: ${PATTERN_ACTION_V2} not found`)
+    if (!pattern_action && ready) throw new Error(`Pattern "Action v2" for id: ${PATTERN_ACTION_V2} not found`)
+    if (!pattern_event && ready) throw new Error(`Pattern "Event" for id: ${PATTERN_EVENT} not found`)
 
     return {
         objects: state.objects,
-        patterns: { action },
+        patterns_available: !!pattern_action && !!pattern_event,
+        patterns: {
+            action: pattern_action,
+            event: pattern_event,
+        },
     }
 }
 
@@ -36,21 +44,30 @@ function _ObjectBulkImport (props: Props)
 {
     const [status, set_status] = useState("")
 
+
     const on_new_objects = (objects: CoreObject[]) =>
     {
         set_status(`Successfully fetched ${objects.length} objects`)
 
         props.upsert_objects({ objects })
-        setTimeout(() => {
-            set_status("")
-        }, 2000)
+        setTimeout(() => set_status(""), 2000)
     }
+
 
     const get_data = () =>
     {
+        if (!props.patterns_available)
+        {
+            set_status("Can not fetch objects from AirTable API, patterns not available")
+            setTimeout(() => set_status(""), 2000)
+            return
+        }
+
         set_status("Fetching objects from AirTable API")
-        get_data_from_air_table(props.patterns.action, props.objects, on_new_objects)
+        get_data_from_air_table(props.patterns.action!, props.objects, on_new_objects)
+        get_data_from_air_table(props.patterns.event!, props.objects, on_new_objects)
     }
+
 
     return <div>
         <b>Object Bulk Import</b>
@@ -65,9 +82,9 @@ function _ObjectBulkImport (props: Props)
 
         <input
             type="button"
-            value="Get data"
+            value={props.patterns_available ? "Get data" : "(Patterns not available)"}
             onClick={get_data}
-            disabled={!!status}
+            disabled={!!status || !props.patterns_available}
         ></input>
 
         <br />
@@ -88,22 +105,36 @@ function get_data_from_air_table (pattern: Pattern, existing_objects: ObjectWith
 {
     const auth_key = localStorage.getItem("airtable_auth_key")
     const app = localStorage.getItem("airtable_app")
-    const table = localStorage.getItem("airtable_table")
-    const view = localStorage.getItem("airtable_view")
-    const url = `https://api.airtable.com/v0/${app}/${table}?maxRecords=100&view=${view}`
+    //  {"p123": {"table": "Table%20name", "view": "Grid%20view"}}
+    const models = JSON.parse(localStorage.getItem("airtable_models")!)
+    const table = models[pattern.id].table
+    const view = models[pattern.id].view
+
+    const maxRecords = 100
+    const url = `https://api.airtable.com/v0/${app}/${table}?maxRecords=${maxRecords}&view=${view}`
 
     const { temporary_ids, get_temp_id } = temp_id_factory()
 
     fetch(url, { headers: { "Authorization": `Bearer ${auth_key}` } })
     .then(d => d.json())
-    .then((d: { records: AirtableActions[] }) =>
+    .then((d: { records: AirtableAction[] }) =>
     {
+        if (d.records.length === maxRecords) alert("Warning, not all objects may have been fetched.")
 
-        const objects_with_temp_ids = d.records.map(airtable_action =>
+        const objects_with_temp_ids = d.records.map(airtable_record =>
         {
-            const predicate = find_object_by_airtable_id(airtable_action.id)
+            const predicate = find_object_by_airtable_id(airtable_record.id)
             const existing_object = existing_objects.find(predicate)
-            return transform_airtable_action({ pattern, get_temp_id, airtable_action, existing_object })
+
+            if (pattern.id === PATTERN_ACTION_V2)
+            {
+                return transform_airtable_action({ pattern, get_temp_id, airtable_record, existing_object })
+            }
+            else if (pattern.id === PATTERN_EVENT)
+            {
+                return transform_airtable_event({ pattern, get_temp_id, airtable_record, existing_object })
+            }
+            else throw new Error(`Unsupported pattern: ${pattern.id}`)
         })
 
         const objects: CoreObject[] = replace_temp_ids({ objects_with_temp_ids, existing_objects, temporary_ids })
@@ -127,8 +158,20 @@ function find_object_by_airtable_id (airtable_id: string)
 }
 
 
+//
+
 type DateString = string
-interface AirtableActions
+interface TransformAirtableRecordArgs<T>
+{
+    pattern: Pattern
+    get_temp_id: TempIdFunc
+    airtable_record: T
+    existing_object?: ObjectWithCache
+}
+
+//
+
+interface AirtableAction
 {
     id: string
     createdTime: string
@@ -149,48 +192,79 @@ interface AirtableActions
     }>
 }
 
-
-interface TransformAirtableActionArgs
-{
-    pattern: Pattern
-    get_temp_id: TempIdFunc
-    airtable_action: AirtableActions
-    existing_object?: ObjectWithCache
-}
-
-function transform_airtable_action (args: TransformAirtableActionArgs): CoreObject
+function transform_airtable_action (args: TransformAirtableRecordArgs<AirtableAction>): CoreObject
 {
     const { pattern, get_temp_id } = args
     if (pattern.id !== PATTERN_ACTION_V2) throw new Error(`transform_airtable_action requires Action pattern`)
-    const aa = args.airtable_action
+    const ar = args.airtable_record
     const eo = args.existing_object
 
-    const new_action_object: CoreObject = {
+    const new_object: CoreObject = {
         id: (eo && eo.id) || get_new_object_id(),
-        datetime_created: eo ? eo.datetime_created : new Date(aa.createdTime),
+        datetime_created: eo ? eo.datetime_created : new Date(ar.createdTime),
         labels: [],
         pattern_id: pattern.id,
-        external_ids: { [EXTERNAL_ID_KEY]: aa.id, ...((eo && eo.external_ids) || {}) },
+        external_ids: { [EXTERNAL_ID_KEY]: ar.id, ...((eo && eo.external_ids) || {}) },
         attributes: [
-            { pidx: 0, value: aa.fields.name || "" },
-            ...airtable_multi_field_to_multi_attributes({ pidx: 1, field: aa.fields.projects, get_temp_id }),
-            { pidx: 2, value: aa.fields.description || "" },
-            { pidx: 3, value: aa.fields.status || "" },
-            airtable_multi_field_to_single_attribute({ pidx: 4, field: aa.fields.encompassing_action, get_temp_id }),
-            ...airtable_multi_field_to_multi_attributes({ pidx: 5, field: aa.fields.depends_on_actions, get_temp_id }),
-            { pidx: 6, value: aa.fields.why || "" },
-            { pidx: 7, value: num_to_string(aa.fields.time_h) },
-            { pidx: 8, value: date_to_string(aa.fields.start_datetime) },
-            { pidx: 9, value: date_to_string(aa.fields.stop_datetime) },
-            { pidx: 10, value: aa.fields["Action Type"] || "" },
-            { pidx: 11, value: date_to_string(aa.fields.deadline_review_datetime) },
-            { pidx: 12, value: bool_to_string(aa.fields.is_project) },
+            { pidx: 0, value: ar.fields.name || "" },
+            ...airtable_multi_field_to_multi_attributes({ pidx: 1, field: ar.fields.projects, get_temp_id }),
+            { pidx: 2, value: ar.fields.description || "" },
+            { pidx: 3, value: ar.fields.status || "" },
+            airtable_multi_field_to_single_attribute({ pidx: 4, field: ar.fields.encompassing_action, get_temp_id }),
+            ...airtable_multi_field_to_multi_attributes({ pidx: 5, field: ar.fields.depends_on_actions, get_temp_id }),
+            { pidx: 6, value: ar.fields.why || "" },
+            { pidx: 7, value: num_to_string(ar.fields.time_h) },
+            { pidx: 8, value: date_to_string(ar.fields.start_datetime) },
+            { pidx: 9, value: date_to_string(ar.fields.stop_datetime) },
+            { pidx: 10, value: ar.fields["Action Type"] || "" },
+            { pidx: 11, value: date_to_string(ar.fields.deadline_review_datetime) },
+            { pidx: 12, value: bool_to_string(ar.fields.is_project) },
         ],
     }
 
-    return new_action_object
+    return new_object
 }
 
+
+//
+interface AirtableEvent
+{
+    id: string
+    createdTime: string
+    fields: Partial<{
+        title: string
+        date: DateString
+        description: string
+        related_actions: string[]
+    }>
+}
+
+function transform_airtable_event (args: TransformAirtableRecordArgs<AirtableEvent>): CoreObject
+{
+    const { pattern, get_temp_id } = args
+    if (pattern.id !== PATTERN_EVENT) throw new Error(`transform_airtable_event requires Event pattern`)
+    const ar = args.airtable_record
+    const eo = args.existing_object
+
+    const new_object: CoreObject = {
+        id: (eo && eo.id) || get_new_object_id(),
+        datetime_created: eo ? eo.datetime_created : new Date(ar.createdTime),
+        labels: [],
+        pattern_id: pattern.id,
+        external_ids: { [EXTERNAL_ID_KEY]: ar.id, ...((eo && eo.external_ids) || {}) },
+        attributes: [
+            { pidx: 0, value: ar.fields.title || "" },
+            { pidx: 1, value: date_to_string(ar.fields.date) },
+            { pidx: 2, value: ar.fields.description || "" },
+            ...airtable_multi_field_to_multi_attributes({ pidx: 3, field: ar.fields.related_actions, get_temp_id }),
+        ],
+    }
+
+    return new_object
+}
+
+
+//
 
 interface AirtableMultiFieldToSingleAttributeArgs
 {
