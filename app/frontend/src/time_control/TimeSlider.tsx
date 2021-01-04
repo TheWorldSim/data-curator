@@ -1,23 +1,38 @@
 import { h } from "preact"
 
+import "./time_slider.css"
+import type { ObjectWithCache } from "../state/State"
+import { useState } from "preact/hooks"
+import { date2str } from "../shared/utils/date_helpers"
+
 
 interface OwnProps
 {
-    events: ProjectEvent[]
+    earliest_ms: number
+    latest_ms: number
+    events: ObjectWithCache[]
 }
 
-export interface ProjectEvent
-{
-    start: Date
-    stop?: Date
-    title: string
-    description?: string
-}
+const MSECONDS_PER_DAY = 86400000
 
 
 export function TimeSlider (props: OwnProps)
 {
-    return <div>
-        {props.events.length} events
+    const earliest_day = Math.floor(props.earliest_ms / MSECONDS_PER_DAY)
+    const latest_day = Math.floor(props.latest_ms / MSECONDS_PER_DAY)
+
+    const [handle_position, set_handle_position] = useState(0)
+    if (handle_position === 0 && earliest_day > 0) set_handle_position(earliest_day)
+
+    return <div className="time_slider">
+        <input
+            type="range"
+            onChange={e => set_handle_position(parseInt(e.currentTarget.value))}
+            value={handle_position}
+            min={earliest_day}
+            max={latest_day}
+        ></input>
+
+        {date2str(new Date(handle_position * MSECONDS_PER_DAY), "yyyy-MM-dd")}
     </div>
 }

@@ -6,7 +6,9 @@ import {
     is_id_attribute,
     ObjectAttribute,
     ObjectWithCache,
+    Pattern,
     RootState,
+    Statement,
 } from "./State"
 import { ACTIONS } from "./store"
 
@@ -30,24 +32,34 @@ export function load_state (dispatch: Dispatch)
     })
     .then(resp => resp.json())
     .then(data => {
-        const state_to_load = {
-            statements: data.statements,
-            patterns: data.patterns,
-            objects: data.objects,
-        }
+
         Object.keys(data).forEach(k => {
             if (!supported_keys.includes(k as any)) throw new Error(`Unexpected key "${k}" in state from server`)
         })
 
-        if (!data.statements) throw new Error(`Expecting statements from server`)
-        if (!data.patterns) throw new Error(`Expecting patterns from server`)
-        if (!data.objects) throw new Error(`Expecting objects from server`)
+        let statements: Statement[] = data.statements
+        let patterns: Pattern[] = data.patterns
+        let objects: ObjectWithCache[] = data.objects
 
-        dispatch(ACTIONS.replace_all_statements({ statements: data.statements }))
-        dispatch(ACTIONS.replace_all_patterns({ patterns: data.patterns }))
-        dispatch(ACTIONS.replace_all_core_objects({ objects: data.objects }))
+        if (!statements) throw new Error(`Expecting statements from server`)
+        if (!patterns) throw new Error(`Expecting patterns from server`)
+        if (!objects) throw new Error(`Expecting objects from server`)
+
+        statements = parse_datetimes(statements)
+        patterns = parse_datetimes(patterns)
+        objects = parse_datetimes(objects)
+
+        dispatch(ACTIONS.replace_all_statements({ statements }))
+        dispatch(ACTIONS.replace_all_patterns({ patterns }))
+        dispatch(ACTIONS.replace_all_core_objects({ objects }))
         dispatch(ACTIONS.update_sync_status(undefined))
     })
+}
+
+
+function parse_datetimes<T extends { datetime_created: Date }> (items: T[]): T[]
+{
+    return items.map(i => ({ ...i, datetime_created: new Date(i.datetime_created) }))
 }
 
 

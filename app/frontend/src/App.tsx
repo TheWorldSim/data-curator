@@ -10,7 +10,7 @@ function App() {
   return (
     <div className="App">
       <div id="main_area"><MainArea /></div>
-      <div id="side_panel"><SidePanel /></div>
+      <div id="side_panel"><div id="side_panel_content"><SidePanel /></div></div>
     </div>
   )
 }

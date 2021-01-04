@@ -17,5 +17,8 @@
   top: 0;
   bottom: 0;
   background-color: #fbfbfb;
+}
+#side_panel_content
+{
   padding: 5px;
 }
