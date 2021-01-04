@@ -6,6 +6,7 @@ import { DeleteButton } from "../sharedf/DeleteButton"
 import type { Pattern } from "../state/State"
 import { ACTIONS } from "../state/store"
 import { PatternAttributesList } from "./PatternAttributesList"
+import { useState } from "preact/hooks"
 
 
 interface OwnProps
@@ -17,7 +18,10 @@ interface OwnProps
 const map_dispatch = (dispatch: Dispatch, props: OwnProps) =>
 {
     return {
-        delete_pattern: () => dispatch(ACTIONS.delete_pattern(props.pattern.id))
+        update_pattern: (args: { name: string, content: string}) => {
+            dispatch(ACTIONS.update_pattern({ id: props.pattern.id, ...args }))
+        },
+        delete_pattern: () => dispatch(ACTIONS.delete_pattern(props.pattern.id)),
     }
 }
 
@@ -27,14 +31,17 @@ type Props = ConnectedProps<typeof connector> & OwnProps
 
 function _EditPatternForm (props: Props)
 {
+    const [name, set_name] = useState(props.pattern.name)
+    const [content, set_content] = useState(props.pattern.content)
+
+    const changed = name !== props.pattern.name || content !== props.pattern.content
 
     return <div>
         <input
             type="text"
             placeholder="Pattern name"
-            value={props.pattern.name}
-            // onChange={name_changed}
-            disabled={true}
+            value={name}
+            onChange={e => set_name(e.currentTarget.value)}
         ></input>
 
         <PatternAttributesList
@@ -50,20 +57,25 @@ function _EditPatternForm (props: Props)
             type="text"
             placeholder="Pattern content"
             value={props.pattern.content}
-            // onChange={content_changed}
-            disabled={true}
+            onChange={e => set_content(e.currentTarget.value)}
         ></input>
 
         <hr/>
 
-        <DeleteButton on_delete={() => props.delete_pattern()} is_large={true}/>
-
-        {/* <input
+        <input
             type="button"
-            value="Add pattern"
-            // onClick={add_pattern}
-            disabled={true}
-        ></input> */}
+            value="Update pattern"
+            onClick={() => props.update_pattern({ name, content })}
+            disabled={!changed}
+        ></input>
+
+        <div style={{ float: "right" }}>
+            <DeleteButton
+                on_delete={() => props.delete_pattern() }
+                is_large={true}
+            />
+        </div>
+
     </div>
 }
 

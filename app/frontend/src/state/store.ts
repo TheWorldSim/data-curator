@@ -1,7 +1,8 @@
 import { createStore, Action, Reducer, AnyAction, Store } from "redux"
 
 import { statements_reducer, statement_actions } from "./statements"
-import { patterns_reducer, pattern_actions } from "./patterns"
+import { patterns_reducer } from "./patterns"
+import { pattern_actions } from "./pattern_actions"
 import type { RootState } from "./State"
 import {
     parse_url_for_routing_params,

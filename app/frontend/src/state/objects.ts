@@ -2,6 +2,7 @@ import type { Action, AnyAction } from "redux"
 import { replace_element } from "../utils/list"
 
 import { get_datetime, get_new_object_id } from "../utils/utils"
+import { is_update_pattern } from "./pattern_actions"
 import type {
     RootState,
     Objekt,
@@ -29,6 +30,7 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
         }
     }
 
+
     if (is_delete_object(action))
     {
         state = {
@@ -37,6 +39,7 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
         }
         bust_object_render_caches = true
     }
+
 
     if (is_update_object(action))
     {
@@ -59,6 +62,7 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
         }
     }
 
+
     if (is_replace_all_core_objects(action))
     {
         const new_objects: ObjectWithCache[] = []
@@ -78,6 +82,7 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
         }
     }
 
+
     if (is_replace_all_objects_with_cache(action))
     {
         state = {
@@ -88,6 +93,7 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
         // value of all objects So we can not bust the cache here
         bust_object_render_caches = false
     }
+
 
     if (is_upsert_objects(action))
     {
@@ -129,6 +135,13 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
         }
     }
 
+
+    if (is_update_pattern(action))
+    {
+        bust_object_render_caches = true
+    }
+
+
     if (bust_object_render_caches)
     {
         // bust the cache
@@ -144,6 +157,7 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
             })
         }
     }
+
 
     return state
 }

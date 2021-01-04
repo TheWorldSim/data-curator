@@ -1,7 +1,8 @@
-import type { Action, AnyAction } from "redux"
+import type { AnyAction } from "redux"
+import { replace_element } from "../utils/list"
 
-import { get_datetime, get_new_pattern_id } from "../utils/utils"
-import type { RootState, Pattern, PatternAttribute } from "./State"
+import { is_add_pattern, is_update_pattern, is_delete_pattern, is_replace_all_patterns } from "./pattern_actions"
+import type { RootState, Pattern } from "./State"
 
 
 export const patterns_reducer = (state: RootState, action: AnyAction): RootState =>
@@ -22,6 +23,32 @@ export const patterns_reducer = (state: RootState, action: AnyAction): RootState
         }
     }
 
+
+    if (is_update_pattern(action))
+    {
+        const pattern = state.patterns.find(({ id }) => id === action.id)
+
+        if (!pattern)
+        {
+            console.error(`No pattern for id: "${action.id}"`)
+            return state
+        }
+
+        const replacement_pattern: Pattern = {
+            ...pattern,
+            name: action.name,
+            content: action.content,
+        }
+
+        const patterns = replace_element(state.patterns, replacement_pattern, ({ id }) => id === action.id)
+
+        state = {
+            ...state,
+            patterns
+        }
+    }
+
+
     if (is_delete_pattern(action))
     {
         state = {
@@ -29,6 +56,7 @@ export const patterns_reducer = (state: RootState, action: AnyAction): RootState
             patterns: state.patterns.filter(({ id }) => id !== action.id)
         }
     }
+
 
     if (is_replace_all_patterns(action))
     {
@@ -39,90 +67,4 @@ export const patterns_reducer = (state: RootState, action: AnyAction): RootState
     }
 
     return state
-}
-
-
-//
-
-interface ActionAddPattern extends Action, Pattern {}
-
-const add_pattern_type = "add_pattern"
-
-
-interface AddPatternArgs
-{
-    name: string
-    content: string
-    attributes: PatternAttribute[]
-}
-const add_pattern = (args: AddPatternArgs): ActionAddPattern =>
-{
-    const id = get_new_pattern_id()
-    const datetime_created = get_datetime()
-
-    return {
-        type: add_pattern_type,
-        id,
-        datetime_created,
-        name: args.name,
-        content: args.content,
-        attributes: args.attributes,
-    }
-}
-
-const is_add_pattern = (action: AnyAction): action is ActionAddPattern => {
-    return action.type === add_pattern_type
-}
-
-
-//
-
-interface ActionDeletePattern extends Action {
-    id: string
-}
-
-const delete_pattern_type = "delete_pattern"
-
-const delete_pattern = (id: string): ActionDeletePattern =>
-{
-    return { type: delete_pattern_type, id }
-}
-
-const is_delete_pattern = (action: AnyAction): action is ActionDeletePattern => {
-    return action.type === delete_pattern_type
-}
-
-
-//
-
-interface ActionReplaceAllPatterns extends Action {
-    patterns: Pattern[]
-}
-
-const replace_all_patterns_type = "replace_all_patterns"
-
-
-interface ReplaceAllPatternsProps
-{
-    patterns: Pattern[]
-}
-const replace_all_patterns = (args: ReplaceAllPatternsProps): ActionReplaceAllPatterns =>
-{
-    return {
-        type: replace_all_patterns_type,
-        patterns: args.patterns,
-    }
-}
-
-const is_replace_all_patterns = (action: AnyAction): action is ActionReplaceAllPatterns => {
-    return action.type === replace_all_patterns_type
-}
-
-
-//
-
-export const pattern_actions = {
-    add_pattern,
-    delete_pattern,
-    replace_all_patterns,
 }
