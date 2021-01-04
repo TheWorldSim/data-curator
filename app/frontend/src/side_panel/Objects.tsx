@@ -13,6 +13,7 @@ interface OwnProps {}
 const map_state = (state: RootState) => ({
     object: state.objects.find(({ id }) => id === state.routing.item_id),
     show_bulk_import: state.routing.sub_route === "objects_bulk_import",
+    object_count: state.objects.length,
 })
 
 const connector = connect(map_state)
@@ -34,7 +35,7 @@ function _Objects (props: Props)
     return <div>
         <ObjectForm object={props.object}/>
         <hr />
-        Objects:
+        Objects: {props.object_count}
         <ObjectsList />
     </div>
 }

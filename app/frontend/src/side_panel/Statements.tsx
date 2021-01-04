@@ -11,7 +11,8 @@ interface OwnProps {}
 
 
 const map_state = (state: RootState) => ({
-    statement: state.statements.find(({ id }) => id === state.routing.item_id)
+    statement: state.statements.find(({ id }) => id === state.routing.item_id),
+    statement_count: state.statements.length,
 })
 
 const connector = connect(map_state)
@@ -34,7 +35,7 @@ function _Statements (props: Props)
         <hr />
         <NewStatementForm />
         <hr />
-        Statements:
+        Statements: {props.statement_count}
         <StatementsList />
     </div>
 }

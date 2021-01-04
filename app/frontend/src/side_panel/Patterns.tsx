@@ -11,7 +11,8 @@ interface OwnProps {}
 
 
 const map_state = (state: RootState) => ({
-    pattern: state.patterns.find(({ id }) => id === state.routing.item_id)
+    pattern: state.patterns.find(({ id }) => id === state.routing.item_id),
+    pattern_count: state.patterns.length,
 })
 
 const connector = connect(map_state)
@@ -34,7 +35,7 @@ function _Patterns (props: Props)
         <hr />
         <NewPatternForm />
         <hr />
-        Patterns:
+        Patterns: {props.pattern_count}
         <PatternsList />
     </div>
 }
