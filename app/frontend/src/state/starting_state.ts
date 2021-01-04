@@ -91,7 +91,7 @@ export function get_starting_state (): RootState
             attributes: [
                 { type_id: "", alt_name: "What is it" },
                 { type_id: "", alt_name: "Who cares? (impact)" },
-                { type_id: CORE_IDS.pAction, alt_name: "What are the next step(s)", multiple: true },
+                { type_id: CORE_IDS.pActionV1, alt_name: "What are the next step(s)", multiple: true },
                 { type_id: CORE_IDS["pPerson(s) or Group(s)"], alt_name: "Allies", multiple: true },
                 { type_id: "", alt_name: "Status" },
                 { type_id: "", alt_name: "Why are we rejecting it for now" },
@@ -99,7 +99,7 @@ export function get_starting_state (): RootState
             ]
         },
         {
-            id: CORE_IDS.pAction,
+            id: CORE_IDS.pActionV1,
             datetime_created: dt2,
             name: "Action v1",
             content: "@@c(0)",
@@ -108,8 +108,8 @@ export function get_starting_state (): RootState
                 { type_id: CORE_IDS.pProject, alt_name: "Project(s)", multiple: true },
                 { type_id: "", alt_name: "Description" },
                 { type_id: CORE_IDS["sAction status"], alt_name: "Status" },
-                { type_id: CORE_IDS.pAction, alt_name: "Encompassing Action" },
-                { type_id: CORE_IDS.pAction, alt_name: "Depends on Actions", multiple: true },
+                { type_id: CORE_IDS.pActionV1, alt_name: "Encompassing Action" },
+                { type_id: CORE_IDS.pActionV1, alt_name: "Depends on Actions", multiple: true },
             ]
         },
         {

@@ -33,7 +33,7 @@ export const PATTERN_IDS = {
     "pDate": pid(),
     pDocument: pid(),
     pProject: pid(),
-    pAction: pid(),
+    pActionV1: pid(),
     "pReference statement": pid(),
 }
 

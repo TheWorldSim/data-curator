@@ -27,7 +27,7 @@ const root_reducer: Reducer<RootState, any> = ((state: RootState, action: AnyAct
     state = routing_reducer(state, action)
     state = global_key_press_reducer(state, action)
 
-    console.log(action.type, action)
+    // console.log(action.type, action)
 
     return state
 }) as any
