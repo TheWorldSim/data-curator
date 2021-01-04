@@ -132,14 +132,14 @@ interface AirtableActions
     id: string
     createdTime: string
     fields: {
-        Description: string
-        Name: string
-        Projects: string[]
-        ["Encompassing Action"]: string[]  // should only be 0 or 1 value
+        description: string
+        name: string
+        projects: string[]
+        encompassing_action: string[]  // should only be 0 or 1 value
         ["Action Type"]: "Is Spike" | "Is Conditional" | undefined
-        ["Depends on Actions"]: string[]  // 0+ values
-        ["Total time (h)"]: number
-        Status: "Icebox" | "Todo" | "In progress" | "Done" | undefined
+        depends_on_actions: string[]  // 0+ values
+        time_h: number
+        status: "Icebox" | "Todo" | "In progress" | "Done" | undefined
     }
 }
 
@@ -168,12 +168,12 @@ function transform_airtable_action (args: TransformAirtableActionArgs): ObjectWi
         pattern_name: pattern.name,
         content: pattern.content,
         attributes: merge_pattern_attributes([
-            { pidx: 0, value: aa.fields.Name },
+            { pidx: 0, value: aa.fields.name },
             { pidx: 1, value: "<project id>" },
-            { pidx: 2, value: aa.fields.Description },
-            { pidx: 3, value: aa.fields.Status || "" },
-            { pidx: 4, id: args.get_temp_id((aa.fields["Encompassing Action"] || [])[0]) },
-            ...(aa.fields["Depends on Actions"] || [""]).map(id => ({
+            { pidx: 2, value: aa.fields.description },
+            { pidx: 3, value: aa.fields.status || "" },
+            { pidx: 4, id: args.get_temp_id((aa.fields.encompassing_action || [])[0]) },
+            ...(aa.fields.depends_on_actions || [""]).map(id => ({
                 pidx: 5, id: id && args.get_temp_id(id),
             })),
         ], pattern),
