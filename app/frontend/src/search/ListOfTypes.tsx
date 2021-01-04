@@ -147,7 +147,12 @@ class _ListOfTypes extends Component<Props, State>
     {
         return <table>
             <tbody>
-                {this.props.items.map(item => <tr key={item.id} className={item.search.match ? "match" : ""}>
+                {this.props.items.map(item => <tr
+                    key={item.id}
+                    className={item.search.match ? "match" : ""}
+                    onClick={() => this.props.on_click(item)}
+                >
+
                     { id_is_statement(item.id) && StatementListEntry({
                         statement: item as Statement,
                         on_click: () => this.props.on_click(item)
@@ -162,6 +167,7 @@ class _ListOfTypes extends Component<Props, State>
                         object: item as ObjectWithCache,
                         on_click: () => this.props.on_click(item)
                     }) }
+
                 </tr>)}
                 {/* Complete hack to force table to be max width and still allow scroll */}
                 <tr> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</tr>

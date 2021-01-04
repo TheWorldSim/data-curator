@@ -15,11 +15,13 @@ type OwnProps =
     editable: false
     item_id: string
     filter: ITEM_FILTERS
+    placeholder?: string
 } | {
     editable: true
     item_id: string
     filter: ITEM_FILTERS
     filter_specific_type_id?: string
+    placeholder?: string
     on_change_item_id?: (id: string) => void
     on_change_item?: (item: Item) => void
 }
@@ -49,7 +51,7 @@ const placeholder_map = {
 function _ItemSelect (props: Props)
 {
     let item_id_css_class = "empty"
-    const placeholder = placeholder_map[props.filter]
+    const placeholder = props.placeholder || placeholder_map[props.filter]
     let item_id_desc: string | h.JSX.Element | undefined = undefined
 
     if (props.item_id)

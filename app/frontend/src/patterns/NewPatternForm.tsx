@@ -1,8 +1,9 @@
 import { h, FunctionComponent } from "preact"
 import { useState, useCallback } from "preact/hooks"
 import { connect, ConnectedProps } from "react-redux"
+import { ItemSelect } from "../search/ItemSelect"
 
-import type { PatternAttribute } from "../state/State"
+import type { Pattern, PatternAttribute, RootState } from "../state/State"
 import { ACTIONS } from "../state/store"
 import { EditablePatternAttributesList } from "./EditablePatternAttributesList"
 
@@ -29,9 +30,9 @@ function _NewPatternForm (props: Props)
     }, [name])
 
     const [content, set_content] = useState("")
-    const content_changed = useCallback((event: h.JSX.TargetedEvent<HTMLInputElement, Event>) => {
+    const content_changed = (event: h.JSX.TargetedEvent<HTMLInputElement, Event>) => {
         set_content(event.currentTarget.value)
-    }, [content])
+    }
 
     const [attributes, set_attributes] = useState<PatternAttribute[]>([])
 
@@ -39,11 +40,19 @@ function _NewPatternForm (props: Props)
         set_attributes(new_attributes)
     }, [attributes])
 
-    function delete_attribute (index: number)
-    {
+    const delete_attribute = useCallback((index: number) => {
         const new_attributes = attributes.filter((_, i) => i !== index )
         set_attributes(new_attributes)
+    }, [attributes])
+
+
+    function on_change_clone_pattern (pattern: Pattern)
+    {
+        set_name(pattern.name)
+        set_content(pattern.content)
+        set_attributes(pattern.attributes)
     }
+
 
     function add_pattern ()
     {
@@ -86,6 +95,16 @@ function _NewPatternForm (props: Props)
             value="Add pattern"
             disabled={!name}
         ></input>
+
+        <div style={{ float: "right" }}>
+            <ItemSelect
+                editable={true}
+                item_id={""}
+                filter="patterns"
+                placeholder="Clone pattern"
+                on_change_item={pattern => on_change_clone_pattern(pattern as Pattern)}
+            />
+        </div>
     </div>
 }
 
