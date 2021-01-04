@@ -101,7 +101,7 @@ export function get_starting_state (): RootState
         {
             id: CORE_IDS.pAction,
             datetime_created: dt2,
-            name: "Action",
+            name: "Action v1",
             content: "@@c(0)",
             attributes: [
                 { type_id: "", alt_name: "Name" },
