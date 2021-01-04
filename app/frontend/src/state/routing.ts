@@ -1,10 +1,10 @@
 import type { Action, AnyAction } from "redux"
 import { id_is_object, id_is_pattern, id_is_statement, id_is_valid } from "../utils/utils"
 
-import { ALLOWED_ROUTES, ALLOWED_SUB_ROUTES, RootState, RootStateCore, ROUTE_TYPES, RoutingState, SUB_ROUTE_TYPES } from "./State"
+import { ALLOWED_ROUTES, ALLOWED_SUB_ROUTES, RootState, ROUTE_TYPES, RoutingState, SUB_ROUTE_TYPES } from "./State"
 
 
-export function parse_url_for_routing_params ({ url, state }: { url: string, state: RootStateCore }): RoutingState
+function parse_url_for_routing_params ({ url, state }: { url: string, state: RootState }): RoutingState
 {
     const hash = url.split("#")[1] || ""
     const parts = hash.split("/")
@@ -21,16 +21,18 @@ export function parse_url_for_routing_params ({ url, state }: { url: string, sta
 
 
     if (!id_is_valid(item_id)) item_id = undefined
-    if (id_is_statement(item_id) && !state.statements.find(({ id }) => id === item_id)) item_id = undefined
-    if (id_is_pattern(item_id) && !state.patterns.find(({ id }) => id === item_id)) item_id = undefined
-    if (id_is_object(item_id) && !state.objects.find(({ id }) => id === item_id)) item_id = undefined
+
+    const ready = state.sync.ready
+    if (ready && id_is_statement(item_id) && !state.statements.find(({ id }) => id === item_id)) item_id = undefined
+    if (ready && id_is_pattern(item_id) && !state.patterns.find(({ id }) => id === item_id)) item_id = undefined
+    if (ready && id_is_object(item_id) && !state.objects.find(({ id }) => id === item_id)) item_id = undefined
 
 
     return { route, sub_route, item_id }
 }
 
 
-export function get_current_route_params (state: RootStateCore): RoutingState
+export function get_current_route_params (state: RootState): RoutingState
 {
     const url = window.location.toString()
     const routing_params = parse_url_for_routing_params({ url, state })

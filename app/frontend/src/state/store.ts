@@ -5,7 +5,7 @@ import { patterns_reducer } from "./patterns"
 import { pattern_actions } from "./pattern_actions"
 import type { RootState } from "./State"
 import {
-    parse_url_for_routing_params,
+    get_current_route_params,
     routing_reducer,
     routing_actions,
 } from "./routing"
@@ -75,9 +75,34 @@ export function config_store (args: ConfigStoreArgs = {})
     store.subscribe(render_all_objects_and_update_store(store))
 
 
-    window.onhashchange = (e: HashChangeEvent) =>
+    /**
+     * Update the route to reflect any manual change of the hash route by the user
+     * Or from when the page first loads and the route changes then.
+     */
+    let promise_state_ready: Promise<void>
+    window.onhashchange = () =>
     {
-        const routing_params = parse_url_for_routing_params({ url: e.newURL, state: store.getState() })
+        const state = store.getState()
+        if (!state.sync.ready)
+        {
+            if (promise_state_ready) return
+            promise_state_ready = new Promise<void>(resolve =>
+            {
+                const unsubscribe = store.subscribe(() => {
+                    unsubscribe()
+                    resolve()
+                })
+            })
+            .then(() =>
+            {
+                const routing_params = get_current_route_params(store.getState())
+                store.dispatch(ACTIONS.change_route(routing_params))
+            })
+
+            return
+        }
+
+        const routing_params = get_current_route_params(store.getState())
         store.dispatch(ACTIONS.change_route(routing_params))
     }
 
