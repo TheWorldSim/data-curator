@@ -45,7 +45,7 @@ export interface Objekt extends CoreObject
 export interface ObjectWithCache extends Objekt
 {
     rendered: string
-    needs_rendering: boolean
+    is_rendered: boolean
 }
 
 export interface CoreObjectIdAttribute {

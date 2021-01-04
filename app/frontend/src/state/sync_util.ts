@@ -1,6 +1,13 @@
 import type { Dispatch } from "redux"
 
-import type { RootState } from "./State"
+import {
+    CoreObject,
+    CoreObjectAttribute,
+    is_id_attribute,
+    ObjectAttribute,
+    ObjectWithCache,
+    RootState,
+} from "./State"
 import { ACTIONS } from "./store"
 
 
@@ -38,7 +45,7 @@ export function load_state (dispatch: Dispatch)
 
         dispatch(ACTIONS.replace_all_statements({ statements: data.statements }))
         dispatch(ACTIONS.replace_all_patterns({ patterns: data.patterns }))
-        dispatch(ACTIONS.replace_all_objects({ objects: data.objects }))
+        dispatch(ACTIONS.replace_all_core_objects({ objects: data.objects }))
         dispatch(ACTIONS.update_sync_status(undefined))
     })
 }
@@ -55,7 +62,7 @@ export function save_state (dispatch: Dispatch, state: RootState)
     const state_to_save = {
         statements: state.statements,
         patterns: state.patterns,
-        objects: state.objects,
+        objects: state.objects.map(convert_object_to_core),
     }
     Object.keys(state).forEach(k => {
         if (!supported_keys.includes(k as any)) throw new Error(`Unexpected key "${k}" in state to save`)
@@ -77,4 +84,33 @@ function needs_save (state: RootState, last_saved: RootState | undefined)
         state.patterns !== last_saved.patterns ||
         state.objects !== last_saved.objects
     )
+}
+
+
+function convert_object_to_core (object: ObjectWithCache): CoreObject
+{
+    return {
+        id: object.id,
+        datetime_created: object.datetime_created,
+        labels: object.labels,
+        attributes: object.attributes.map(convert_attribute_to_core),
+        pattern_id: object.pattern_id,
+        external_ids: object.external_ids,
+    }
+}
+
+function convert_attribute_to_core (attribute: ObjectAttribute): CoreObjectAttribute
+{
+    if (is_id_attribute(attribute))
+    {
+        return {
+            pidx: attribute.pidx,
+            id: attribute.id,
+        }
+    }
+
+    return {
+        pidx: attribute.pidx,
+        value: attribute.value,
+    }
 }

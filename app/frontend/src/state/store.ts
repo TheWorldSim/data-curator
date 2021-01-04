@@ -26,6 +26,8 @@ const root_reducer: Reducer<RootState, any> = ((state: RootState, action: AnyAct
     state = routing_reducer(state, action)
     state = global_key_press_reducer(state, action)
 
+    console.log(action.type, action)
+
     return state
 }) as any
 
@@ -110,7 +112,7 @@ function render_all_objects_and_update_store (store: Store)
 
         if (objects !== state.objects)
         {
-            store.dispatch(ACTIONS.replace_all_objects({ objects }))
+            store.dispatch(ACTIONS.replace_all_objects_with_cache({ objects }))
         }
     }
 }
@@ -121,7 +123,7 @@ function render_all_objects (state: RootState): RootState
     let updated_one_or_more = false
 
     const updated_objects = state.objects.map(object => {
-        if (!object.needs_rendering) return object
+        if (object.is_rendered) return object
 
         updated_one_or_more = true
 
@@ -129,7 +131,7 @@ function render_all_objects (state: RootState): RootState
         return {
             ...object,
             rendered,
-            needs_rendering: false,
+            is_rendered: true,
         }
     })
 

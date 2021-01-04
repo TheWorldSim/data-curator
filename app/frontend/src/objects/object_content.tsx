@@ -1,7 +1,7 @@
 import type { Store, Action } from "redux"
 
 import { test } from "../utils/test"
-import { merge_pattern } from "../state/objects"
+import { merge_pattern_into_core_object } from "../state/objects"
 import {
     CoreObject,
     is_value_attribute,
@@ -26,7 +26,7 @@ let store: Store<RootState, Action<any>>  // mutable reference to store for test
 
 export function object_content ({ object, depth }: OwnProps)
 {
-    if (!object.needs_rendering) return object.rendered
+    if (object.is_rendered) return object.rendered
 
     if (!store) store = config_store()
 
@@ -51,7 +51,7 @@ interface RenderObjectArgs
 
 export function render_object (args: RenderObjectArgs)
 {
-    if (!args.object.needs_rendering) return args.object.rendered
+    if (args.object.is_rendered) return args.object.rendered
 
     const depth = args.depth === undefined ? 3 : args.depth
     let content = args.object.content
@@ -168,7 +168,7 @@ function get_pattern_for_test (args: Partial<Pattern>): Pattern
 
 function get_object_for_test (args: Partial<CoreObject>, patterns: Pattern[]): ObjectWithCache
 {
-    const object = merge_pattern({
+    const core_object: CoreObject = {
         id: "o1",
         datetime_created: new Date(),
         attributes: [],
@@ -176,9 +176,10 @@ function get_object_for_test (args: Partial<CoreObject>, patterns: Pattern[]): O
         external_ids: {},
         pattern_id: "p1",
         ...args,
-    }, patterns)
+    }
+    const object = merge_pattern_into_core_object({ patterns, object: core_object })
 
-    return { ...object, rendered: "", needs_rendering: true }
+    return { ...object, rendered: "", is_rendered: false }
 }
 
 

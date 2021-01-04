@@ -33,7 +33,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux & OwnProps
 
 
-const blank_state: UpdateObjectProps = {
+const blank_state: ObjectWithCache = {
     id: undefined as unknown as string,
     datetime_created: undefined as unknown as Date,
     pattern_id: "",
@@ -43,15 +43,18 @@ const blank_state: UpdateObjectProps = {
     attributes: [],
     labels: [],
     external_ids: {},
+
+    rendered: "",
+    is_rendered: false,
 }
 
 function _ObjectForm (props: Props)
 {
-    const initial_state: UpdateObjectProps = props.object || blank_state
-    const [object, set_object] = useState<UpdateObjectProps>(initial_state)
+    const initial_state: ObjectWithCache = props.object || blank_state
+    const [object, set_object] = useState<ObjectWithCache>(initial_state)
     const [pattern_attributes, set_pattern_attributes] = useState<PatternAttribute[]>([])
 
-    function update_object (args: Partial<UpdateObjectProps>) { set_object({ ...object, ...args }) }
+    function update_object (args: Partial<ObjectWithCache>) { set_object({ ...object, ...args }) }
 
     if (props.object && props.object.id !== object.id) reset_form_data()
     if (!props.object && object.id !== undefined) reset_form_data()
@@ -59,7 +62,6 @@ function _ObjectForm (props: Props)
     const set_pattern = useCallback((pattern: Pattern) => {
         update_object({
             pattern_id: pattern.id,
-            pattern_name: pattern.name,
             content: pattern.content,
             attributes: convert_from_pattern_attributes(pattern.attributes),
         })
@@ -67,9 +69,9 @@ function _ObjectForm (props: Props)
         set_pattern_attributes(pattern.attributes)
     }, [object])
 
-    const content_changed = useCallback((event: h.JSX.TargetedEvent<HTMLInputElement, Event>) => {
-        set_object({ ...object, content: event.currentTarget.value })
-    }, [object])
+    // const content_changed = useCallback((event: h.JSX.TargetedEvent<HTMLInputElement, Event>) => {
+    //     set_object({ ...object, content: event.currentTarget.value })
+    // }, [object])
 
 
     const change_attributes = useCallback((new_attributes: ObjectAttribute[]) => {
@@ -132,14 +134,14 @@ function _ObjectForm (props: Props)
             type="text"
             placeholder="Object content"
             value={object.content}
-            disabled={!!props.object}
-            onChange={content_changed}
+            disabled={true} //!!props.object}
+            // onChange={content_changed}
         ></input>
 
         <br/><br />
 
         <div>
-            {object_content({ object: { ...object, rendered: "", needs_rendering: true } })}
+            {object_content({ object })}
         </div>
 
         <br/><br />

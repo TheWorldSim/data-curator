@@ -16,10 +16,12 @@ import type {
 
 export const objects_reducer = (state: RootState, action: AnyAction): RootState =>
 {
+    let bust_object_render_caches = false
+
     if (is_add_object(action))
     {
-        const new_object: ObjectWithCache = { ...action }
-        delete (new_object as any).type
+        const new_object = action_to_object_with_cache(action, state.patterns)
+        bust_object_render_caches = true
 
         state = {
             ...state,
@@ -33,6 +35,7 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
             ...state,
             objects: state.objects.filter(({ id }) => id !== action.id)
         }
+        bust_object_render_caches = true
     }
 
     if (is_update_object(action))
@@ -45,9 +48,10 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
             return state
         }
 
-        const replacement_object: ObjectWithCache = { ...action }
-        delete (replacement_object as any).type
-        let objects = replace_element(state.objects, replacement_object, ({ id }) => id === action.id)
+        const replacement_object = action_to_object_with_cache(action, state.patterns)
+        bust_object_render_caches = true
+
+        const objects = replace_element(state.objects, replacement_object, ({ id }) => id === action.id)
 
         state = {
             ...state,
@@ -55,21 +59,34 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
         }
     }
 
-    if (is_add_object(action) || is_delete_object(action) || is_update_object(action))
+    if (is_replace_all_core_objects(action))
     {
-        // bust the cache
+        const new_objects: ObjectWithCache[] = []
+        action.objects.forEach(core_object => {
+            const new_object = add_cache(merge_pattern_into_core_object({
+                object: core_object,
+                patterns: state.patterns,
+            }))
+            new_objects.push(new_object)
+        })
+        // `add_cache` function already set all objects to have id_rendered: false
+        // bust_object_render_caches = true
+
         state = {
             ...state,
-            objects: state.objects.map(o => ({ ...o, rendered: "", needs_rendering: true })),
+            objects: new_objects,
         }
     }
 
-    if (is_replace_all_objects(action))
+    if (is_replace_all_objects_with_cache(action))
     {
         state = {
             ...state,
             objects: action.objects,
         }
+        // For now `is_replace_all_objects_with_cache` is how we set the rendered
+        // value of all objects So we can not bust the cache here
+        bust_object_render_caches = false
     }
 
     if (is_upsert_objects(action))
@@ -82,10 +99,17 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
 
         const object_ids_to_update: {[id: string]: ObjectWithCache} = {}
         const objects_to_insert: ObjectWithCache[] = []
-        action.objects.forEach(o => {
-            if (existing_ids.has(o.id)) object_ids_to_update[o.id] = o
-            else objects_to_insert.push(o)
+
+        action.objects.forEach(core_object => {
+            const new_object = add_cache(merge_pattern_into_core_object({
+                object: core_object,
+                patterns: state.patterns,
+            }))
+
+            if (existing_ids.has(new_object.id)) object_ids_to_update[new_object.id] = new_object
+            else objects_to_insert.push(new_object)
         })
+        bust_object_render_caches = true
 
         const objects: ObjectWithCache[] = state.objects.map(o => {
             if (object_ids_to_update.hasOwnProperty(o.id))
@@ -105,13 +129,29 @@ export const objects_reducer = (state: RootState, action: AnyAction): RootState 
         }
     }
 
+    if (bust_object_render_caches)
+    {
+        // bust the cache
+        state = {
+            ...state,
+            objects: state.objects.map(o => {
+                const object: ObjectWithCache = {
+                    ...o,
+                    rendered: "",
+                    is_rendered: false,
+                }
+                return object
+            })
+        }
+    }
+
     return state
 }
 
 
 //
 
-interface ActionAddObject extends Action, ObjectWithCache {}
+interface ActionAddObject extends Action, CoreObject {}
 
 const add_object_type = "add_object"
 
@@ -119,10 +159,8 @@ const add_object_type = "add_object"
 export interface AddObjectProps
 {
     pattern_id: string
-    pattern_name: string
-    content: string
 
-    attributes: ObjectAttribute[]
+    attributes: CoreObjectAttribute[]
     labels: string[]
     external_ids: { [application: string]: string },
 }
@@ -136,14 +174,9 @@ const add_object = (args: AddObjectProps): ActionAddObject =>
         id,
         datetime_created,
         pattern_id: args.pattern_id,
-        pattern_name: args.pattern_name,
-        content: args.content,
         attributes: args.attributes,
         labels: args.labels,
         external_ids: args.external_ids,
-
-        rendered: "",
-        needs_rendering: true,
     }
 }
 
@@ -172,12 +205,12 @@ const is_delete_object = (action: AnyAction): action is ActionDeleteObject => {
 
 //
 
-interface ActionUpdateObject extends Action, ObjectWithCache {}
+interface ActionUpdateObject extends Action, CoreObject {}
 
 const update_object_type = "update_object"
 
 
-export interface UpdateObjectProps extends Objekt {}
+export interface UpdateObjectProps extends CoreObject {}
 const update_object = (args: UpdateObjectProps): ActionUpdateObject =>
 {
     return {
@@ -185,14 +218,9 @@ const update_object = (args: UpdateObjectProps): ActionUpdateObject =>
         id: args.id,
         datetime_created: args.datetime_created,
         pattern_id: args.pattern_id,
-        pattern_name: args.pattern_name,
-        content: args.content,
         attributes: args.attributes,
         labels: args.labels,
         external_ids: args.external_ids,
-
-        rendered: "",
-        needs_rendering: true,
     }
 }
 
@@ -204,7 +232,7 @@ const is_update_object = (action: AnyAction): action is ActionUpdateObject => {
 //
 
 interface ActionUpsertObjects extends Action {
-    objects: ObjectWithCache[]
+    objects: CoreObject[]
 }
 
 const upsert_objects_type = "upsert_objects"
@@ -212,7 +240,7 @@ const upsert_objects_type = "upsert_objects"
 
 interface UpsertObjectsProps
 {
-    objects: ObjectWithCache[]
+    objects: CoreObject[]
 }
 const upsert_objects = (args: UpsertObjectsProps): ActionUpsertObjects =>
 {
@@ -221,8 +249,6 @@ const upsert_objects = (args: UpsertObjectsProps): ActionUpsertObjects =>
         objects: args.objects.map(o => ({
             ...o,
             id: o.id || get_new_object_id(),
-            rendered: "",
-            needs_rendering: true,
         })),
     }
 }
@@ -234,27 +260,53 @@ const is_upsert_objects = (action: AnyAction): action is ActionUpsertObjects => 
 
 //
 
-interface ActionReplaceAllObjects extends Action {
-    objects: ObjectWithCache[]
+interface ActionReplaceAllCoreObjects extends Action {
+    objects: CoreObject[]
 }
 
-const replace_all_objects_type = "replace_all_objects"
+const replace_all_core_objects_type = "replace_all_core_objects"
 
 
-interface ReplaceAllObjectsProps
+interface ReplaceAllCoreObjectsProps
 {
-    objects: ObjectWithCache[]
+    objects: CoreObject[]
 }
-const replace_all_objects = (args: ReplaceAllObjectsProps): ActionReplaceAllObjects =>
+const replace_all_core_objects = (args: ReplaceAllCoreObjectsProps): ActionReplaceAllCoreObjects =>
 {
     return {
-        type: replace_all_objects_type,
+        type: replace_all_core_objects_type,
         objects: args.objects,
     }
 }
 
-const is_replace_all_objects = (action: AnyAction): action is ActionReplaceAllObjects => {
-    return action.type === replace_all_objects_type
+const is_replace_all_core_objects = (action: AnyAction): action is ActionReplaceAllCoreObjects => {
+    return action.type === replace_all_core_objects_type
+}
+
+
+//
+
+interface ActionReplaceAllObjectsWithCache extends Action {
+    objects: ObjectWithCache[]
+}
+
+const replace_all_objects_with_cache_type = "replace_all_objects_with_cache"
+
+
+interface ReplaceAllObjectsWithCacheProps
+{
+    objects: ObjectWithCache[]
+}
+const replace_all_objects_with_cache = (args: ReplaceAllObjectsWithCacheProps): ActionReplaceAllObjectsWithCache =>
+{
+    return {
+        type: replace_all_objects_with_cache_type,
+        objects: args.objects,
+    }
+}
+
+const is_replace_all_objects_with_cache = (action: AnyAction): action is ActionReplaceAllObjectsWithCache => {
+    return action.type === replace_all_objects_with_cache_type
 }
 
 
@@ -265,7 +317,8 @@ export const object_actions = {
     delete_object,
     update_object,
     upsert_objects,
-    replace_all_objects,
+    replace_all_core_objects,
+    replace_all_objects_with_cache,
 }
 
 
@@ -280,17 +333,58 @@ export function merge_pattern_attributes (attributes: CoreObjectAttribute[], pat
     return attributes.map(a => ({ ...a, pattern: pattern.attributes[a.pidx] }))
 }
 
-export function merge_pattern (object: CoreObject, patterns: Pattern[]): Objekt
-{
-    const pattern = patterns.find(({ id }) => id === object.pattern_id)
 
-    if (!pattern) throw new Error(`No pattern id: "${object.pattern_id}" in patterns`)
+type MergePatternIntoCoreObjectArgs =
+{
+    object: CoreObject
+    patterns: Pattern[]
+} | {
+    object: CoreObject
+    pattern: Pattern
+}
+export function merge_pattern_into_core_object (args: MergePatternIntoCoreObjectArgs): Objekt
+{
+    const pattern: Pattern = args.hasOwnProperty("pattern")
+        ? (args as any).pattern
+        : find_pattern((args as any).patterns, args.object.pattern_id)
 
     return {
-        ...object,
+        ...args.object,
         pattern_id: pattern.id,
         pattern_name: pattern.name,
         content: pattern.content,
-        attributes: merge_pattern_attributes(object.attributes, pattern)
+        attributes: merge_pattern_attributes(args.object.attributes, pattern)
     }
+}
+
+function find_pattern (patterns: Pattern[], pattern_id: string)
+{
+    const pattern = patterns.find(({ id }) => id === pattern_id)
+
+    if (!pattern) throw new Error(`No pattern id: "${pattern_id}" in patterns`)
+
+    return pattern
+}
+
+
+function add_cache (object: Objekt): ObjectWithCache
+{
+    return {
+        ...object,
+        rendered: "",
+        is_rendered: false,
+    }
+}
+
+
+function action_to_object_with_cache (action: CoreObject & Action, patterns: Pattern[]): ObjectWithCache
+{
+    const core_object: CoreObject = { ...action }
+    delete (core_object as any).type
+    const object: ObjectWithCache = add_cache(merge_pattern_into_core_object({
+        object: core_object,
+        patterns: patterns,
+    }))
+
+    return object
 }
