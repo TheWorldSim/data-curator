@@ -10,7 +10,18 @@ tbody
     display: block;
 }
 
-.match
+td a
+{
+    padding: 5px;
+}
+
+tr
+{
+    border: thin solid #CCC;
+}
+
+tr.match
 {
     border: thin solid #DDF;
+    background-color: #F5F5FF;
 }
