@@ -22,7 +22,7 @@ type Props = PropsFromRedux & OwnProps
 function _StatementsList (props: Props)
 {
 
-    return <table>
+    return <table class="list">
         <tbody>
             {props.statements.map(statement => <tr>
                 { StatementListEntry({statement}) }

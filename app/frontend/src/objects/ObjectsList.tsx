@@ -20,7 +20,7 @@ type Props = PropsFromRedux & OwnProps
 
 function _ObjectsList (props: Props)
 {
-    return <table>
+    return <table class="list">
         <tbody>
             {props.objects.map(object => <tr>
                 { ObjectListEntry({object}) }

@@ -1,7 +1,6 @@
 import { Component, FunctionComponent, h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
 
-import "./ListOfTypes.css"
 import { PatternListEntry } from "../patterns/PatternListEntry"
 import { StatementListEntry } from "../statements/StatementListEntry"
 import type { Item, ObjectWithCache, Pattern, RootState, Statement } from "../state/State"

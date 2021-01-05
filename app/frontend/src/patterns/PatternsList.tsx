@@ -22,7 +22,7 @@ type Props = PropsFromRedux & OwnProps
 function _PatternsList (props: Props)
 {
 
-    return <table>
+    return <table class="list">
         <tbody>
             {props.patterns.map(pattern => <tr>
                 { PatternListEntry({pattern}) }
