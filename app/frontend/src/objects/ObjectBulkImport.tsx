@@ -9,8 +9,8 @@ import { get_new_object_id } from "../utils/utils"
 interface OwnProps {}
 
 
-const PATTERN_ACTION_V2 = "p6396372272707644"
-const PATTERN_EVENT = "p1980829678265834"
+const PATTERN_ACTION_V2 = "p9"
+const PATTERN_EVENT = "p12"
 const map_state = (state: RootState) => {
     const pattern_action = state.patterns.find(({ id }) => id === PATTERN_ACTION_V2)
     const pattern_event = state.patterns.find(({ id }) => id === PATTERN_EVENT)
