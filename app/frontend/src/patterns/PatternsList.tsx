@@ -9,7 +9,7 @@ interface OwnProps {}
 
 
 const map_state = (state: RootState) => ({
-    patterns: state.patterns
+    patterns: [...state.patterns].reverse()
 })
 
 

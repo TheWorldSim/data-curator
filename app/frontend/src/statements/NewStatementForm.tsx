@@ -32,6 +32,7 @@ function _NewStatementForm (props: Props)
 
     function add_label (id: string)
     {
+        if (labels.includes(id)) return
         set_labels([...labels, id])
     }
 
