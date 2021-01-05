@@ -48,7 +48,7 @@ function add_search_props (item: Item): Item & SearchProps
 function map_state (state: RootState, own_props: OwnProps)
 {
     const { filtered_by_string, filter_type } = own_props
-    const fi = filtered_by_string.toLowerCase()
+    const terms = filtered_by_string.toLowerCase().split(" ")
 
     let statements: (Statement & SearchProps)[] = state.statements.map(i => add_search_props(i))
     let patterns: (Pattern & SearchProps)[] = state.patterns.map(i => add_search_props(i))
@@ -64,13 +64,32 @@ function map_state (state: RootState, own_props: OwnProps)
         statements = []
     }
 
-    statements = statements.filter(s => s.id.startsWith(fi) || s.content.toLowerCase().includes(fi))
+    statements.forEach(i => {
+        terms.forEach(term => {
+            const match = i.content.toLowerCase().includes(term)
+                // || i.id.startsWith(term)
+
+            if (match) i.search.weight += 1
+        })
+    })
 
 
     if (filter_type === "types" || filter_type === "patterns")
     {
-        patterns = patterns.filter(p => {
-            return p.id.startsWith(fi) || p.name.toLowerCase().includes(fi) || p.content.toLowerCase().includes(fi)
+        patterns = patterns.filter(i => {
+            let any_match = false
+
+            terms.forEach(term => {
+                const match = i.name.toLowerCase().includes(term)
+                    // || i.id.startsWith(term)
+                    || i.content.toLowerCase().includes(term)
+
+                if (match) i.search.weight += 1
+
+                any_match = any_match || match
+            })
+
+            return any_match
         })
     }
     else
@@ -84,7 +103,23 @@ function map_state (state: RootState, own_props: OwnProps)
         objects = []
     }
 
-    objects = objects.filter(o => o.id.startsWith(fi) || o.content.toLowerCase().includes(fi) || o.rendered.toLowerCase().includes(fi))
+    objects = objects.filter(i => {
+        let any_match = false
+
+        terms.forEach(term => {
+            const match = i.content.toLowerCase().includes(term)
+                // || i.id.startsWith(term)
+                || i.rendered.toLowerCase().includes(term)
+                || i.pattern_name.toLowerCase().includes(term)
+
+            if (match) i.search.weight += 1
+
+            any_match = any_match || match
+        })
+
+        return any_match
+    })
+
 
     let items: (Item & SearchProps)[] = []
 
@@ -93,25 +128,22 @@ function map_state (state: RootState, own_props: OwnProps)
         .concat(patterns)
         .concat(objects)
 
-    items = items
-        .map(i => {
-            if (!own_props.specific_type_id) return i
+    items.forEach(i => {
+        if (!own_props.specific_type_id || !i.hasOwnProperty("labels")) return
 
-            if (i.hasOwnProperty("labels"))
-            {
-                const t = i as (Statement | ObjectWithCache)
-                const match = t.labels.includes(own_props.specific_type_id)
+        const t = i as (Statement | ObjectWithCache)
+        const match = t.labels.includes(own_props.specific_type_id)
 
-                if (match)
-                {
-                    i.search.weight += 1
-                }
+        if (match) i.search.weight += 1
 
-                i.search.match = match
-            }
+        i.search.match = match
+    })
 
-            return i
-        })
+    let max_weight = 0
+    items.forEach(i => max_weight = Math.max(max_weight, i.search.weight))
+
+    // normalise weights
+    items.forEach(i => i.search.weight = i.search.weight / max_weight)
 
     items = items
         .sort(({ search: { weight: a } }, { search: { weight: b } }) => a === b ? 0 : (a > b ? -1 : 1))
@@ -151,6 +183,13 @@ class _ListOfTypes extends Component<Props, State>
                     className={item.search.match ? "match" : ""}
                     onClick={() => this.props.on_click(item)}
                 >
+                    <td>
+                        <div style={{
+                            width: 5,
+                            height: `${3 + item.search.weight * 18}px`,
+                            backgroundColor: `rgba(255, ${(1 - item.search.weight) * 255},0,${item.search.weight})`
+                        }}></div>
+                    </td>
 
                     { id_is_statement(item.id) && StatementListEntry({
                         statement: item as Statement,
@@ -168,8 +207,13 @@ class _ListOfTypes extends Component<Props, State>
                     }) }
 
                 </tr>)}
-                {/* Complete hack to force table to be max width and still allow scroll */}
-                <tr> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        {/* Complete hack to force table to be max width and still allow scroll */}
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    </td>
+                </tr>
             </tbody>
         </table>
     }

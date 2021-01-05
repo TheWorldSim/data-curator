@@ -56,7 +56,7 @@ function _EditPatternForm (props: Props)
             style={{ width: 400 }}
             type="text"
             placeholder="Pattern content"
-            value={props.pattern.content}
+            value={content}
             onChange={e => set_content(e.currentTarget.value)}
         ></input>
 
