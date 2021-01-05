@@ -25,11 +25,37 @@ const map_dispatch = (dispatch: Dispatch, own_props: OwnProps) => ({
 const connector = connect(null, map_dispatch)
 type Props = ConnectedProps<typeof connector> & OwnProps
 
+interface State { clicked: boolean }
 
-class _Link extends Component<Props>
+
+class _Link extends Component<Props, State>
 {
+    constructor (props: Props)
+    {
+        super(props)
+        this.state = { clicked: false }
+    }
+
+    private remove_clicked_class: NodeJS.Timeout | undefined
+    componentWillUpdate (new_props: Props, new_state: State)
+    {
+
+        if (new_state.clicked && !this.remove_clicked_class)
+        {
+
+            this.remove_clicked_class = setTimeout(() => {
+
+                this.setState({ clicked: false })
+                this.remove_clicked_class = undefined
+
+            }, 300)
+        }
+    }
+
     render () {
         const on_click = (e: h.JSX.TargetedEvent<HTMLAnchorElement, MouseEvent>) => {
+            this.setState({ clicked: true })
+
             if (this.props.on_click)
             {
                 e.preventDefault()
@@ -44,6 +70,7 @@ class _Link extends Component<Props>
         return <a
             onClick={on_click}
             href={get_route(this.props)}
+            className={"link " + (this.state.clicked ? "clicked_animate" : "")}
         >
             {this.props.children}
         </a>

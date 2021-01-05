@@ -9,7 +9,7 @@ interface OwnProps {}
 
 
 const map_state = (state: RootState) => ({
-    objects: state.objects
+    objects: [...state.objects].reverse()
 })
 
 const connector = connect(map_state)

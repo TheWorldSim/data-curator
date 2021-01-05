@@ -1,5 +1,6 @@
 import { h, FunctionComponent } from "preact"
 import { useState, useCallback } from "preact/hooks"
+import type { Dispatch } from "redux"
 import { connect, ConnectedProps } from "react-redux"
 import { SelectPattern } from "../patterns/SelectPattern"
 
@@ -17,14 +18,18 @@ type OwnProps = {
 }
 
 
-const map_dispatch = {
-    add_object: (args: AddObjectProps) => ACTIONS.add_object(args),
-    update_object: (args: UpdateObjectProps) => ACTIONS.update_object(args),
-    delete_object: (id: string) => ACTIONS.delete_object(id),
-    show_bulk_import: () => ACTIONS.change_route({
+const map_dispatch = (dispatch: Dispatch) => ({
+    add_object: (args: AddObjectProps) => {
+        const action_add_object = ACTIONS.add_object(args)
+        dispatch(action_add_object)
+        dispatch(ACTIONS.change_route({ route: "objects", item_id: action_add_object.id, sub_route: undefined }))
+    },
+    update_object: (args: UpdateObjectProps) => dispatch(ACTIONS.update_object(args)),
+    delete_object: (id: string) => dispatch(ACTIONS.delete_object(id)),
+    show_bulk_import: () => dispatch(ACTIONS.change_route({
         route: "objects", sub_route: "objects_bulk_import", item_id: undefined
-    }),
-}
+    })),
+})
 
 
 const connector = connect(null, map_dispatch)

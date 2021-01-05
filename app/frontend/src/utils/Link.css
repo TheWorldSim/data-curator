@@ -1,6 +1,20 @@
 
-a
+a.link
 {
     text-decoration: none;
     color: initial;
+    display: block;
+    height: 100%;
+    width:100%;
+}
+
+.clicked_animate
+{
+  animation-duration: 300ms;
+  animation-name: click_animation;
+}
+
+@keyframes click_animation {
+  0% { background-color: rgba(150, 150, 240, 1); }
+  100% { background-color: rgba(255, 255, 255, 0); }
 }
