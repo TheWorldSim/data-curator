@@ -1,5 +1,4 @@
-import { FunctionComponent, h } from "preact"
-import { useState } from "preact/hooks"
+import { Component, ComponentClass, h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
 
 import { CoreObject, CoreObjectAttribute, is_id_attribute, ObjectWithCache, Pattern, RootState } from "../state/State"
@@ -40,62 +39,76 @@ const connector = connect(map_state, map_dispatch)
 type Props = ConnectedProps<typeof connector> & OwnProps
 
 
-function _ObjectBulkImport (props: Props)
+class _ObjectBulkImport extends Component<Props, {statuses: string[]}>
 {
-    const [status, set_status] = useState("")
-
-
-    const on_new_objects = (objects: CoreObject[]) =>
+    constructor (props: Props)
     {
-        set_status(`Successfully fetched ${objects.length} objects`)
-
-        props.upsert_objects({ objects })
-        setTimeout(() => set_status(""), 2000)
+        super(props)
+        this.state = { statuses: [] }
     }
 
 
-    const get_data = () =>
+    render ()
     {
-        if (!props.patterns_available)
+        const add_status = (status: string) => this.setState({ statuses: [...this.state.statuses, status] })
+        const set_statuses = (statuses: string[]) => this.setState({ statuses })
+
+        const on_new_objects_factory = (object_type: string) => (objects: CoreObject[]) =>
         {
-            set_status("Can not fetch objects from AirTable API, patterns not available")
-            setTimeout(() => set_status(""), 2000)
-            return
+            add_status(`Successfully fetched ${objects.length} ${object_type} objects`)
+
+            this.props.upsert_objects({ objects })
+            setTimeout(() => set_statuses([]), 5000)
         }
 
-        set_status("Fetching objects from AirTable API")
-        get_data_from_air_table(props.patterns.action!, props.objects, on_new_objects)
-        get_data_from_air_table(props.patterns.event!, props.objects, on_new_objects)
+
+        const get_data = () =>
+        {
+            if (!this.props.patterns_available)
+            {
+                set_statuses(["Can not fetch objects from AirTable API, patterns not available"])
+                setTimeout(() => set_statuses([]), 5000)
+                return
+            }
+
+            set_statuses(["Fetching objects from AirTable API", ""])
+            get_data_from_air_table(this.props.patterns.action!, this.props.objects, on_new_objects_factory("Action"))
+            get_data_from_air_table(this.props.patterns.event!, this.props.objects, on_new_objects_factory("Event"))
+        }
+
+
+        let { statuses } = this.state
+        if (statuses.length) statuses = ["Status:", ...statuses]
+
+
+        return <div>
+            <b>Object Bulk Import</b>
+
+            <br /><br />
+
+            <hr />
+
+            <b>Get AirTable data</b>
+
+            <br /><br />
+
+            <input
+                type="button"
+                value={this.props.patterns_available ? "Get data" : "(Patterns not available)"}
+                onClick={get_data}
+                disabled={!!statuses.length || !this.props.patterns_available}
+            ></input>
+
+            <br />
+
+            {statuses.map((status, i) => <div key={status + i}><b>{status}</b><br /></div>) }
+
+        </div>
     }
-
-
-    return <div>
-        <b>Object Bulk Import</b>
-
-        <br /><br />
-
-        <hr />
-
-        <b>Get AirTable data</b>
-
-        <br /><br />
-
-        <input
-            type="button"
-            value={props.patterns_available ? "Get data" : "(Patterns not available)"}
-            onClick={get_data}
-            disabled={!!status || !props.patterns_available}
-        ></input>
-
-        <br />
-
-        {status && <b>Status: {status}</b>}
-
-    </div>
 }
 
 
-export const ObjectBulkImport = connector(_ObjectBulkImport) as FunctionComponent<OwnProps>
+export const ObjectBulkImport = connector(_ObjectBulkImport) as ComponentClass<OwnProps>
 
 
 const EXTERNAL_ID_KEY = "airtable"
