@@ -65,6 +65,7 @@ export function config_store (args: ConfigStoreArgs = {})
     const save = () =>
     {
         const state = store.getState()
+        ;(window as any).debug_state = state
         if (!state.sync.ready) return
         save_state(store.dispatch, state)
     }
@@ -77,6 +78,7 @@ export function config_store (args: ConfigStoreArgs = {})
 
     /**
      * Update the route to reflect any manual change of the hash route by the user
+     * editing the url, or by pressing the navigation buttons.
      * Or from when the page first loads and the route changes then.
      */
     let promise_state_ready: Promise<void>
@@ -101,6 +103,8 @@ export function config_store (args: ConfigStoreArgs = {})
 
             return
         }
+
+        debugger
 
         const routing_params = get_current_route_params(store.getState())
         store.dispatch(ACTIONS.change_route(routing_params))

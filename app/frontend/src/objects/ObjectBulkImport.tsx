@@ -231,7 +231,7 @@ function transform_airtable_action (args: TransformAirtableRecordArgs<AirtableAc
             { pidx: 9, value: date_to_string(ar.fields.stop_datetime) },
             { pidx: 10, value: ar.fields["Action Type"] || "" },
             { pidx: 11, value: date_to_string(ar.fields.deadline_review_datetime) },
-            { pidx: 12, value: ar.fields.is_project ? "Project" : " " },
+            { pidx: 12, value: ar.fields.is_project ? "(Project)" : "" },
         ],
     }
 

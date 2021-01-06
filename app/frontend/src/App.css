@@ -50,3 +50,16 @@ table.list
   border: thin solid #DDF;
   background-color: #F5F5FF;
 }
+
+.list.no_border > tr
+{
+  border: initial;
+}
+.list.no_border > tr:not(:first-child)
+{
+  border-top: thin solid #CCC;
+}
+.list.padded > tr > td
+{
+  padding: 5px 2px;
+}

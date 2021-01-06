@@ -53,6 +53,7 @@ const blank_state: ObjectWithCache = {
     is_rendered: false,
 }
 
+
 function _ObjectForm (props: Props)
 {
     const initial_state: ObjectWithCache = props.object || blank_state
@@ -146,7 +147,7 @@ function _ObjectForm (props: Props)
         <br/><br />
 
         <div>
-            {object_content({ object })}
+            {object_content({ object: { ...object, rendered: "", is_rendered: false } })}
         </div>
 
         <br/><br />
@@ -154,7 +155,7 @@ function _ObjectForm (props: Props)
         <input
             type="button"
             onClick={upsert_object}
-            value={(props.object ? "Update" : "Add") + " object"}
+            value={props.object ? "Update object" : "Add object"}
             disabled={!object.content}
         ></input>
 

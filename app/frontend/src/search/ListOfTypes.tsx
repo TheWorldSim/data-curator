@@ -104,7 +104,7 @@ function map_state (state: RootState, own_props: OwnProps)
     }
 
     objects = objects.filter(i => {
-        let any_match = false
+        let matches = 0
 
         terms.forEach(term => {
             const match = i.content.toLowerCase().includes(term)
@@ -112,12 +112,12 @@ function map_state (state: RootState, own_props: OwnProps)
                 || i.rendered.toLowerCase().includes(term)
                 || i.pattern_name.toLowerCase().includes(term)
 
-            if (match) i.search.weight += 1
-
-            any_match = any_match || match
+            matches += match ? 1 : 0
         })
 
-        return any_match
+        i.search.weight += matches
+
+        return matches > 0
     })
 
 
@@ -129,14 +129,24 @@ function map_state (state: RootState, own_props: OwnProps)
         .concat(objects)
 
     items.forEach(i => {
-        if (!own_props.specific_type_id || !i.hasOwnProperty("labels")) return
+        if (!own_props.specific_type_id) return
 
-        const t = i as (Statement | ObjectWithCache)
-        const match = t.labels.includes(own_props.specific_type_id)
+        let matches = 0
 
-        if (match) i.search.weight += 1
+        if (i.hasOwnProperty("labels"))
+        {
+            const t = i as (Statement | ObjectWithCache)
+            matches += t.labels.includes(own_props.specific_type_id) ? 1 : 0
+        }
 
-        i.search.match = match
+        if (i.hasOwnProperty("pattern_name"))
+        {
+            const t = i as (ObjectWithCache)
+            matches += t.pattern_id === own_props.specific_type_id ? 1 : 0
+        }
+
+        i.search.weight += matches
+        i.search.match = matches > 0
     })
 
     let max_weight = 0
@@ -176,7 +186,7 @@ class _ListOfTypes extends Component<Props, State>
 
     render ()
     {
-        return <table>
+        return <table class="list">
             <tbody>
                 {this.props.items.map(item => <tr
                     key={item.id}

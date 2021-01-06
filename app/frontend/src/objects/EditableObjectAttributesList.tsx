@@ -23,7 +23,7 @@ function _EditableObjectAttributesList (props: OwnProps)
     }
 
     return <div>
-        <table>
+        <table class="list no_border padded">
             {props.attributes.map((attribute, i) => <tr> {/* TODO set key */}
                 <ObjectAttributeListEntry
                     attribute={attribute}

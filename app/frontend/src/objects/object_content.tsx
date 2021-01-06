@@ -59,7 +59,7 @@ export function render_object (args: RenderObjectArgs)
 
     const rendered_content = render_content(args.state, content, args.object.attributes, depth)
 
-    return rendered_content
+    return rendered_content.trim() ? rendered_content : "?"
 }
 
 
@@ -99,18 +99,24 @@ function render_content (state: RenderState, content: string, attributes: Object
 
 function attribute_content (state: RenderState, attribute_index_lookup: string, attributes: ObjectAttribute[], depth: number)
 {
-    const { attribute, parts } = get_attribute_from_index_lookup(attribute_index_lookup, attributes)
+    const { matching_attributes, parts } = get_attribute_from_index_lookup(attribute_index_lookup, attributes)
 
-    return get_content_from_attribute(state, attribute, parts, depth)
+    return get_content_from_attributes(state, matching_attributes, parts, depth)
 }
 
 
 function get_attribute_from_index_lookup (attribute_index_lookup: string, attributes: ObjectAttribute[])
 {
     const parts = attribute_index_lookup.split(".").map(i => parseInt(i))
-    const attribute = attributes[parts[0]]
+    const matching_attributes = attributes.filter(({ pidx }) => pidx === parts[0])
 
-    return { attribute, parts: parts.slice(1) }
+    return { matching_attributes, parts: parts.slice(1) }
+}
+
+
+function get_content_from_attributes (state: RenderState, attributes: ObjectAttribute[], parts: number[], depth: number)
+{
+    return attributes.map(a => get_content_from_attribute(state, a, parts, depth)).join(", ")
 }
 
 
@@ -122,7 +128,7 @@ function get_content_from_attribute (state: RenderState, attribute: ObjectAttrib
     }
     else
     {
-        if (is_value_attribute(attribute)) return attribute.value || "?"
+        if (is_value_attribute(attribute)) return attribute.value || ""
 
         const res = convert_id_to_content(state, attribute.id)
         if (typeof res === "string") return res
