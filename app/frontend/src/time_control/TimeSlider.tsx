@@ -29,17 +29,24 @@ export function TimeSlider (props: OwnProps)
     const latest_day = Math.floor(props.latest_ms / MSECONDS_PER_DAY)
 
     const [handle_position, set_handle_position] = useState(0)
-    if (handle_position === 0 && earliest_day > 0) set_handle_position(earliest_day)
 
     return <div className="time_slider">
         <input
             type="range"
             onChange={e => set_handle_position(parseInt(e.currentTarget.value))}
             value={handle_position}
-            min={earliest_day}
-            max={latest_day}
+            min={0}
+            max={latest_day - earliest_day}
+            list="tickmarks"
         ></input>
+        <datalist id="tickmarks">
+            {props.events
+                .map(event => (event.start_date.getTime() / MSECONDS_PER_DAY) - earliest_day)
+                .sort()
+                .map(d => <option value={d}>{d}</option>)}
+        </datalist>
 
-        {date2str(new Date(handle_position * MSECONDS_PER_DAY), "yyyy-MM-dd")}
+        {date2str(new Date((earliest_day + handle_position) * MSECONDS_PER_DAY), "yyyy-MM-dd")}
+
     </div>
 }
