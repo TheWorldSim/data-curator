@@ -156,7 +156,7 @@ function _ObjectForm (props: Props)
             type="button"
             onClick={upsert_object}
             value={props.object ? "Update object" : "Add object"}
-            disabled={!object.content}
+            disabled={initial_state === object} // This is a poor version of an "on changed" check
         ></input>
 
         <div style={{ float: "right" }}>

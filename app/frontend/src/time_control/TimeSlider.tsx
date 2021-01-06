@@ -1,16 +1,23 @@
 import { h } from "preact"
 
 import "./time_slider.css"
-import type { ObjectWithCache } from "../state/State"
 import { useState } from "preact/hooks"
 import { date2str } from "../shared/utils/date_helpers"
+
+
+export interface EventObject
+{
+    start_date: Date
+    name: string
+    object_id: string
+}
 
 
 interface OwnProps
 {
     earliest_ms: number
     latest_ms: number
-    events: ObjectWithCache[]
+    events: EventObject[]
 }
 
 const MSECONDS_PER_DAY = 86400000
