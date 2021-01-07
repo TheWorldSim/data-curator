@@ -4,25 +4,34 @@ import { connect, ConnectedProps } from "react-redux"
 
 import "./Link.css"
 import { get_route } from "../state/routing"
-import type { ROUTE_TYPES } from "../state/State"
+import type { RootState, ROUTE_TYPES, RoutingArgs } from "../state/State"
 import { ACTIONS } from "../state/store"
 
 
 interface OwnProps {
     route: ROUTE_TYPES
     item_id?: string
+    args?: RoutingArgs
     on_click?: () => void
 }
 
 
+const map_state = (state: RootState) =>
+{
+    return {
+        routing_args: state.routing.args,
+    }
+}
+
+
 const map_dispatch = (dispatch: Dispatch, own_props: OwnProps) => ({
-    link_clicked: () => dispatch(ACTIONS.change_route({
-        route: own_props.route, sub_route: undefined, item_id: own_props.item_id
+    link_clicked: (routing_args: RoutingArgs) => dispatch(ACTIONS.change_route({
+        route: own_props.route, sub_route: undefined, item_id: own_props.item_id, args: routing_args,
     }))
 })
 
 
-const connector = connect(null, map_dispatch)
+const connector = connect(map_state, map_dispatch)
 type Props = ConnectedProps<typeof connector> & OwnProps
 
 interface State { clicked: boolean }
@@ -53,6 +62,9 @@ class _Link extends Component<Props, State>
     }
 
     render () {
+        const partial_routing_args = this.props.args || {}
+        const full_routing_args = { ...this.props.routing_args, ...partial_routing_args }
+
         const on_click = (e: h.JSX.TargetedEvent<HTMLAnchorElement, MouseEvent>) => {
             this.setState({ clicked: true })
 
@@ -63,13 +75,13 @@ class _Link extends Component<Props, State>
             }
             else
             {
-                this.props.link_clicked()
+                this.props.link_clicked(partial_routing_args)
             }
         }
 
         return <a
             onClick={on_click}
-            href={get_route(this.props)}
+            href={get_route({ ...this.props, args: full_routing_args })}
             className={"link " + (this.state.clicked ? "clicked_animate" : "")}
         >
             {this.props.children}

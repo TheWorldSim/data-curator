@@ -16,7 +16,7 @@ interface OwnProps {
 const map_dispatch = (dispatch: Dispatch, props: OwnProps) => ({
     delete_statement: () => {
         dispatch(ACTIONS.delete_statement(props.statement.id))
-        dispatch(ACTIONS.change_route({ route: "statements", sub_route: undefined, item_id: undefined }))
+        dispatch(ACTIONS.change_route({ route: "statements", sub_route: undefined, item_id: undefined, args: {} }))
     },
 })
 

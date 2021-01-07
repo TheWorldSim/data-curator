@@ -22,12 +22,20 @@ const map_dispatch = (dispatch: Dispatch) => ({
     add_object: (args: AddObjectProps) => {
         const action_add_object = ACTIONS.add_object(args)
         dispatch(action_add_object)
-        dispatch(ACTIONS.change_route({ route: "objects", item_id: action_add_object.id, sub_route: undefined }))
+        dispatch(ACTIONS.change_route({
+            route: "objects",
+            item_id: action_add_object.id,
+            sub_route: null,
+            args: {},
+        }))
     },
     update_object: (args: UpdateObjectProps) => dispatch(ACTIONS.update_object(args)),
     delete_object: (id: string) => dispatch(ACTIONS.delete_object(id)),
     show_bulk_import: () => dispatch(ACTIONS.change_route({
-        route: "objects", sub_route: "objects_bulk_import", item_id: undefined
+        route: "objects",
+        sub_route: "objects_bulk_import",
+        item_id: null,
+        args: {},
     })),
 })
 
@@ -108,7 +116,7 @@ function _ObjectForm (props: Props)
             type="button"
             style={{ float: "right" }}
             value="Bulk import"
-            onClick={props.show_bulk_import}
+            onClick={() => props.show_bulk_import()}
         ></input>
 
         <hr />

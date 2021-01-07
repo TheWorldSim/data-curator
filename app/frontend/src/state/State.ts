@@ -103,7 +103,9 @@ export interface RoutingState
     route: ROUTE_TYPES
     sub_route: SUB_ROUTE_TYPES | undefined
     item_id: string | undefined
+    args: RoutingArgs
 }
+export type RoutingArgs = {[ key: string ]: string }
 
 
 export interface GlobalKeyPress

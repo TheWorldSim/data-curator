@@ -1,8 +1,16 @@
 import { h } from "preact"
 import { useState } from "preact/hooks"
 
-import { bounded } from "../utils/utils"
 import "./Canvas.css"
+import type { GraphNode } from "./interfaces"
+import { bounded } from "../utils/utils"
+import { Node } from "./Node"
+
+
+interface OwnProps
+{
+    nodes: GraphNode[]
+}
 
 
 type PointerState =
@@ -26,7 +34,9 @@ const pointer_state: PointerState = {
     canvas_start_x: null,
     canvas_start_y: null,
 }
-export function Canvas ()
+
+
+export function Canvas (props: OwnProps)
 {
     const [x, change_x] = useState(0)
     const [y, change_y] = useState(0)
@@ -94,7 +104,7 @@ export function Canvas ()
         onWheel={on_wheel}
     >
         <div id="graph_visuals_container" style={html_container_style}>
-            {/* List of visuals */}
+            {props.nodes.map(node => <Node node={node} />)}
 
             <svg
                 width="900"

@@ -104,8 +104,6 @@ export function config_store (args: ConfigStoreArgs = {})
             return
         }
 
-        debugger
-
         const routing_params = get_current_route_params(store.getState())
         store.dispatch(ACTIONS.change_route(routing_params))
     }

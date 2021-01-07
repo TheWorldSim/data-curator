@@ -29,3 +29,17 @@
     width: 200px;
     cursor: pointer;
 }
+
+.graph_node
+{
+    position: absolute;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.graph_node > div
+{
+    border: thin solid #555;
+    border-radius: 5px;
+    background-color: #FCFCFC;
+}
