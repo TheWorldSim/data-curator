@@ -9,21 +9,25 @@ import { get_new_object_id } from "../utils/utils"
 interface OwnProps {}
 
 
-const PATTERN_ACTION_V2 = "p9"
-const PATTERN_EVENT = "p12"
+const PATTERN_ID_ACTION_V2 = "p9"
+const PATTERN_ID_PRIORITY = "p10"
+const PATTERN_ID_EVENT = "p12"
 const map_state = (state: RootState) => {
-    const pattern_action = state.patterns.find(({ id }) => id === PATTERN_ACTION_V2)
-    const pattern_event = state.patterns.find(({ id }) => id === PATTERN_EVENT)
+    const pattern_action = state.patterns.find(({ id }) => id === PATTERN_ID_ACTION_V2)
+    const pattern_priority = state.patterns.find(({ id }) => id === PATTERN_ID_PRIORITY)
+    const pattern_event = state.patterns.find(({ id }) => id === PATTERN_ID_EVENT)
 
     const ready = state.sync.ready
-    if (!pattern_action && ready) throw new Error(`Pattern "Action v2" for id: ${PATTERN_ACTION_V2} not found`)
-    if (!pattern_event && ready) throw new Error(`Pattern "Event" for id: ${PATTERN_EVENT} not found`)
+    if (!pattern_action && ready) throw new Error(`Pattern "Action v2" for id: ${PATTERN_ID_ACTION_V2} not found`)
+    if (!pattern_priority && ready) throw new Error(`Pattern "Priority" for id: ${PATTERN_ID_PRIORITY} not found`)
+    if (!pattern_event && ready) throw new Error(`Pattern "Event" for id: ${PATTERN_ID_EVENT} not found`)
 
     return {
         objects: state.objects,
         patterns_available: !!pattern_action && !!pattern_event,
         patterns: {
             action: pattern_action,
+            priority: pattern_priority,
             event: pattern_event,
         },
     }
@@ -71,9 +75,12 @@ class _ObjectBulkImport extends Component<Props, {statuses: string[]}>
                 return
             }
 
+            const { patterns, objects } = this.props
+
             set_statuses(["Fetching objects from AirTable API", ""])
-            get_data_from_air_table(this.props.patterns.action!, this.props.objects, on_new_objects_factory("Action"))
-            get_data_from_air_table(this.props.patterns.event!, this.props.objects, on_new_objects_factory("Event"))
+            get_data_from_air_table(patterns.action!, objects, on_new_objects_factory("Action"))
+            get_data_from_air_table(patterns.priority!, objects, on_new_objects_factory("Priorities"))
+            get_data_from_air_table(patterns.event!, objects, on_new_objects_factory("Event"))
         }
 
 
@@ -120,8 +127,12 @@ function get_data_from_air_table (pattern: Pattern, existing_objects: ObjectWith
     const app = localStorage.getItem("airtable_app")
     //  {"p123": {"table": "Table%20name", "view": "Grid%20view"}}
     const models = JSON.parse(localStorage.getItem("airtable_models")!)
-    const table = models[pattern.id].table
-    const view = models[pattern.id].view
+    const model = models[pattern.id]
+
+    if (!model) return console.error(`Pattern id "${pattern.id}" could not be found in localStorage.airtable_models`)
+
+    const table = model.table
+    const view = model.view
 
     const maxRecords = 100
     const url = `https://api.airtable.com/v0/${app}/${table}?maxRecords=${maxRecords}&view=${view}`
@@ -139,11 +150,15 @@ function get_data_from_air_table (pattern: Pattern, existing_objects: ObjectWith
             const predicate = find_object_by_airtable_id(airtable_record.id)
             const existing_object = existing_objects.find(predicate)
 
-            if (pattern.id === PATTERN_ACTION_V2)
+            if (pattern.id === PATTERN_ID_ACTION_V2)
             {
                 return transform_airtable_action({ pattern, get_temp_id, airtable_record, existing_object })
             }
-            else if (pattern.id === PATTERN_EVENT)
+            else if (pattern.id === PATTERN_ID_PRIORITY)
+            {
+                return transform_airtable_priority({ pattern, get_temp_id, airtable_record, existing_object })
+            }
+            else if (pattern.id === PATTERN_ID_EVENT)
             {
                 return transform_airtable_event({ pattern, get_temp_id, airtable_record, existing_object })
             }
@@ -208,7 +223,7 @@ interface AirtableAction
 function transform_airtable_action (args: TransformAirtableRecordArgs<AirtableAction>): CoreObject
 {
     const { pattern, get_temp_id } = args
-    if (pattern.id !== PATTERN_ACTION_V2) throw new Error(`transform_airtable_action requires Action pattern`)
+    if (pattern.id !== PATTERN_ID_ACTION_V2) throw new Error(`transform_airtable_action requires Action pattern`)
     const ar = args.airtable_record
     const eo = args.existing_object
 
@@ -240,6 +255,44 @@ function transform_airtable_action (args: TransformAirtableRecordArgs<AirtableAc
 
 
 //
+
+interface AirtablePriority
+{
+    id: string
+    createdTime: string
+    fields: Partial<{
+        project: string[]  // 0 or 1 value
+        start_datetime: DateString
+        effort: number
+        why: string
+    }>
+}
+
+function transform_airtable_priority (args: TransformAirtableRecordArgs<AirtablePriority>): CoreObject
+{
+    const { pattern, get_temp_id } = args
+    if (pattern.id !== PATTERN_ID_PRIORITY) throw new Error(`transform_airtable_priority requires Priority pattern`)
+    const ar = args.airtable_record
+    const eo = args.existing_object
+
+    const new_object: CoreObject = {
+        id: (eo && eo.id) || get_new_object_id(),
+        datetime_created: eo ? eo.datetime_created : new Date(ar.createdTime),
+        labels: [],
+        pattern_id: pattern.id,
+        external_ids: { [EXTERNAL_ID_KEY]: ar.id, ...((eo && eo.external_ids) || {}) },
+        attributes: [
+            airtable_multi_field_to_single_attribute({ pidx: 0, field: ar.fields.project, get_temp_id }),
+            { pidx: 1, value: date_to_string(ar.fields.start_datetime) },
+            { pidx: 2, value: num_to_string(ar.fields.effort) },
+            { pidx: 3, value: ar.fields.why || "" },
+        ],
+    }
+
+    return new_object
+}
+
+//
 interface AirtableEvent
 {
     id: string
@@ -255,7 +308,7 @@ interface AirtableEvent
 function transform_airtable_event (args: TransformAirtableRecordArgs<AirtableEvent>): CoreObject
 {
     const { pattern, get_temp_id } = args
-    if (pattern.id !== PATTERN_EVENT) throw new Error(`transform_airtable_event requires Event pattern`)
+    if (pattern.id !== PATTERN_ID_EVENT) throw new Error(`transform_airtable_event requires Event pattern`)
     const ar = args.airtable_record
     const eo = args.existing_object
 
