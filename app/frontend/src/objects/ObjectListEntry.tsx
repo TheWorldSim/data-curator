@@ -16,7 +16,13 @@ export function ObjectListEntry (props: OwnProps)
 {
     return [
         <td>
-            <Link route="objects" item_id={props.object.id} on_click={props.on_click}>
+            <Link
+                route="objects"
+                sub_route={null}
+                item_id={props.object.id}
+                args={undefined}
+                on_click={props.on_click}
+            >
                 {object_content({ object: props.object })}
             </Link>
         </td>,

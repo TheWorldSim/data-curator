@@ -13,34 +13,56 @@ function parse_url_for_routing_params ({ url, state }: { url: string, state: Roo
 
     if (!ALLOWED_ROUTES.includes(route))
     {
-        return { route: "statements", sub_route: undefined, item_id: undefined, args: {} }
+        return { route: "statements", sub_route: null, item_id: null, args: {} }
     }
 
-    const part2 = parts[1] as SUB_ROUTE_TYPES | undefined
-    let sub_route: SUB_ROUTE_TYPES | undefined = undefined
-    let item_id: string | undefined = undefined
+    const part2 = (parts[1] || null) as SUB_ROUTE_TYPES
+    let sub_route: SUB_ROUTE_TYPES = null
+    let item_id: string | null = null
 
     if (ALLOWED_SUB_ROUTES[route].includes(part2 as any)) sub_route = part2
     else item_id = part2 as string
 
 
-    if (!id_is_valid(item_id)) item_id = undefined
+    if (!id_is_valid(item_id)) item_id = null
 
     const ready = state.sync.ready
-    if (ready && id_is_statement(item_id) && !state.statements.find(({ id }) => id === item_id)) item_id = undefined
-    if (ready && id_is_pattern(item_id) && !state.patterns.find(({ id }) => id === item_id)) item_id = undefined
-    if (ready && id_is_object(item_id) && !state.objects.find(({ id }) => id === item_id)) item_id = undefined
+    if (ready && id_is_statement(item_id) && !state.statements.find(({ id }) => id === item_id)) item_id = null
+    if (ready && id_is_pattern(item_id) && !state.patterns.find(({ id }) => id === item_id)) item_id = null
+    if (ready && id_is_object(item_id) && !state.objects.find(({ id }) => id === item_id)) item_id = null
 
     const args: RoutingArgs = {}
     if (main_parts.length > 1)
     {
         main_parts.slice(1).forEach(part => {
             const [key, value] = part.split("=")
+            if (!value) return
             args[key] = value
         })
     }
 
     return { route, sub_route, item_id, args }
+}
+
+
+export function routing_state_to_string (args: RoutingState): string
+{
+    const sub_route = args.sub_route ? `${args.sub_route}/` : ""
+    const element_route = args.item_id ? `${args.item_id}/` : ""
+
+    const routing_args = args.args || {}
+    const routing_args_str = routing_args_to_string(routing_args)
+    return "#" + args.route + "/" + sub_route + element_route + routing_args_str
+}
+
+function routing_args_to_string (routing_args: RoutingArgs)
+{
+    const routing_args_str = Object.keys(routing_args)
+        .sort()
+        .map(key => `&${key}=${routing_args[key]}`)
+        .join("")
+
+    return routing_args_str
 }
 
 
@@ -52,16 +74,28 @@ export function get_current_route_params (state: RootState): RoutingState
 }
 
 
-export function get_route (args: { route: ROUTE_TYPES, sub_route?: SUB_ROUTE_TYPES, item_id?: string, args?: RoutingArgs }): string
-{
-    const sub_route = args.sub_route ? `${args.sub_route}/` : ""
-    const element_route = args.item_id ? `${args.item_id}/` : ""
+//
 
-    const routing_args = args.args || {}
-    const routing_args_str = Object.keys(routing_args)
-        .map(key => `&${key}=${routing_args[key]}`)
-        .join("")
-    return "#" + args.route + "/" + sub_route + element_route + routing_args_str
+export function merge_routing_state (current_routing_state: RoutingState, new_routing_state: ActionChangeRouteArgs): RoutingState
+{
+    const {
+        route,
+        sub_route,
+        item_id,
+        args,
+    } = current_routing_state
+
+    const merged_args = { ...args, ...new_routing_state.args }
+    Object.keys(merged_args).forEach(key => {
+        if (!merged_args[key]) delete merged_args[key]
+    })
+
+    return {
+        route: new_routing_state.route || route,
+        sub_route: new_routing_state.sub_route === null ? null : (new_routing_state.sub_route || sub_route),
+        item_id: new_routing_state.item_id === null ? null : (new_routing_state.item_id || item_id),
+        args: merged_args,
+    }
 }
 
 
@@ -77,22 +111,24 @@ export const routing_reducer = (state: RootState, action: AnyAction): RootState 
             args,
         } = state.routing
 
-        if (route !== action.route || sub_route !== action.sub_route || item_id !== action.item_id)
+        const changed = (
+            route !== action.route
+            || sub_route !== action.sub_route
+            || item_id !== action.item_id
+            || routing_args_to_string(args) !== routing_args_to_string(action.args || {})
+        )
+
+        if (changed)
         {
             state = {
                 ...state,
-                routing: {
-                    route: action.route || route,
-                    sub_route: action.sub_route === null ? undefined : (action.sub_route || sub_route),
-                    item_id: action.item_id === null ? undefined : (action.item_id || item_id),
-                    args: { ...args, ...action.args },
-                }
+                routing: merge_routing_state(state.routing, action)
             }
         }
     }
 
     // Putting this side effect here seems wrong, perhaps best as a store.subscribe?
-    const route = get_route(state.routing)
+    const route = routing_state_to_string(state.routing)
     window.location.hash = route
 
     return state
@@ -104,7 +140,7 @@ interface ActionChangeRouteArgs {
     route: ROUTE_TYPES | undefined
     sub_route: SUB_ROUTE_TYPES | undefined | null
     item_id: string | undefined | null
-    args: RoutingArgs
+    args: RoutingArgs | undefined
 }
 interface ActionChangeRoute extends Action, ActionChangeRouteArgs {}
 

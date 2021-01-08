@@ -133,7 +133,7 @@ export function get_starting_state (): RootState
         patterns,
         objects,
         sync: { ready: false, status: "LOADING" },
-        routing: { route: "statements", sub_route: undefined, item_id: undefined, args: {} },
+        routing: { route: "statements", sub_route: null, item_id: null, args: {} },
         global_key_press: { last_key: undefined, last_key_time_stamp: undefined },
     }
 

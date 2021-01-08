@@ -14,7 +14,13 @@ export function PatternListEntry (props: OwnProps)
 {
     return [
     <td>
-        <Link route="patterns" item_id={props.pattern.id} on_click={props.on_click}>
+        <Link
+            route="patterns"
+            sub_route={null}
+            item_id={props.pattern.id}
+            args={undefined}
+            on_click={props.on_click}
+        >
             {props.pattern.name}
         </Link>
     </td>,

@@ -15,7 +15,13 @@ export function StatementListEntry (props: OwnProps)
 {
     return [
         <td>
-            <Link route="statements" item_id={props.statement.id} on_click={props.on_click}>
+            <Link
+                route="statements"
+                sub_route={null}
+                item_id={props.statement.id}
+                args={undefined}
+                on_click={props.on_click}
+            >
                 {props.statement.content}
             </Link>
         </td>,

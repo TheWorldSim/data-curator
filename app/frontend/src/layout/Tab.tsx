@@ -42,7 +42,7 @@ function _Tab (props: Props)
     return <div
         class={css_class}
     >
-        <Link route={props.id}>
+        <Link route={props.id} sub_route={null} item_id={null} args={undefined} >
             {title}
         </Link>
     </div>

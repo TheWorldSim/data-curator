@@ -3,15 +3,16 @@ import type { Dispatch } from "redux"
 import { connect, ConnectedProps } from "react-redux"
 
 import "./Link.css"
-import { get_route } from "../state/routing"
-import type { RootState, ROUTE_TYPES, RoutingArgs } from "../state/State"
+import { merge_routing_state, routing_state_to_string } from "../state/routing"
+import type { RootState, ROUTE_TYPES, RoutingArgs, RoutingState, SUB_ROUTE_TYPES } from "../state/State"
 import { ACTIONS } from "../state/store"
 
 
 interface OwnProps {
-    route: ROUTE_TYPES
-    item_id?: string
-    args?: RoutingArgs
+    route: ROUTE_TYPES | undefined
+    sub_route: SUB_ROUTE_TYPES | undefined
+    item_id: string | null | undefined
+    args: RoutingArgs | undefined
     on_click?: () => void
 }
 
@@ -19,14 +20,17 @@ interface OwnProps {
 const map_state = (state: RootState) =>
 {
     return {
-        routing_args: state.routing.args,
+        current_routing_state: state.routing,
     }
 }
 
 
 const map_dispatch = (dispatch: Dispatch, own_props: OwnProps) => ({
     link_clicked: (routing_args: RoutingArgs) => dispatch(ACTIONS.change_route({
-        route: own_props.route, sub_route: undefined, item_id: own_props.item_id, args: routing_args,
+        route:     own_props.route,
+        sub_route: own_props.sub_route,
+        item_id:   own_props.item_id,
+        args:      routing_args,
     }))
 })
 
@@ -63,7 +67,6 @@ class _Link extends Component<Props, State>
 
     render () {
         const partial_routing_args = this.props.args || {}
-        const full_routing_args = { ...this.props.routing_args, ...partial_routing_args }
 
         const on_click = (e: h.JSX.TargetedEvent<HTMLAnchorElement, MouseEvent>) => {
             this.setState({ clicked: true })
@@ -79,9 +82,13 @@ class _Link extends Component<Props, State>
             }
         }
 
+        const full_routing_state = merge_routing_state(this.props.current_routing_state, this.props)
+        const full_routing_args = { ...this.props.current_routing_state.args, ...partial_routing_args }
+        full_routing_state.args = full_routing_args
+
         return <a
             onClick={on_click}
-            href={get_route({ ...this.props, args: full_routing_args })}
+            href={routing_state_to_string({ ...full_routing_state })}
             className={"link " + (this.state.clicked ? "clicked_animate" : "")}
         >
             {this.props.children}

@@ -83,7 +83,7 @@ export type ROUTE_TYPES = (
     | "patterns"
     | "creation_context"
 )
-export type SUB_ROUTE_TYPES = "objects_bulk_import"
+export type SUB_ROUTE_TYPES = "objects_bulk_import" | null
 export const ALLOWED_ROUTES: ROUTE_TYPES[] = [
     "filter",
     "statements",
@@ -101,8 +101,8 @@ export const ALLOWED_SUB_ROUTES: {[k in ROUTE_TYPES]: SUB_ROUTE_TYPES[]} = {
 export interface RoutingState
 {
     route: ROUTE_TYPES
-    sub_route: SUB_ROUTE_TYPES | undefined
-    item_id: string | undefined
+    sub_route: SUB_ROUTE_TYPES
+    item_id: string | null
     args: RoutingArgs
 }
 export type RoutingArgs = {[ key: string ]: string }
