@@ -1,5 +1,6 @@
 import { Component, ComponentClass, h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
+import { date2str } from "../shared/utils/date_helpers"
 
 import { CoreObject, CoreObjectAttribute, is_id_attribute, ObjectWithCache, Pattern, RootState } from "../state/State"
 import { ACTIONS } from "../state/store"
@@ -125,7 +126,7 @@ function get_data_from_air_table (pattern: Pattern, existing_objects: ObjectWith
 {
     const auth_key = localStorage.getItem("airtable_auth_key")
     const app = localStorage.getItem("airtable_app")
-    //  {"p123": {"table": "Table%20name", "view": "Grid%20view"}}
+    // Run: localStorage.setItem("airtable_models", `{"p123": {"table": "Your%20table", "view": "Grid%20view"}}`)
     const models = JSON.parse(localStorage.getItem("airtable_models")!)
     const model = models[pattern.id]
 
@@ -362,8 +363,19 @@ function airtable_multi_field_to_multi_attributes (args: AirtableMultiFieldToMul
 }
 
 
+
+const MSECONDS_PER_DAY = 86400000
+const date_to_string = (v: DateString | undefined): string => {
+    if (!v) return ""
+
+    const d = new Date(v)
+    if (isNaN(d as any)) return ""
+
+    if (d.getTime() % 86400000 === 0) return date2str(d, "yyyy-MM-dd")
+
+    return date2str(d, "yyyy-MM-dd HH:mm")
+}
 const num_to_string = (v: number | undefined): string => v === undefined ? "" : `${v}`
-const date_to_string = (v: DateString | undefined): string => v === undefined ? "" : v
 const bool_to_string = (v: Boolean | undefined): string => v ? "Yes" : "No"
 
 
