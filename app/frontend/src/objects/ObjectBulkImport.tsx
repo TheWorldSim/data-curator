@@ -373,7 +373,7 @@ const date_to_string = (v: DateString | undefined): string => {
 
     if (d.getTime() % 86400000 === 0) return date2str(d, "yyyy-MM-dd")
 
-    return date2str(d, "yyyy-MM-dd HH:mm")
+    return date2str(d, "yyyy-MM-dd hh:mm")
 }
 const num_to_string = (v: number | undefined): string => v === undefined ? "" : `${v}`
 const bool_to_string = (v: Boolean | undefined): string => v ? "Yes" : "No"
