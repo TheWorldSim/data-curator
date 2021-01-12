@@ -43,3 +43,8 @@
     border-radius: 5px;
     background-color: #FCFCFC;
 }
+
+.graph_node.focused
+{
+    z-index: 100;
+}

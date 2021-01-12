@@ -21,7 +21,7 @@ type Props = ConnectedProps<typeof connector> & OwnProps
 function _MainContentControls (props: Props)
 {
     return <div>
-        <TimeSlider earliest_ms={props.earliest_ms} latest_ms={props.latest_ms} events={props.events} />
+        <TimeSlider earliest_ms={props.earliest_ms} latest_ms={props.latest_ms} events={props.project_priorities} />
     </div>
 }
 

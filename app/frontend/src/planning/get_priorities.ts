@@ -14,7 +14,7 @@ export interface ProjectPriority
 
 export interface Priorities
 {
-    events: ProjectPriority[]
+    project_priorities: ProjectPriority[]
     earliest_ms: number
     latest_ms: number
 }
@@ -23,13 +23,13 @@ export interface Priorities
 const PATTERN_PROJECT_PRIORITY = "p10"
 export const get_priorities = (state: RootState): Priorities => {
 
-    const project_priorities = state.objects.filter(({ pattern_id }) => pattern_id === PATTERN_PROJECT_PRIORITY)
+    const raw_project_priorities = state.objects.filter(({ pattern_id }) => pattern_id === PATTERN_PROJECT_PRIORITY)
 
     let earliest_ms = new Date().getTime()
     let latest_ms = earliest_ms + 1
 
-    const events: ProjectPriority[] = []
-    project_priorities.forEach(project_priority => {
+    const project_priorities: ProjectPriority[] = []
+    raw_project_priorities.forEach(project_priority => {
         const { attributes } = project_priority
 
         const start_date = new Date((attributes[1] as CoreObjectValueAttribute).value)
@@ -46,7 +46,7 @@ export const get_priorities = (state: RootState): Priorities => {
 
         const effort_value = (attributes[2] as CoreObjectValueAttribute).value
 
-        events.push({
+        project_priorities.push({
             start_date,
             name: (project.attributes[0] as CoreObjectValueAttribute).value,
             id: project_priority.id,
@@ -56,7 +56,7 @@ export const get_priorities = (state: RootState): Priorities => {
     })
 
     return {
-        events,
+        project_priorities,
         earliest_ms,
         latest_ms,
     }

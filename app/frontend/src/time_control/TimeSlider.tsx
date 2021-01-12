@@ -67,7 +67,7 @@ function _TimeSlider (props: Props)
     return <div className="time_slider">
         <input
             type="range"
-            onChange={e => changed_handle_position(e, false)}
+            onChange={e => changed_handle_position(e, true)} // change to false for performance
             onMouseUp={e => changed_handle_position(e, true)}
             value={handle_position_ms}
             min={earliest_day_ms}

@@ -15,5 +15,6 @@ export interface GraphNode
     width: number
     height: number
 
+    effort: number
     display: boolean
 }
