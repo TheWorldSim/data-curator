@@ -371,9 +371,10 @@ const date_to_string = (v: DateString | undefined): string => {
     const d = new Date(v)
     if (isNaN(d as any)) return ""
 
-    if (d.getTime() % 86400000 === 0) return date2str(d, "yyyy-MM-dd")
+    const only_days = d.getTime() % 86400000 === 0
+    const format = only_days ? "yyyy-MM-dd" : "yyyy-MM-dd hh:mm"
 
-    return date2str(d, "yyyy-MM-dd hh:mm")
+    return date2str(d, format)
 }
 const num_to_string = (v: number | undefined): string => v === undefined ? "" : `${v}`
 const bool_to_string = (v: Boolean | undefined): string => v ? "Yes" : "No"
