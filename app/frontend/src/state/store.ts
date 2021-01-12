@@ -1,19 +1,16 @@
 import { createStore, Action, Reducer, AnyAction, Store } from "redux"
 
-import { statements_reducer, statement_actions } from "./statements"
+import { ACTIONS } from "./actions"
+import { global_key_press_reducer, ActionKeyDownArgs } from "./global_key_press"
+import { objects_reducer } from "./objects/objects"
+import { render_all_objects, render_all_objects_and_update_store } from "./objects/rendering"
 import { patterns_reducer } from "./patterns"
-import { pattern_actions } from "./pattern_actions"
-import type { RootState } from "./State"
-import {
-    get_current_route_params,
-    routing_reducer,
-    routing_actions,
-} from "./routing"
-import { ActionKeyDownArgs, global_key_press_actions, global_key_press_reducer } from "./global_key_press"
-import { object_actions, objects_reducer } from "./objects"
-import { render_object } from "../objects/object_content"
+import { routing_reducer, get_current_route_params } from "./routing/routing"
+import { factory_update_location_hash } from "./routing/update_location_hash"
 import { get_starting_state } from "./starting_state"
-import { sync_actions, sync_reducer } from "./sync"
+import type { RootState } from "./State"
+import { statements_reducer } from "./statements"
+import { sync_reducer } from "./sync"
 import { load_state, save_state } from "./sync_util"
 
 
@@ -52,7 +49,7 @@ export function config_store (args: ConfigStoreArgs = {})
     override_preloaded_state = override_preloaded_state || {}
     const preloaded_state: RootState = render_all_objects({
         ...get_starting_state(),
-        ...override_preloaded_state
+        ...override_preloaded_state,
     })
     const store = createStore<RootState, Action, {}, {}>(root_reducer, preloaded_state)
     cached_store = store
@@ -75,6 +72,7 @@ export function config_store (args: ConfigStoreArgs = {})
 
     store.subscribe(render_all_objects_and_update_store(store))
 
+    store.subscribe(factory_update_location_hash(store))
 
     /**
      * Update the route to reflect any manual change of the hash route by the user
@@ -127,57 +125,4 @@ export function config_store (args: ConfigStoreArgs = {})
 
 
     return store
-}
-
-
-function render_all_objects_and_update_store (store: Store)
-{
-    return () =>
-    {
-        const state = store.getState()
-
-        const { objects } = render_all_objects(state)
-
-        if (objects !== state.objects)
-        {
-            store.dispatch(ACTIONS.replace_all_objects_with_cache({ objects }))
-        }
-    }
-}
-
-
-function render_all_objects (state: RootState): RootState
-{
-    let updated_one_or_more = false
-
-    const updated_objects = state.objects.map(object => {
-        if (object.is_rendered) return object
-
-        updated_one_or_more = true
-
-        const rendered = render_object({ object, state })
-        return {
-            ...object,
-            rendered,
-            is_rendered: true,
-        }
-    })
-
-    if (!updated_one_or_more) return state
-
-    return {
-        ...state,
-        objects: updated_objects,
-    }
-}
-
-
-export const ACTIONS =
-{
-    ...pattern_actions,
-    ...statement_actions,
-    ...object_actions,
-    ...sync_actions,
-    ...routing_actions,
-    ...global_key_press_actions,
 }

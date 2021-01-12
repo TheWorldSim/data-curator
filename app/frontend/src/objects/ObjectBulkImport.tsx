@@ -1,10 +1,10 @@
 import { Component, ComponentClass, h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
-import { date2str } from "../shared/utils/date_helpers"
 
 import { CoreObject, CoreObjectAttribute, is_id_attribute, ObjectWithCache, Pattern, RootState } from "../state/State"
-import { ACTIONS } from "../state/store"
+import { ACTIONS } from "../state/actions"
 import { get_new_object_id } from "../utils/utils"
+import { date2str_auto } from "../shared/utils/date_helpers"
 
 
 interface OwnProps {}
@@ -363,18 +363,13 @@ function airtable_multi_field_to_multi_attributes (args: AirtableMultiFieldToMul
 }
 
 
-
-const MSECONDS_PER_DAY = 86400000
-const date_to_string = (v: DateString | undefined): string => {
+function date_to_string (v: DateString | undefined): string {
     if (!v) return ""
 
     const d = new Date(v)
     if (isNaN(d as any)) return ""
 
-    const only_days = d.getTime() % 86400000 === 0
-    const format = only_days ? "yyyy-MM-dd" : "yyyy-MM-dd hh:mm"
-
-    return date2str(d, format)
+    return date2str_auto(d)
 }
 const num_to_string = (v: number | undefined): string => v === undefined ? "" : `${v}`
 const bool_to_string = (v: Boolean | undefined): string => v ? "Yes" : "No"

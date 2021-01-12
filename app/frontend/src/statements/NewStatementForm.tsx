@@ -4,7 +4,7 @@ import { connect, ConnectedProps } from "react-redux"
 
 import { LabelsList } from "../labels/LabelsList"
 import { ItemSelect } from "../search/ItemSelect"
-import { ACTIONS } from "../state/store"
+import { ACTIONS } from "../state/actions"
 
 
 interface OwnProps {}

@@ -1,6 +1,7 @@
 import { CORE_IDS, STATEMENT_IDS } from "./core_data"
-import { get_current_route_params } from "./routing"
-import type { ObjectWithCache, Pattern, RootState, Statement } from "./State"
+import { get_current_route_params } from "./routing/routing"
+import { datetime_to_routing_args } from "./routing/routing_datetime"
+import type { ObjectWithCache, Pattern, RootState, RoutingArgs, Statement } from "./State"
 
 
 export function get_starting_state (): RootState
@@ -128,12 +129,16 @@ export function get_starting_state (): RootState
     const objects: ObjectWithCache[] = []
 
 
+    const routing_args: RoutingArgs = {
+        ...datetime_to_routing_args(new Date()),
+    }
+
     const starting_state: RootState = {
         statements,
         patterns,
         objects,
         sync: { ready: false, status: "LOADING" },
-        routing: { route: "statements", sub_route: null, item_id: null, args: {} },
+        routing: { route: "statements", sub_route: null, item_id: null, args: routing_args },
         global_key_press: { last_key: undefined, last_key_time_stamp: undefined },
     }
 

@@ -1,8 +1,8 @@
 import type { Action, AnyAction } from "redux"
-import { replace_element } from "../utils/list"
+import { replace_element } from "../../utils/list"
 
-import { get_datetime, get_new_object_id } from "../utils/utils"
-import { is_update_pattern } from "./pattern_actions"
+import { get_datetime, get_new_object_id } from "../../utils/utils"
+import { is_update_pattern } from "../pattern_actions"
 import type {
     RootState,
     Objekt,
@@ -12,7 +12,7 @@ import type {
     CoreObjectAttribute,
     CoreObject,
     ObjectWithCache,
-} from "./State"
+} from "../State"
 
 
 export const objects_reducer = (state: RootState, action: AnyAction): RootState =>

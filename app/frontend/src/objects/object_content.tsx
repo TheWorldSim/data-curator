@@ -1,7 +1,7 @@
 import type { Store, Action } from "redux"
 
 import { test } from "../utils/test"
-import { merge_pattern_into_core_object } from "../state/objects"
+import { merge_pattern_into_core_object } from "../state/objects/objects"
 import {
     CoreObject,
     is_value_attribute,

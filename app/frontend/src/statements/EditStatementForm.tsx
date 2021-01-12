@@ -5,7 +5,7 @@ import { connect, ConnectedProps } from "react-redux"
 import { LabelsList } from "../labels/LabelsList"
 import { DeleteButton } from "../sharedf/DeleteButton"
 import type { Statement } from "../state/State"
-import { ACTIONS } from "../state/store"
+import { ACTIONS } from "../state/actions"
 
 
 interface OwnProps {

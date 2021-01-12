@@ -25,8 +25,8 @@ export const get_priorities = (state: RootState): Priorities => {
 
     const project_priorities = state.objects.filter(({ pattern_id }) => pattern_id === PATTERN_PROJECT_PRIORITY)
 
-    let earliest_ms: number = Number.POSITIVE_INFINITY
-    let latest_ms: number = Number.NEGATIVE_INFINITY
+    let earliest_ms = new Date().getTime()
+    let latest_ms = earliest_ms + 1
 
     const events: ProjectPriority[] = []
     project_priorities.forEach(project_priority => {
@@ -54,12 +54,6 @@ export const get_priorities = (state: RootState): Priorities => {
             fields: [{ name: "Effort", value: effort_value }]
         })
     })
-
-    if (!Number.isFinite(earliest_ms))
-    {
-        earliest_ms = 0
-        latest_ms = 1
-    }
 
     return {
         events,

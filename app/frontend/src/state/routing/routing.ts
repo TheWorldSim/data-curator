@@ -1,7 +1,7 @@
 import type { Action, AnyAction } from "redux"
-import { id_is_object, id_is_pattern, id_is_statement, id_is_valid } from "../utils/utils"
+import { id_is_object, id_is_pattern, id_is_statement, id_is_valid } from "../../utils/utils"
 
-import { ALLOWED_ROUTES, ALLOWED_SUB_ROUTES, RootState, ROUTE_TYPES, RoutingArgs, RoutingState, SUB_ROUTE_TYPES } from "./State"
+import { ALLOWED_ROUTES, ALLOWED_SUB_ROUTES, RootState, ROUTE_TYPES, RoutingArgs, RoutingState, SUB_ROUTE_TYPES } from "../State"
 
 
 function parse_url_for_routing_params ({ url, state }: { url: string, state: RootState }): RoutingState
@@ -31,7 +31,10 @@ function parse_url_for_routing_params ({ url, state }: { url: string, state: Roo
     if (ready && id_is_pattern(item_id) && !state.patterns.find(({ id }) => id === item_id)) item_id = null
     if (ready && id_is_object(item_id) && !state.objects.find(({ id }) => id === item_id)) item_id = null
 
-    const args: RoutingArgs = {}
+    const args: RoutingArgs = {
+        ...state.routing.args,
+    }
+
     if (main_parts.length > 1)
     {
         main_parts.slice(1).forEach(part => {
@@ -126,10 +129,6 @@ export const routing_reducer = (state: RootState, action: AnyAction): RootState 
             }
         }
     }
-
-    // Putting this side effect here seems wrong, perhaps best as a store.subscribe?
-    const route = routing_state_to_string(state.routing)
-    window.location.hash = route
 
     return state
 }

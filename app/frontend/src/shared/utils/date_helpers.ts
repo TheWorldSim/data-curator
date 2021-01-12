@@ -222,20 +222,29 @@ export function distance_of_time_in_hms (from_date: Date, to_date: Date) {
 
 
 // https://stackoverflow.com/a/23593278/539490
-export function date2str(x: Date, y: string)
+export function date2str(date: Date, format: string)
 {
     const z: any = {
-        M: x.getMonth() + 1,
-        d: x.getDate(),
-        h: x.getHours(),
-        m: x.getMinutes(),
-        s: x.getSeconds()
+        M: date.getMonth() + 1,
+        d: date.getDate(),
+        h: date.getHours(),
+        m: date.getMinutes(),
+        s: date.getSeconds()
     }
-    y = y.replace(/(M+|d+|h+|m+|s+)/g, function (v) {
+    format = format.replace(/(M+|d+|h+|m+|s+)/g, function (v) {
         return ((v.length > 1 ? "0" : "") + z[v.slice(-1)]).slice(-2)
     })
 
-    return y.replace(/(y+)/g, function(v) {
-        return x.getFullYear().toString().slice(-v.length)
+    return format.replace(/(y+)/g, function(v) {
+        return date.getFullYear().toString().slice(-v.length)
     })
+}
+
+
+export function date2str_auto (date: Date)
+{
+    const only_days = date.getTime() % 86400000 === 0
+    const format = only_days ? "yyyy-MM-dd" : "yyyy-MM-dd hh:mm"
+
+    return date2str(date, format)
 }

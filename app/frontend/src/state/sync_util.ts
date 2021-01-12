@@ -10,7 +10,7 @@ import {
     RootState,
     Statement,
 } from "./State"
-import { ACTIONS } from "./store"
+import { ACTIONS } from "./actions"
 
 
 const supported_keys: (keyof RootState)[] = [

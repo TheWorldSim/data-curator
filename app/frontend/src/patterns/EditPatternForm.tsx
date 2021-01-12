@@ -4,7 +4,7 @@ import { connect, ConnectedProps } from "react-redux"
 import { DeleteButton } from "../sharedf/DeleteButton"
 
 import type { Pattern } from "../state/State"
-import { ACTIONS } from "../state/store"
+import { ACTIONS } from "../state/actions"
 import { PatternAttributesList } from "./PatternAttributesList"
 import { useState } from "preact/hooks"
 

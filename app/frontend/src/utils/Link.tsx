@@ -3,9 +3,9 @@ import type { Dispatch } from "redux"
 import { connect, ConnectedProps } from "react-redux"
 
 import "./Link.css"
-import { merge_routing_state, routing_state_to_string } from "../state/routing"
+import { merge_routing_state, routing_state_to_string } from "../state/routing/routing"
 import type { RootState, ROUTE_TYPES, RoutingArgs, RoutingState, SUB_ROUTE_TYPES } from "../state/State"
-import { ACTIONS } from "../state/store"
+import { ACTIONS } from "../state/actions"
 
 
 interface OwnProps {

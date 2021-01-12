@@ -4,7 +4,7 @@ import { connect, ConnectedProps } from "react-redux"
 import { ItemSelect } from "../search/ItemSelect"
 
 import type { Pattern, PatternAttribute, RootState } from "../state/State"
-import { ACTIONS } from "../state/store"
+import { ACTIONS } from "../state/actions"
 import { EditablePatternAttributesList } from "./EditablePatternAttributesList"
 
 
