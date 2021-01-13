@@ -41,7 +41,7 @@ export function Node (props: OwnProps)
         onMouseLeave={() => set_is_focused(false)}
     >
         <div style={style_inner}>
-            {title}
+            <span title={title}>{title}</span>
 
             <hr />
 
