@@ -115,6 +115,12 @@ export interface GlobalKeyPress
 }
 
 
+export interface CurrentDateTime
+{
+    dt: Date
+}
+
+
 export interface RootStateCore
 {
     statements: Statement[]
@@ -126,4 +132,5 @@ export interface RootState extends RootStateCore
     sync: SyncState
     routing: RoutingState
     global_key_press: GlobalKeyPress
+    current_datetime: CurrentDateTime
 }

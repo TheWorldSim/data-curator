@@ -1,6 +1,7 @@
 import { createStore, Action, Reducer, AnyAction, Store } from "redux"
 
 import { ACTIONS } from "./actions"
+import { current_datetime_reducer, periodically_update_current_datetime } from "./current_datetime"
 import { global_key_press_reducer, ActionKeyDownArgs } from "./global_key_press"
 import { objects_reducer } from "./objects/objects"
 import { render_all_objects, render_all_objects_and_update_store } from "./objects/rendering"
@@ -23,6 +24,7 @@ const root_reducer: Reducer<RootState, any> = ((state: RootState, action: AnyAct
     state = sync_reducer(state, action)
     state = routing_reducer(state, action)
     state = global_key_press_reducer(state, action)
+    state = current_datetime_reducer(state, action)
 
     // console.log(action.type, action)
 
@@ -73,6 +75,8 @@ export function config_store (args: ConfigStoreArgs = {})
     store.subscribe(render_all_objects_and_update_store(store))
 
     store.subscribe(factory_update_location_hash(store))
+
+    periodically_update_current_datetime(store)
 
     /**
      * Update the route to reflect any manual change of the hash route by the user

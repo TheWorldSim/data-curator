@@ -140,6 +140,7 @@ export function get_starting_state (): RootState
         sync: { ready: false, status: "LOADING" },
         routing: { route: "statements", sub_route: null, item_id: null, args: routing_args },
         global_key_press: { last_key: undefined, last_key_time_stamp: undefined },
+        current_datetime: { dt: new Date() }
     }
 
     starting_state.routing = get_current_route_params(starting_state)

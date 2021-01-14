@@ -1,3 +1,4 @@
+import { current_datetime_actions } from "./current_datetime"
 import { global_key_press_actions } from "./global_key_press"
 import { object_actions } from "./objects/objects"
 import { pattern_actions } from "./pattern_actions"
@@ -14,4 +15,5 @@ export const ACTIONS =
     ...sync_actions,
     ...routing_actions,
     ...global_key_press_actions,
+    ...current_datetime_actions,
 }
