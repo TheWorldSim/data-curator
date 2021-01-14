@@ -342,8 +342,11 @@ interface AirtableMultiFieldToSingleAttributeArgs
 function airtable_multi_field_to_single_attribute (args: AirtableMultiFieldToSingleAttributeArgs)
 {
     const { pidx, get_temp_id, field } = args
-    const field_normalised: string[] = field || []
-    return { pidx, id: get_temp_id(field_normalised[0]) }
+    const id = (field && field.length) ? get_temp_id(field[0]) : ""
+
+    if (field && field.length > 1) console.warn(`Dropping fields: ${JSON.stringify(field.slice(1))}`)
+
+    return { pidx, id }
 }
 
 

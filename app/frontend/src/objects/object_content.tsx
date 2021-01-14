@@ -99,18 +99,36 @@ function render_content (state: RenderState, content: string, attributes: Object
 
 function attribute_content (state: RenderState, attribute_index_lookup: string, attributes: ObjectAttribute[], depth: number)
 {
-    const { matching_attributes, parts } = get_attribute_from_index_lookup(attribute_index_lookup, attributes)
+    const { matching_attributes, parts } = get_attributes_from_compound_index_lookup(attribute_index_lookup, attributes)
 
     return get_content_from_attributes(state, matching_attributes, parts, depth)
 }
 
 
-function get_attribute_from_index_lookup (attribute_index_lookup: string, attributes: ObjectAttribute[])
+function get_attributes_from_compound_index_lookup (attribute_index_lookup: string, attributes: ObjectAttribute[])
 {
     const parts = attribute_index_lookup.split(".").map(i => parseInt(i))
-    const matching_attributes = attributes.filter(({ pidx }) => pidx === parts[0])
+    const matching_attributes = get_attributes_by_index_lookup(parts[0], attributes)
 
     return { matching_attributes, parts: parts.slice(1) }
+}
+
+
+export function get_attributes_by_index_lookup (attribute_index: number, attributes: ObjectAttribute[])
+{
+    const matching_attributes = attributes.filter(({ pidx }) => pidx === attribute_index )
+
+    return matching_attributes
+}
+
+
+export function get_attribute_by_index_lookup (attribute_index: number, attributes: ObjectAttribute[])
+{
+    const matching_attributes = attributes.filter(({ pidx }) => pidx === attribute_index )
+
+    if (matching_attributes.length > 1) console.warn(`More than 1 attribute for: ${attribute_index}`)
+
+    return matching_attributes[0]
 }
 
 

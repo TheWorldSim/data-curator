@@ -2,14 +2,16 @@ import { h } from "preact"
 import { useState } from "preact/hooks"
 
 import "./Canvas.css"
-import type { GraphNode } from "./interfaces"
+import type { ProjectPriorityNodeProps, DailyActionNodeProps } from "./interfaces"
 import { bounded } from "../utils/utils"
-import { Node } from "./Node"
+import { ProjectPriorityNode } from "../planning/project_priorities/ProjectPriorityNode"
+import { DailyActionNode } from "../planning/daily_actions/DailyActionNode"
 
 
 interface OwnProps
 {
-    nodes: GraphNode[]
+    project_priority_nodes: ProjectPriorityNodeProps[]
+    daily_action_nodes: DailyActionNodeProps[]
 }
 
 
@@ -104,7 +106,8 @@ export function Canvas (props: OwnProps)
         onWheel={on_wheel}
     >
         <div id="graph_visuals_container" style={html_container_style}>
-            {props.nodes.map(node => <Node node={node} />)}
+            {props.project_priority_nodes.map(node => <ProjectPriorityNode node={node} />)}
+            {props.daily_action_nodes.map(node => <DailyActionNode node={node} />)}
 
             <svg
                 width="900"

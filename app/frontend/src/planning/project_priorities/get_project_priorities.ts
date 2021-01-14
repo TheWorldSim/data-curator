@@ -1,27 +1,9 @@
-import type { NodeField } from "../canvas/interfaces"
-import type { CoreObjectIdAttribute, CoreObjectValueAttribute, RootState } from "../state/State"
-
-
-export interface ProjectPriority
-{
-    id: string
-    start_date: Date
-    name: string
-    project_id: string
-    fields: NodeField[]
-}
-
-
-export interface Priorities
-{
-    project_priorities: ProjectPriority[]
-    earliest_ms: number
-    latest_ms: number
-}
+import type { CoreObjectIdAttribute, CoreObjectValueAttribute, RootState } from "../../state/State"
+import type { ProjectPrioritiesMeta, ProjectPriority } from "../interfaces"
 
 
 const PATTERN_PROJECT_PRIORITY = "p10"
-export const get_priorities = (state: RootState): Priorities => {
+export const get_project_priorities_meta = (state: RootState): ProjectPrioritiesMeta => {
 
     const raw_project_priorities = state.objects.filter(({ pattern_id }) => pattern_id === PATTERN_PROJECT_PRIORITY)
 

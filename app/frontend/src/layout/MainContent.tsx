@@ -2,24 +2,47 @@ import { FunctionComponent, h } from "preact"
 import { connect, ConnectedProps } from "react-redux"
 
 import { Canvas } from "../canvas/Canvas"
-import { convert_priorities_to_nodes } from "../planning/convert_priorities_to_nodes"
-import { get_priorities } from "../planning/get_priorities"
 import { routing_args_to_datetime_ms } from "../state/routing/routing_datetime"
 import type { RootState } from "../state/State"
+import { convert_daily_actions_to_nodes } from "../planning/daily_actions/daily_actions_to_nodes"
+import { get_daily_actions_meta } from "../planning/daily_actions/get_daily_actions"
+import { get_project_priorities_meta } from "../planning/project_priorities/get_project_priorities"
+import { convert_project_priorities_to_nodes } from "../planning/project_priorities/project_priorities_to_nodes"
+import { group_priorities_by_project, order_priorities_by_project } from "../planning/project_priorities/group_and_order"
+import { get_project_id_to_vertical_position } from "../planning/project_priorities/vertical_position"
 
 
 interface OwnProps {}
 
 
-const SCALE = 10
 const map_state = (state: RootState) => {
     const display_at_datetime_ms = routing_args_to_datetime_ms(state)
 
-    const priorities = get_priorities(state)
+    const {
+        earliest_ms,
+        project_priorities,
+    } = get_project_priorities_meta(state)
+    const unordered_priorities_by_project = group_priorities_by_project(project_priorities)
+    const priorities_by_project = order_priorities_by_project(unordered_priorities_by_project)
+    const project_priority_nodes = convert_project_priorities_to_nodes({
+        priorities_by_project,
+        display_at_datetime_ms,
+        origin_ms: earliest_ms,
+    })
+
+    const daily_actions_meta = get_daily_actions_meta(state)
+    const project_id_to_vertical_position = get_project_id_to_vertical_position(priorities_by_project)
+    const daily_action_nodes = convert_daily_actions_to_nodes({
+        daily_actions_meta,
+        display_at_datetime_ms,
+        origin_ms: earliest_ms,
+        project_id_to_vertical_position,
+    })
 
     return {
         route: state.routing.route,
-        nodes: convert_priorities_to_nodes({ priorities, display_at_datetime_ms, scale: SCALE }),
+        project_priority_nodes,
+        daily_action_nodes,
     }
 }
 
@@ -33,7 +56,10 @@ type Props = PropsFromRedux & OwnProps
 function _MainContent (props: Props)
 {
     return <div>
-        <Canvas nodes={props.nodes} />
+        <Canvas
+            project_priority_nodes={props.project_priority_nodes}
+            daily_action_nodes={props.daily_action_nodes}
+        />
     </div>
 }
 

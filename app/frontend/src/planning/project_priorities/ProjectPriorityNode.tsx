@@ -1,16 +1,16 @@
 import { h } from "preact"
 import { useState } from "preact/hooks"
 
-import type { GraphNode } from "./interfaces"
+import type { ProjectPriorityNodeProps } from "../../canvas/interfaces"
 
 
 interface OwnProps
 {
-    node: GraphNode
+    node: ProjectPriorityNodeProps
 }
 
 
-export function Node (props: OwnProps)
+export function ProjectPriorityNode (props: OwnProps)
 {
     const [is_focused, set_is_focused] = useState(false)
 

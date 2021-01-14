@@ -1,0 +1,33 @@
+import { h } from "preact"
+
+import type { DailyActionNodeProps } from "../../canvas/interfaces"
+
+
+interface OwnProps
+{
+    node: DailyActionNodeProps
+}
+
+
+export function DailyActionNode (props: OwnProps)
+{
+    const { x, y, width, height, display, action_count } = props.node
+
+    const style_outer: h.JSX.CSSProperties = {
+        width,
+        height,
+        left: x,
+        top: y,
+        display: display ? "" : "none",
+        backgroundColor: "orange",
+        borderRadius: "2px",
+        border: "thin solid #777",
+    }
+
+    return <div
+        className={"graph_node"}
+        style={style_outer}
+        title={`${action_count} actions`}
+    >
+    </div>
+}

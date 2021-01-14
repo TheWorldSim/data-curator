@@ -4,7 +4,7 @@ import { useState } from "preact/hooks"
 
 import "./time_slider.css"
 import { date2str_auto } from "../shared/utils/date_helpers"
-import type { ProjectPriority } from "../planning/get_priorities"
+import type { ProjectPriority } from "../planning/interfaces"
 import { ACTIONS } from "../state/actions"
 import type { RootState } from "../state/State"
 import { datetime_ms_to_routing_args, routing_args_to_datetime_ms } from "../state/routing/routing_datetime"
