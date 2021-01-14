@@ -58,16 +58,21 @@ class _ObjectBulkImport extends Component<Props, {statuses: string[]}>
         const add_status = (status: string) => this.setState({ statuses: [...this.state.statuses, status] })
         const set_statuses = (statuses: string[]) => this.setState({ statuses })
 
-        const on_new_objects_factory = (object_type: string) => (objects: CoreObject[]) =>
+        const on_new_objects = (object_type: string, objects: CoreObject[], error: string) =>
         {
+            if (error)
+            {
+                add_status(error)
+                return
+            }
+
             add_status(`Successfully fetched ${objects.length} ${object_type} objects`)
 
             this.props.upsert_objects({ objects })
-            setTimeout(() => set_statuses([]), 5000)
         }
 
 
-        const get_data = () =>
+        const get_data = async () =>
         {
             if (!this.props.patterns_available)
             {
@@ -79,9 +84,14 @@ class _ObjectBulkImport extends Component<Props, {statuses: string[]}>
             const { patterns, objects } = this.props
 
             set_statuses(["Fetching objects from AirTable API", ""])
-            get_data_from_air_table(patterns.action!, objects, on_new_objects_factory("Action"))
-            get_data_from_air_table(patterns.priority!, objects, on_new_objects_factory("Priorities"))
-            get_data_from_air_table(patterns.event!, objects, on_new_objects_factory("Event"))
+            const actions_result = await get_data_from_air_table(patterns.action!, objects)
+            on_new_objects("Action", actions_result.objects, actions_result.error)
+            const priorities_result = await get_data_from_air_table(patterns.priority!, objects)
+            on_new_objects("Priorities", priorities_result.objects, actions_result.error)
+            const events_result = await get_data_from_air_table(patterns.event!, objects)
+            on_new_objects("Event", events_result.objects, actions_result.error)
+
+            setTimeout(() => set_statuses([]), 5000)
         }
 
 
@@ -121,55 +131,125 @@ export const ObjectBulkImport = connector(_ObjectBulkImport) as ComponentClass<O
 
 const EXTERNAL_ID_KEY = "airtable"
 
-
-function get_data_from_air_table (pattern: Pattern, existing_objects: ObjectWithCache[], on_new_objects: (objects: CoreObject[]) => void)
+interface GetObjectsResult
 {
-    const auth_key = localStorage.getItem("airtable_auth_key")
+    objects: CoreObject[]
+    error: string
+}
+
+async function get_data_from_air_table (pattern: Pattern, existing_objects: ObjectWithCache[]): Promise<GetObjectsResult>
+{
+    const auth_key = localStorage.getItem("airtable_auth_key") || ""
     const app = localStorage.getItem("airtable_app")
     // Run: localStorage.setItem("airtable_models", `{"p123": {"table": "Your%20table", "view": "Grid%20view"}}`)
     const models = JSON.parse(localStorage.getItem("airtable_models")!)
     const model = models[pattern.id]
 
-    if (!model) return console.error(`Pattern id "${pattern.id}" could not be found in localStorage.airtable_models`)
+    if (!model) {
+        const error = `Pattern id "${pattern.id}" could not be found in localStorage.airtable_models`
+        return { objects: [], error }
+    }
 
     const table = model.table
     const view = model.view
 
-    const maxRecords = 100
-    const url = `https://api.airtable.com/v0/${app}/${table}?maxRecords=${maxRecords}&view=${view}`
+    const url = (offset: string) =>
+    {
+        return `https://api.airtable.com/v0/${app}/${table}?view=${view}` + (offset ? `&offset=${offset}` : "")
+    }
 
     const { temporary_ids, get_temp_id } = temp_id_factory()
 
-    fetch(url, { headers: { "Authorization": `Bearer ${auth_key}` } })
-    .then(d => d.json())
-    .then((d: { records: AirtableAction[] }) =>
+    let objects: CoreObject[] = []
+    let offset: string = ""
+
+    do
     {
-        if (d.records.length === maxRecords) alert("Warning, not all objects may have been fetched.")
-
-        const objects_with_temp_ids = d.records.map(airtable_record =>
-        {
-            const predicate = find_object_by_airtable_id(airtable_record.id)
-            const existing_object = existing_objects.find(predicate)
-
-            if (pattern.id === PATTERN_ID_ACTION_V2)
-            {
-                return transform_airtable_action({ pattern, get_temp_id, airtable_record, existing_object })
-            }
-            else if (pattern.id === PATTERN_ID_PRIORITY)
-            {
-                return transform_airtable_priority({ pattern, get_temp_id, airtable_record, existing_object })
-            }
-            else if (pattern.id === PATTERN_ID_EVENT)
-            {
-                return transform_airtable_event({ pattern, get_temp_id, airtable_record, existing_object })
-            }
-            else throw new Error(`Unsupported pattern: ${pattern.id}`)
+        const result = await perform_request({
+            pattern,
+            url: url(offset),
+            auth_key,
+            existing_objects,
+            get_temp_id,
+            temporary_ids,
         })
 
-        const objects: CoreObject[] = replace_temp_ids({ objects_with_temp_ids, existing_objects, temporary_ids })
+        if (result.error) return { objects: [], error: result.error }
 
-        on_new_objects(objects)
+        offset = result.offset
+        objects = objects.concat(result.objects)
+
+    } while (offset)
+
+    return { objects, error: "" }
+}
+
+
+interface PerformRequestArgs
+{
+    pattern: Pattern
+    url: string
+    auth_key: string
+    existing_objects: ObjectWithCache[]
+    get_temp_id: TempIdFunc
+    temporary_ids: TempIds
+}
+
+async function perform_request(args: PerformRequestArgs)
+{
+    const { pattern, url, auth_key, existing_objects, get_temp_id, temporary_ids } = args
+
+    const transformation_function = get_transformation_function(pattern)
+
+    if (!transformation_function)
+    {
+        const error = `Unsupported pattern: ${pattern.id}`
+        return { objects: [], offset: "", error }
+    }
+
+    let response: Response
+    try
+    {
+        response = await fetch(url, { headers: { "Authorization": `Bearer ${auth_key}` } })
+    } catch (e)
+    {
+        return { objects: [], offset: "", error: `${e}` }
+    }
+
+    const d = await response.json() as { records: AirtableAction[], offset: string }
+
+    const maybe_objects_with_temp_ids = d.records.map(airtable_record =>
+    {
+        const predicate = find_object_by_airtable_id(airtable_record.id)
+        const existing_object = existing_objects.find(predicate)
+
+        return transformation_function({ pattern, get_temp_id, airtable_record, existing_object })
     })
+
+    const objects_with_temp_ids = maybe_objects_with_temp_ids.filter(o => !!o) as CoreObject[]
+
+    const objects: CoreObject[] = replace_temp_ids({ objects_with_temp_ids, existing_objects, temporary_ids })
+
+    return { objects, offset: d.offset, error: "" }
+}
+
+
+function get_transformation_function (pattern: Pattern)
+{
+    if (pattern.id === PATTERN_ID_ACTION_V2)
+    {
+        return transform_airtable_action
+    }
+    else if (pattern.id === PATTERN_ID_PRIORITY)
+    {
+        return transform_airtable_priority
+    }
+    else if (pattern.id === PATTERN_ID_EVENT)
+    {
+        return transform_airtable_event
+    }
+
+    return undefined
 }
 
 
@@ -221,12 +301,15 @@ interface AirtableAction
     }>
 }
 
-function transform_airtable_action (args: TransformAirtableRecordArgs<AirtableAction>): CoreObject
+function transform_airtable_action (args: TransformAirtableRecordArgs<AirtableAction>): CoreObject | undefined
 {
+
     const { pattern, get_temp_id } = args
     if (pattern.id !== PATTERN_ID_ACTION_V2) throw new Error(`transform_airtable_action requires Action pattern`)
     const ar = args.airtable_record
     const eo = args.existing_object
+
+    if (!ar.fields.name || ar.fields.name === "_") return undefined
 
     const new_object: CoreObject = {
         id: (eo && eo.id) || get_new_object_id(),
@@ -378,12 +461,16 @@ const num_to_string = (v: number | undefined): string => v === undefined ? "" : 
 const bool_to_string = (v: Boolean | undefined): string => v ? "Yes" : "No"
 
 
+interface TempIds
+{
+    [id: string]: number
+}
 interface TempIdFunc {
     (id: string | undefined): string
 }
 const TEMP_ID_PREFIX = "temp_id: "
 function temp_id_factory () {
-    const temporary_ids: { [id: string]: number } = {}
+    const temporary_ids: TempIds = {}
 
     const get_temp_id: TempIdFunc = id => {
         if (!id) return ""
@@ -405,7 +492,7 @@ interface ReplaceTempIdsArgs
 {
     objects_with_temp_ids: CoreObject[]
     existing_objects: CoreObject[]
-    temporary_ids: { [id: string]: number }
+    temporary_ids: TempIds
 }
 function replace_temp_ids (args: ReplaceTempIdsArgs): CoreObject[]
 {
