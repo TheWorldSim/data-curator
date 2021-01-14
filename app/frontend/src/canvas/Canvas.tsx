@@ -6,12 +6,16 @@ import type { ProjectPriorityNodeProps, DailyActionNodeProps } from "./interface
 import { bounded } from "../utils/utils"
 import { ProjectPriorityNode } from "../planning/project_priorities/ProjectPriorityNode"
 import { DailyActionNode } from "../planning/daily_actions/DailyActionNode"
+import { CurrentDatetimeLine } from "../planning/CurrentDatetimeLine"
+import type { ExtendOfContent } from "../planning/project_priorities/project_priorities_to_nodes"
 
 
 interface OwnProps
 {
     project_priority_nodes: ProjectPriorityNodeProps[]
     daily_action_nodes: DailyActionNodeProps[]
+    origin_ms: number
+    extent_of_content: ExtendOfContent
 }
 
 
@@ -114,7 +118,10 @@ export function Canvas (props: OwnProps)
                 height="600"
             >
                 <g>
-                    {/* List of SVG objects */}
+                    <CurrentDatetimeLine
+                        extent_of_content={props.extent_of_content}
+                        origin_ms={props.origin_ms}
+                    />
                 </g>
             </svg>
         </div>

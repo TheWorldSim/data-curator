@@ -20,6 +20,7 @@ const supported_keys: (keyof RootState)[] = [
     "sync",
     "routing",
     "global_key_press",
+    "current_datetime",
 ]
 
 

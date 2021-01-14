@@ -62,3 +62,16 @@ function get_next_event (events: ProjectPriority[], project_priority_id: string)
 
     return events[index + 1]
 }
+
+
+export interface ExtendOfContent
+{
+    max_y: number
+}
+
+export function get_extent_of_content (priorities_by_project: ProjectPrioritiesByProjectId): ExtendOfContent
+{
+    const number_of_project_streams = Object.keys(priorities_by_project).length
+    const max_y = project_priority_y(number_of_project_streams + 1)
+    return { max_y }
+}

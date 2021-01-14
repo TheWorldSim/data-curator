@@ -7,7 +7,7 @@ import type { RootState } from "../state/State"
 import { convert_daily_actions_to_nodes } from "../planning/daily_actions/daily_actions_to_nodes"
 import { get_daily_actions_meta } from "../planning/daily_actions/get_daily_actions"
 import { get_project_priorities_meta } from "../planning/project_priorities/get_project_priorities"
-import { convert_project_priorities_to_nodes } from "../planning/project_priorities/project_priorities_to_nodes"
+import { convert_project_priorities_to_nodes, get_extent_of_content } from "../planning/project_priorities/project_priorities_to_nodes"
 import { group_priorities_by_project, order_priorities_by_project } from "../planning/project_priorities/group_and_order"
 import { get_project_id_to_vertical_position } from "../planning/project_priorities/vertical_position"
 
@@ -39,10 +39,13 @@ const map_state = (state: RootState) => {
         project_id_to_vertical_position,
     })
 
+    const extent_of_content = get_extent_of_content(priorities_by_project)
+
     return {
-        route: state.routing.route,
         project_priority_nodes,
         daily_action_nodes,
+        origin_ms: earliest_ms,
+        extent_of_content,
     }
 }
 
@@ -59,6 +62,8 @@ function _MainContent (props: Props)
         <Canvas
             project_priority_nodes={props.project_priority_nodes}
             daily_action_nodes={props.daily_action_nodes}
+            origin_ms={props.origin_ms}
+            extent_of_content={props.extent_of_content}
         />
     </div>
 }
