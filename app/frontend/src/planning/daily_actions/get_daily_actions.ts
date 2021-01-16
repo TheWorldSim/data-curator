@@ -15,19 +15,21 @@ export const get_daily_actions_meta = (state: RootState): DailyActionsMeta => {
     raw_actions.forEach(action => {
         const { attributes } = action
 
-        const project_id_attrs = get_attributes_by_index_lookup(1, attributes) as CoreObjectIdAttribute[]
+        let project_id_attrs = get_attributes_by_index_lookup(1, attributes) as CoreObjectIdAttribute[]
         const start_datetime_attr = get_attribute_by_index_lookup(8, attributes) as CoreObjectValueAttribute
         const stop_datetime_attr = get_attribute_by_index_lookup(9, attributes) as CoreObjectValueAttribute
-
-        project_id_attrs.forEach(({ id }) =>
-        {
-            actions_by_project_id[id] = actions_by_project_id[id] || {}
-        })
 
         const start_datetime = new Date(start_datetime_attr.value)
         const stop_datetime = new Date(stop_datetime_attr.value)
 
         if (Number.isNaN(start_datetime.getTime())) return
+
+        project_id_attrs = project_id_attrs.filter(id => !!id)
+
+        project_id_attrs.forEach(({ id }) =>
+        {
+            actions_by_project_id[id] = actions_by_project_id[id] || {}
+        })
 
         const date_strs: string[] = []
         const start_date_str = date2str(start_datetime, "yyyy-MM-dd")
