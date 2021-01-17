@@ -13,7 +13,7 @@ export const get_daily_actions_meta = (state: RootState): DailyActionsMeta => {
     const actions_by_project_id: DailyActionsMeta = {}
 
     raw_actions.forEach(action => {
-        const { attributes } = action
+        const { attributes, id: action_id } = action
 
         let project_id_attrs = get_attributes_by_index_lookup(1, attributes) as CoreObjectIdAttribute[]
         const start_datetime_attr = get_attribute_by_index_lookup(8, attributes) as CoreObjectValueAttribute
@@ -48,12 +48,12 @@ export const get_daily_actions_meta = (state: RootState): DailyActionsMeta => {
             }
         }
 
-        project_id_attrs.forEach(({ id }) =>
+        project_id_attrs.forEach(({ id: project_id }) =>
         {
             date_strs.forEach(date_str =>
             {
-                actions_by_project_id[id][date_str] = actions_by_project_id[id][date_str] || { action_count: 0 }
-                actions_by_project_id[id][date_str].action_count++
+                actions_by_project_id[project_id][date_str] = actions_by_project_id[project_id][date_str] || { action_ids: [] }
+                actions_by_project_id[project_id][date_str].action_ids.push(action_id)
             })
         })
 

@@ -12,8 +12,8 @@ import type { ExtendOfContent } from "../planning/project_priorities/project_pri
 
 interface OwnProps
 {
-    project_priority_nodes: ProjectPriorityNodeProps[]
-    daily_action_nodes: DailyActionNodeProps[]
+    project_priority_node_props: ProjectPriorityNodeProps[]
+    daily_action_node_props: DailyActionNodeProps[]
     origin_ms: number
     extent_of_content: ExtendOfContent
 }
@@ -110,8 +110,8 @@ export function Canvas (props: OwnProps)
         onWheel={on_wheel}
     >
         <div id="graph_visuals_container" style={html_container_style}>
-            {props.project_priority_nodes.map(node => <ProjectPriorityNode node={node} />)}
-            {props.daily_action_nodes.map(node => <DailyActionNode node={node} />)}
+            {props.project_priority_node_props.map(props => <ProjectPriorityNode {...props} />)}
+            {props.daily_action_node_props.map(props => <DailyActionNode {...props} />)}
 
             <svg
                 width="900"

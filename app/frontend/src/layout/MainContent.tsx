@@ -60,8 +60,8 @@ function _MainContent (props: Props)
 {
     return <div>
         <Canvas
-            project_priority_nodes={props.project_priority_nodes}
-            daily_action_nodes={props.daily_action_nodes}
+            project_priority_node_props={props.project_priority_nodes}
+            daily_action_node_props={props.daily_action_nodes}
             origin_ms={props.origin_ms}
             extent_of_content={props.extent_of_content}
         />

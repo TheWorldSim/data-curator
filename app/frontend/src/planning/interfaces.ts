@@ -32,7 +32,7 @@ export interface ProjectPrioritiesByProjectId
 
 export interface DailyAction
 {
-    action_count: number
+    action_ids: string[]
 }
 
 export interface DailyActionsMeta

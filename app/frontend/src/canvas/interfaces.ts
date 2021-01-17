@@ -28,5 +28,5 @@ export interface ProjectPriorityNodeProps extends TextNodeProps
 }
 
 export interface DailyActionNodeProps extends NodeProps {
-    action_count: number
+    action_ids: string[]
 }

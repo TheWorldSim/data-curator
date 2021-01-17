@@ -43,7 +43,7 @@ export function convert_daily_actions_to_nodes (args: ConvertActionsToNodesArgs)
                 width,
                 height: action_height,
                 display,
-                action_count: a.action_count,
+                action_ids: a.action_ids,
             }
 
             nodes.push(node)

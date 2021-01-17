@@ -4,17 +4,11 @@ import { useState } from "preact/hooks"
 import type { ProjectPriorityNodeProps } from "../../canvas/interfaces"
 
 
-interface OwnProps
-{
-    node: ProjectPriorityNodeProps
-}
-
-
-export function ProjectPriorityNode (props: OwnProps)
+export function ProjectPriorityNode (props: ProjectPriorityNodeProps)
 {
     const [is_focused, set_is_focused] = useState(false)
 
-    const { x, y, width, height, title, fields, effort, display } = props.node
+    const { x, y, width, height, title, fields, effort, display } = props
 
     const w = effort > 0 ? Math.max(width, 150) : 150
 
