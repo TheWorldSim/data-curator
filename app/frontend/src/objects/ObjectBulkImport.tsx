@@ -288,7 +288,7 @@ interface AirtableAction
         name: string
         projects: string[]
         description: string
-        status: "Icebox" | "Todo" | "In progress" | "Done"
+        status: "Icebox" | "Todo" | "In progress" | "Done" | "Rejected"
         encompassing_action: string[]  // should only be 0 or 1 value
         depends_on_actions: string[]  // 0+ values
         why: string
