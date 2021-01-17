@@ -10,6 +10,8 @@ import { get_project_priorities_meta } from "../planning/project_priorities/get_
 import { convert_project_priorities_to_nodes, get_extent_of_content } from "../planning/project_priorities/project_priorities_to_nodes"
 import { group_priorities_by_project, order_priorities_by_project } from "../planning/project_priorities/group_and_order"
 import { get_project_id_to_vertical_position } from "../planning/project_priorities/vertical_position"
+import { DailyActionsList } from "./daily_actions/DailyActionsList"
+import { useState } from "preact/hooks"
 
 
 interface OwnProps {}
@@ -58,13 +60,21 @@ type Props = PropsFromRedux & OwnProps
 
 function _Planning (props: Props)
 {
+    const [action_ids_to_show, set_action_ids_to_show] = useState<string[]>([])
+
     return <div>
         <Canvas
             project_priority_node_props={props.project_priority_nodes}
             daily_action_node_props={props.daily_action_nodes}
             origin_ms={props.origin_ms}
             extent_of_content={props.extent_of_content}
+            set_action_ids_to_show={set_action_ids_to_show}
         />
+
+        {action_ids_to_show.length === 0 ? null : <DailyActionsList
+            action_ids_to_show={action_ids_to_show}
+            on_close={() => set_action_ids_to_show([])}
+        ></DailyActionsList>}
     </div>
 }
 

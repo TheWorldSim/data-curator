@@ -16,6 +16,7 @@ interface OwnProps
     daily_action_node_props: DailyActionNodeProps[]
     origin_ms: number
     extent_of_content: ExtendOfContent
+    set_action_ids_to_show: (action_ids: string[]) => void
 }
 
 
@@ -110,8 +111,8 @@ export function Canvas (props: OwnProps)
         onWheel={on_wheel}
     >
         <div id="graph_visuals_container" style={html_container_style}>
-            {props.project_priority_node_props.map(props => <ProjectPriorityNode {...props} />)}
-            {props.daily_action_node_props.map(props => <DailyActionNode {...props} />)}
+            {props.project_priority_node_props.map(node_props => <ProjectPriorityNode {...node_props} />)}
+            {props.daily_action_node_props.map(node_props => <DailyActionNode {...node_props} set_action_ids_to_show={props.set_action_ids_to_show} />)}
 
             <svg
                 width="900"
