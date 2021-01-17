@@ -18,6 +18,7 @@ function get_title (id: ROUTE_TYPES)
     else if (id === "objects") return "Objects"
     else if (id === "patterns") return "Patterns"
     else if (id === "creation_context") return "Creation Context"
+    else if (id === "views") return "Views"
 
     else return "?"
 }

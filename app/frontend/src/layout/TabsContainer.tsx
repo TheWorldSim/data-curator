@@ -1,4 +1,5 @@
 import { h } from "preact"
+import { ALLOWED_ROUTES } from "../state/State"
 import { Tab } from "./Tab"
 
 
@@ -13,10 +14,6 @@ export function TabsContainer (props: TabsContainerProps)
     setTimeout(() => props.content_changed(), 0) // remove hack
 
     return <div>
-        <Tab id="filter" />
-        <Tab id="statements" />
-        <Tab id="objects" />
-        <Tab id="patterns" />
-        <Tab id="creation_context" />
+        {ALLOWED_ROUTES.map(route => <Tab id={route} />)}
     </div>
 }
