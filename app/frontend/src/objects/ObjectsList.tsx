@@ -5,12 +5,22 @@ import type { RootState } from "../state/State"
 import { ObjectListEntry } from "./ObjectListEntry"
 
 
-interface OwnProps {}
+interface OwnProps {
+    object_ids?: string[]
+}
 
 
-const map_state = (state: RootState) => ({
-    objects: [...state.objects].reverse()
-})
+const map_state = (state: RootState, props: OwnProps) => {
+    let objects = [...state.objects].reverse()
+
+    if (props.object_ids)
+    {
+        const include_ids = new Set(props.object_ids)
+        objects = objects.filter(({ id }) => include_ids.has(id))
+    }
+
+    return { objects }
+}
 
 const connector = connect(map_state)
 type PropsFromRedux = ConnectedProps<typeof connector>
