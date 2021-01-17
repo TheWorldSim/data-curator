@@ -112,12 +112,18 @@ export type RoutingArgs = {
     date: string
     time: string
     view: string
+    zoom: string
+    x: string
+    y: string
 }
 export type RoutingArgKey = keyof RoutingArgs
 const ALLOWED_ROUTE_ARG_KEYS: RoutingArgKey[] = [
     "date",
     "time",
     "view",
+    "zoom",
+    "x",
+    "y",
 ]
 export function is_route_arg_key (key: string): key is RoutingArgKey
 {
