@@ -1,7 +1,7 @@
 import type { Action, AnyAction } from "redux"
 import { id_is_object, id_is_pattern, id_is_statement, id_is_valid } from "../../utils/utils"
 
-import { ALLOWED_ROUTES, ALLOWED_SUB_ROUTES, RootState, ROUTE_TYPES, RoutingArgs, RoutingState, SUB_ROUTE_TYPES } from "../State"
+import { ALLOWED_ROUTES, ALLOWED_SUB_ROUTES, is_route_arg_key, RootState, ROUTE_TYPES, RoutingArgKey, RoutingArgs, RoutingState, SUB_ROUTE_TYPES } from "../State"
 
 
 function parse_url_for_routing_params ({ url, state }: { url: string, state: RootState }): RoutingState
@@ -13,7 +13,7 @@ function parse_url_for_routing_params ({ url, state }: { url: string, state: Roo
 
     if (!ALLOWED_ROUTES.includes(route))
     {
-        return { route: "statements", sub_route: null, item_id: null, args: {} }
+        return { route: "statements", sub_route: null, item_id: null, args: state.routing.args }
     }
 
     const part2 = (parts[1] || null) as SUB_ROUTE_TYPES
@@ -37,9 +37,11 @@ function parse_url_for_routing_params ({ url, state }: { url: string, state: Roo
 
     if (main_parts.length > 1)
     {
-        main_parts.slice(1).forEach(part => {
+        main_parts.slice(1)
+        .forEach(part => {
             const [key, value] = part.split("=")
             if (!value) return
+            if (!is_route_arg_key(key)) return
             args[key] = value
         })
     }
@@ -62,7 +64,7 @@ function routing_args_to_string (routing_args: RoutingArgs)
 {
     const routing_args_str = Object.keys(routing_args)
         .sort()
-        .map(key => `&${key}=${routing_args[key]}`)
+        .map(key => `&${key}=${routing_args[key as RoutingArgKey]}`)
         .join("")
 
     return routing_args_str
@@ -90,7 +92,9 @@ export function merge_routing_state (current_routing_state: RoutingState, new_ro
 
     const merged_args = { ...args, ...new_routing_state.args }
     Object.keys(merged_args).forEach(key => {
-        if (!merged_args[key]) delete merged_args[key]
+        const no_value = !merged_args[key as RoutingArgKey]
+        const not_valid = !is_route_arg_key(key)
+        if (no_value || not_valid) delete merged_args[key as RoutingArgKey]
     })
 
     return {
@@ -114,19 +118,18 @@ export const routing_reducer = (state: RootState, action: AnyAction): RootState 
             args,
         } = state.routing
 
+        const merged = merge_routing_state(state.routing, action)
+
         const changed = (
-            route !== action.route
-            || sub_route !== action.sub_route
-            || item_id !== action.item_id
-            || routing_args_to_string(args) !== routing_args_to_string(action.args || {})
+            route !== merged.route
+            || sub_route !== merged.sub_route
+            || item_id !== merged.item_id
+            || routing_args_to_string(args) !== routing_args_to_string(merged.args)
         )
 
         if (changed)
         {
-            state = {
-                ...state,
-                routing: merge_routing_state(state.routing, action)
-            }
+            state = { ...state, routing: merged }
         }
     }
 
@@ -139,7 +142,7 @@ interface ActionChangeRouteArgs {
     route: ROUTE_TYPES | undefined
     sub_route: SUB_ROUTE_TYPES | undefined | null
     item_id: string | undefined | null
-    args: RoutingArgs | undefined
+    args: Partial<RoutingArgs> | undefined
 }
 interface ActionChangeRoute extends Action, ActionChangeRouteArgs {}
 

@@ -105,7 +105,21 @@ export interface RoutingState
     item_id: string | null
     args: RoutingArgs
 }
-export type RoutingArgs = {[ key: string ]: string }
+export type RoutingArgs = {
+    date: string
+    time: string
+    view: string
+}
+export type RoutingArgKey = keyof RoutingArgs
+const ALLOWED_ROUTE_ARG_KEYS: RoutingArgKey[] = [
+    "date",
+    "time",
+    "view",
+]
+export function is_route_arg_key (key: string): key is RoutingArgKey
+{
+    return ALLOWED_ROUTE_ARG_KEYS.includes(key as RoutingArgKey)
+}
 
 
 export interface GlobalKeyPress

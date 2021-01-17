@@ -26,7 +26,7 @@ const map_state = (state: RootState) =>
 
 
 const map_dispatch = (dispatch: Dispatch, own_props: OwnProps) => ({
-    link_clicked: (routing_args: RoutingArgs) => dispatch(ACTIONS.change_route({
+    link_clicked: (routing_args: Partial<RoutingArgs>) => dispatch(ACTIONS.change_route({
         route:     own_props.route,
         sub_route: own_props.sub_route,
         item_id:   own_props.item_id,
@@ -66,7 +66,7 @@ class _Link extends Component<Props, State>
     }
 
     render () {
-        const partial_routing_args = this.props.args || {}
+        const partial_routing_args: Partial<RoutingArgs> = this.props.args || {}
 
         const on_click = (e: h.JSX.TargetedEvent<HTMLAnchorElement, MouseEvent>) => {
             this.setState({ clicked: true })
