@@ -132,7 +132,7 @@ export function get_starting_state (): RootState
     const routing_args: RoutingArgs = {
         ...datetime_to_routing_args(new Date()),
         view: "planning",
-        zoom: "1",
+        zoom: "100",
         x: "0",
         y: "0",
     }

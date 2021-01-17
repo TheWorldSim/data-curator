@@ -139,10 +139,10 @@ export const routing_reducer = (state: RootState, action: AnyAction): RootState 
 
 
 interface ActionChangeRouteArgs {
-    route: ROUTE_TYPES | undefined
-    sub_route: SUB_ROUTE_TYPES | undefined | null
-    item_id: string | undefined | null
-    args: Partial<RoutingArgs> | undefined
+    route?: ROUTE_TYPES
+    sub_route?: SUB_ROUTE_TYPES | null
+    item_id?: string | null
+    args?: Partial<RoutingArgs>
 }
 interface ActionChangeRoute extends Action, ActionChangeRouteArgs {}
 
