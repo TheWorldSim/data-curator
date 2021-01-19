@@ -55,8 +55,8 @@ class _Modal extends Component<Props>
         const should_close = calc_should_close(this.props, this.time_stamp_first_rendered)
         if (should_close) setTimeout(() => this.props.on_close(), 0)
 
-        return <div id="modal_background">
-            <div id="modal_container">
+        return <div id="modal_background" onClick={() => this.props.on_close()}>
+            <div id="modal_container" onClick={e => e.stopPropagation()}>
                 {this.props.title}
                 <div id="modal_close" onClick={() => this.props.on_close()}><span>X</span></div>
 

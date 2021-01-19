@@ -2,7 +2,7 @@ import { get_attribute_by_index_lookup, get_attributes_by_index_lookup } from ".
 import { date2str } from "../../shared/utils/date_helpers"
 import type { CoreObjectIdAttribute, CoreObjectValueAttribute, RootState } from "../../state/State"
 import { MSECONDS_PER_DAY } from "../display"
-import type { DailyAction, DailyActionsMeta } from "../interfaces"
+import type { DailyActionsMeta } from "../interfaces"
 
 
 const PATTERN_ACTION_V2 = "p9"
@@ -22,7 +22,7 @@ export const get_daily_actions_meta = (state: RootState): DailyActionsMeta => {
         const start_datetime = new Date(start_datetime_attr.value)
         const stop_datetime = new Date(stop_datetime_attr.value)
 
-        if (Number.isNaN(start_datetime.getTime())) return
+        if (Number.isNaN(start_datetime)) return
 
         project_id_attrs = project_id_attrs.filter(id => !!id)
 
