@@ -33,6 +33,7 @@ export function convert_project_priorities_to_nodes (args: ConvertProjectPriorit
             const display = start_datetime_ms <= display_at_datetime_ms
 
             const node: ProjectPriorityNodeProps = {
+                id,
                 title: name,
                 fields,
 

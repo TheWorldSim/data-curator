@@ -25,6 +25,7 @@ interface TextNodeProps extends NodeProps
 export interface ProjectPriorityNodeProps extends TextNodeProps
 {
     effort: number
+    id: string
 }
 
 export interface DailyActionNodeProps extends NodeProps {

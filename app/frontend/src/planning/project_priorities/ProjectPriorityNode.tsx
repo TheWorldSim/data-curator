@@ -1,10 +1,23 @@
-import { h } from "preact"
+import { FunctionalComponent, h } from "preact"
 import { useState } from "preact/hooks"
+import type { Dispatch } from "redux"
+import { connect, ConnectedProps } from "react-redux"
 
 import type { ProjectPriorityNodeProps } from "../../canvas/interfaces"
+import { ACTIONS } from "../../state/actions"
+
+type OwnProps = ProjectPriorityNodeProps
 
 
-export function ProjectPriorityNode (props: ProjectPriorityNodeProps)
+const map_dispatch = (dispatch: Dispatch, own_props: OwnProps) => ({
+    change_route: () => dispatch(ACTIONS.change_route({ route: "objects", item_id: own_props.id }))
+})
+
+const connector = connect(null, map_dispatch)
+type Props = ConnectedProps<typeof connector> & OwnProps
+
+
+function _ProjectPriorityNode (props: Props)
 {
     const [is_focused, set_is_focused] = useState(false)
 
@@ -33,6 +46,7 @@ export function ProjectPriorityNode (props: ProjectPriorityNodeProps)
         style={style_outer}
         onMouseEnter={() => set_is_focused(true)}
         onMouseLeave={() => set_is_focused(false)}
+        onClick={() => props.change_route()}
     >
         <div style={style_inner}>
             <span title={title}>{title}</span>
@@ -45,3 +59,6 @@ export function ProjectPriorityNode (props: ProjectPriorityNodeProps)
         </div>
     </div>
 }
+
+
+export const ProjectPriorityNode = connector(_ProjectPriorityNode) as FunctionalComponent<OwnProps>
