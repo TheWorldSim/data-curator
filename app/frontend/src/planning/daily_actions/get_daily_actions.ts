@@ -22,7 +22,7 @@ export const get_daily_actions_meta = (state: RootState): DailyActionsMeta => {
         const start_datetime = new Date(start_datetime_attr.value)
         const stop_datetime = new Date(stop_datetime_attr.value)
 
-        if (Number.isNaN(start_datetime)) return
+        if (Number.isNaN(start_datetime.getTime())) return
 
         project_id_attrs = project_id_attrs.filter(id => !!id)
 
