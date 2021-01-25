@@ -24,7 +24,7 @@ const map_state = (state: RootState) => {
     if (!pattern_event && ready) throw new Error(`Pattern "Event" for id: ${PATTERN_ID_EVENT} not found`)
 
     return {
-        objects: state.objects,
+        existing_objects: state.objects,
         patterns_available: !!pattern_action && !!pattern_event,
         patterns: {
             action: pattern_action,
@@ -81,15 +81,27 @@ class _ObjectBulkImport extends Component<Props, {statuses: string[]}>
                 return
             }
 
-            const { patterns, objects } = this.props
+            const { patterns, existing_objects } = this.props
+            const { temporary_ids_map, get_temp_id } = temp_id_factory()
 
             set_statuses(["Fetching objects from AirTable API", ""])
-            const actions_result = await get_data_from_air_table(patterns.action!, objects)
-            on_new_objects("Action", actions_result.objects, actions_result.error)
-            const priorities_result = await get_data_from_air_table(patterns.priority!, objects)
-            on_new_objects("Priorities", priorities_result.objects, actions_result.error)
-            const events_result = await get_data_from_air_table(patterns.event!, objects)
-            on_new_objects("Event", events_result.objects, actions_result.error)
+            const actions_result = await get_data_from_air_table(patterns.action!, existing_objects, get_temp_id)
+            const priorities_result = await get_data_from_air_table(patterns.priority!, existing_objects, get_temp_id)
+            const events_result = await get_data_from_air_table(patterns.event!, existing_objects, get_temp_id)
+
+            const objects_with_temp_ids = [
+                ...actions_result.objects_with_temp_ids,
+                ...priorities_result.objects_with_temp_ids,
+                ...events_result.objects_with_temp_ids,
+            ]
+
+            const objects: CoreObject[] = replace_temp_ids({
+                objects_with_temp_ids,
+                existing_objects,
+                temporary_ids_map,
+            })
+
+            on_new_objects("of all types of", objects, actions_result.error)
 
             setTimeout(() => set_statuses([]), 5000)
         }
@@ -133,11 +145,11 @@ const EXTERNAL_ID_KEY = "airtable"
 
 interface GetObjectsResult
 {
-    objects: CoreObject[]
+    objects_with_temp_ids: CoreObject[]
     error: string
 }
 
-async function get_data_from_air_table (pattern: Pattern, existing_objects: ObjectWithCache[]): Promise<GetObjectsResult>
+async function get_data_from_air_table (pattern: Pattern, existing_objects: ObjectWithCache[], get_temp_id: TempIdFunc): Promise<GetObjectsResult>
 {
     const auth_key = localStorage.getItem("airtable_auth_key") || ""
     const app = localStorage.getItem("airtable_app")
@@ -147,7 +159,7 @@ async function get_data_from_air_table (pattern: Pattern, existing_objects: Obje
 
     if (!model) {
         const error = `Pattern id "${pattern.id}" could not be found in localStorage.airtable_models`
-        return { objects: [], error }
+        return { objects_with_temp_ids: [], error }
     }
 
     const table = model.table
@@ -158,9 +170,7 @@ async function get_data_from_air_table (pattern: Pattern, existing_objects: Obje
         return `https://api.airtable.com/v0/${app}/${table}?view=${view}` + (offset ? `&offset=${offset}` : "")
     }
 
-    const { temporary_ids, get_temp_id } = temp_id_factory()
-
-    let objects: CoreObject[] = []
+    let objects_with_temp_ids: CoreObject[] = []
     let offset: string = ""
 
     do
@@ -171,17 +181,16 @@ async function get_data_from_air_table (pattern: Pattern, existing_objects: Obje
             auth_key,
             existing_objects,
             get_temp_id,
-            temporary_ids,
         })
 
-        if (result.error) return { objects: [], error: result.error }
+        if (result.error) return { objects_with_temp_ids: [], error: result.error }
 
         offset = result.offset
-        objects = objects.concat(result.objects)
+        objects_with_temp_ids = objects_with_temp_ids.concat(result.objects_with_temp_ids)
 
     } while (offset)
 
-    return { objects, error: "" }
+    return { objects_with_temp_ids, error: "" }
 }
 
 
@@ -192,19 +201,18 @@ interface PerformRequestArgs
     auth_key: string
     existing_objects: ObjectWithCache[]
     get_temp_id: TempIdFunc
-    temporary_ids: TempIds
 }
 
-async function perform_request(args: PerformRequestArgs)
+async function perform_request (args: PerformRequestArgs)
 {
-    const { pattern, url, auth_key, existing_objects, get_temp_id, temporary_ids } = args
+    const { pattern, url, auth_key, existing_objects, get_temp_id } = args
 
     const transformation_function = get_transformation_function(pattern)
 
     if (!transformation_function)
     {
         const error = `Unsupported pattern: ${pattern.id}`
-        return { objects: [], offset: "", error }
+        return { objects_with_temp_ids: [], offset: "", error }
     }
 
     let response: Response
@@ -213,7 +221,7 @@ async function perform_request(args: PerformRequestArgs)
         response = await fetch(url, { headers: { "Authorization": `Bearer ${auth_key}` } })
     } catch (e)
     {
-        return { objects: [], offset: "", error: `${e}` }
+        return { objects_with_temp_ids: [], offset: "", error: `${e}` }
     }
 
     const d = await response.json() as { records: AirtableAction[], offset: string }
@@ -228,9 +236,7 @@ async function perform_request(args: PerformRequestArgs)
 
     const objects_with_temp_ids = maybe_objects_with_temp_ids.filter(o => !!o) as CoreObject[]
 
-    const objects: CoreObject[] = replace_temp_ids({ objects_with_temp_ids, existing_objects, temporary_ids })
-
-    return { objects, offset: d.offset, error: "" }
+    return { objects_with_temp_ids, offset: d.offset, error: "" }
 }
 
 
@@ -303,7 +309,6 @@ interface AirtableAction
 
 function transform_airtable_action (args: TransformAirtableRecordArgs<AirtableAction>): CoreObject | undefined
 {
-
     const { pattern, get_temp_id } = args
     if (pattern.id !== PATTERN_ID_ACTION_V2) throw new Error(`transform_airtable_action requires Action pattern`)
     const ar = args.airtable_record
@@ -461,28 +466,28 @@ const num_to_string = (v: number | undefined): string => v === undefined ? "" : 
 const bool_to_string = (v: Boolean | undefined): string => v ? "Yes" : "No"
 
 
-interface TempIds
+interface AirtableToTempIdsMap
 {
-    [id: string]: number
+    [airtable_id: string]: number
 }
 interface TempIdFunc {
     (id: string | undefined): string
 }
 const TEMP_ID_PREFIX = "temp_id: "
 function temp_id_factory () {
-    const temporary_ids: TempIds = {}
+    const temporary_ids_map: AirtableToTempIdsMap = {}
 
     const get_temp_id: TempIdFunc = id => {
         if (!id) return ""
 
-        if (!temporary_ids.hasOwnProperty(id)) temporary_ids[id] = 0
-        temporary_ids[id] += 1
+        if (!temporary_ids_map.hasOwnProperty(id)) temporary_ids_map[id] = 0
+        temporary_ids_map[id] += 1
 
         return `${TEMP_ID_PREFIX}${id}`
     }
 
     return {
-        temporary_ids,
+        temporary_ids_map,
         get_temp_id,
     }
 }
@@ -492,16 +497,16 @@ interface ReplaceTempIdsArgs
 {
     objects_with_temp_ids: CoreObject[]
     existing_objects: CoreObject[]
-    temporary_ids: TempIds
+    temporary_ids_map: AirtableToTempIdsMap
 }
 function replace_temp_ids (args: ReplaceTempIdsArgs): CoreObject[]
 {
-    const { objects_with_temp_ids, existing_objects, temporary_ids } = args
+    const { objects_with_temp_ids, existing_objects, temporary_ids_map } = args
 
     const airtable_id_map = build_airtable_id_map({
         objects_with_temp_ids,
         existing_objects,
-        expected_ids: Object.keys(temporary_ids)
+        expected_airtable_ids: Object.keys(temporary_ids_map)
     })
 
     const objects = change_temp_ids({ objects_with_temp_ids, airtable_id_map })
@@ -514,12 +519,12 @@ interface BuildAirtableIdMapArgs
 {
     objects_with_temp_ids: CoreObject[]
     existing_objects: CoreObject[]
-    expected_ids: string[]
+    expected_airtable_ids: string[]
 }
 type ID_MAP = { [ airtable_id: string]: string }
 function build_airtable_id_map (args: BuildAirtableIdMapArgs): ID_MAP
 {
-    const { objects_with_temp_ids, existing_objects, expected_ids } = args
+    const { objects_with_temp_ids, existing_objects, expected_airtable_ids } = args
 
     const id_map: ID_MAP = {}
 
@@ -527,12 +532,15 @@ function build_airtable_id_map (args: BuildAirtableIdMapArgs): ID_MAP
     mutate_id_map_with_objects(existing_objects, id_map)
 
     // Check all temporary_ids are present in map
-    const missing_ids: Set<string> = new Set()
-    expected_ids.forEach(id => {
-        if (!id_map.hasOwnProperty(id)) missing_ids.add(id)
+    const missing_airtable_ids: Set<string> = new Set()
+    expected_airtable_ids.forEach(airtable_id => {
+        if (!id_map.hasOwnProperty(airtable_id)) missing_airtable_ids.add(airtable_id)
     })
 
-    if (missing_ids.size) throw new Error(`Missing ${missing_ids.size} ids from objects`)
+    if (missing_airtable_ids.size)
+    {
+        throw new Error(`Missing ${missing_airtable_ids.size} airtable ids from objects`)
+    }
 
     return id_map
 }
